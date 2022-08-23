@@ -452,7 +452,7 @@ def getPlayerAvg(data,season,**kwargs):
     print('loaded # player stats: ', len(playerStats))
     for team in teams:
         badPlayer = False
-        badPlayerid = 0#gosh i hope there is only ever 1 of these on each team else smh nooo
+        badPlayerid = 0#\
         for playerid in data[team+'_team_players']:
             foundSaved = False
             #check if player has been saved
@@ -468,8 +468,8 @@ def getPlayerAvg(data,season,**kwargs):
             if not foundSaved:
                 uurl = url+str(playerid)
                 response = req(uurl)
-                #wtf ig it was setting all playerids to the same then laying the stats down its fucked tho this pissed me off soo fucking much
-                data[team+'_team_players'].update({playerid : {}})#this fucking line holly fuck took me 3 hours to figure out why all the stas where the same
+
+                data[team+'_team_players'].update({playerid : {}})
                 print(len(response['data']))
                 if len(response['data']) != 0:#this is sad it means a player didnt play a single game all season lmao poor player
                     for statName in response['data'][0]:
