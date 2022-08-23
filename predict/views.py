@@ -562,7 +562,7 @@ def save_obj(obj, name):
 def load_obj(name):
     with open('obj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
-#------------------------------------------------------------------------#TensorFlow Time lets get it####################
+#------------------------------------------------------------------------#TensorFlow Time
 
 def predict(l, LABELS,LABEL_COLUMN, path):
     def sss(l):
