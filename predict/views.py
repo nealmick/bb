@@ -21,10 +21,6 @@ import pandas as pd
 import tensorflow as tf
 import seaborn as sns
 import random
-##test
-####ffffffffasdfasdf
-#helloaadsfasdf
-#asdsfsasdfasdasdfasd
 
 
 def saveEdit(request,pk,change,**kwargs):
