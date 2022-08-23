@@ -1,0 +1,137 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+{% block content%}
+<div class="col-md-6">
+  {% if request.user.is_authenticated %}
+
+    <body class="background">
+
+        <div class="content-section">
+          <h1>Your Predictions:</h1>
+          {% for game in games %}
+            <a href="{% url 'edit-predict' game.pk%}">
+            <div class="ff" >
+
+              <article class="media content-section ff">
+                <div class="media-body">
+                  <p class="article-content"<font color="#white"></font>home: {{ game.home }} {% if game.home_score != None %} {{game.home_score}}{% endif %} - visitor: {{ game.visitor }} {% if game.visitor_score != None %} {{game.visitor_score}}{% endif %} - date: {{ game.gamedate }}</font></p>
+                  {% if game.home_spread is not None and game.visitor_spread is not None%}
+                    <p>
+                      Home Spread: {{game.home_spread}} Visitor Spread: {{game.visitor_spread}}
+                    </p>
+                  {% endif %}
+                  {% if game.finished%}
+                    {% if game.prediction > .5 and game.winner == 1 or game.prediction < .5 and game.winner == 0 %}
+                      <p><font color="green">Prediction:  {{ game.prediction }}</font></p>
+                      {% else %}
+                      <p><font color="red">Prediction:  {{ game.prediction }}</font></p>
+                    {%endif%}
+                  {%else%}
+                    <p><font color="#17a2b8" >Prediction:{{ game.prediction }}</font></p>
+                  {% endif %}
+                  {% if game.prediction is None %}
+                    <p>
+                      <font color="red">Error</font>: Check date and teams.
+                    </p>
+                  {% else %}
+                  {% if not game.finished%}
+                    <form action="{% url 'get-score' game.pk %}" method="get">
+                      <div>
+                        <input type="submit" class="btn btn-outline-info" value="Get Score" name="mybtn">
+                      </div>
+                    </form>
+                  {% endif %}
+
+                  {% endif %}
+                  </div>
+              </article>
+            </div>
+            </a>
+          {% endfor %}
+          <center>
+
+            <p>
+...
+            </p>
+          {% if is_paginated %}
+            {% if page_obj.has_previous %}
+              <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+              <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+              <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+          {% endif %}
+          </center>
+        </div>
+      </div>
+
+        <div class="col-md-6">
+          <div class="content-section">
+            <h3>Todays games:</h3>
+            <form action="{% url 'predict-today' %}" method="get">
+              <div>
+                <input type="submit" class="btn btn-outline-info" value="Predict All" name="mybtn1">
+              </div>
+            </form>
+              <h3> </h3>
+              <ul class="list-group">
+                {% for matchup in today %}
+                <li class="list-group-item list-group-item-light">{{matchup}}</li>
+                {% endfor %}
+              </ul>
+            </p>
+          </div>
+          <div class="col-md-13">
+            <div class="content-section">
+              <h3>User Prediction Stats:</h3>
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-light">Correct Completed Predictions: {{ correct }}</li>
+                  <li class="list-group-item list-group-item-light">Completed Predictions: {{ numpred }}</li>
+                  <li class="list-group-item list-group-item-light">Percent Correct: {{ pc }} %</li>
+                  <li class="list-group-item list-group-item-light">Prediction Gain: {{ gain }}</li>
+                  <li class="list-group-item list-group-item-light">Prediction Loss: {{ loss }}</li>
+                  <li class="list-group-item list-group-item-light">Prediction Gain-Loss: {{ lg }}</li>
+                  <li class="list-group-item list-group-item-light">dis gone b like a function of the spread gain-loss and Prediction Gain-Loss</li>
+                  <li class="list-group-item list-group-item-light">spread accuracy % mayBBBB????shallll c</li>
+                  <li class="list-group-item list-group-item-light">dis gone b like spread loss need to get dat fukin bovada</li>
+                  <li class="list-group-item list-group-item-light">oof nog and a half</li>
+
+                </ul>
+              </p>
+            </div>
+          </div>
+          <!---
+          site prediction stats.....
+          <div class="col-md-13">
+            <div class="content-section">
+              <h3>Site Prediction Stats:</h3>
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-light">Correct Completed Predictions: oofnog</li>
+                  <li class="list-group-item list-group-item-light">Completed Predictions: ooferino</li>
+                  <li class="list-group-item list-group-item-light">Percent Correct: ergsherg %</li>
+                  <li class="list-group-item list-group-item-light">Prediction Gain: derp</li>
+                  <li class="list-group-item list-group-item-light">Prediction Loss: adsf</li>
+                  <li class="list-group-item list-group-item-light">Prediction Gain-Loss: fdsa</li>
+                </ul>
+              </p>
+            </div>
+            --->
+
+          </div>
+        </div>
+    {% endif %}
+  </body>
+</div>
+{% endblock content %}

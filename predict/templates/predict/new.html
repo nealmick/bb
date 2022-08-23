@@ -1,0 +1,34 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+<div class="col-md-6">
+  <body class="background2">
+    <div class="content-section">
+      <div class="fff">
+        <form method="POST">
+          {% csrf_token %}
+          <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Get Game Stats</legend>
+            {{ form|crispy }}
+          </fieldset>
+          <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Get Stats</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+    <div class="col-md-6">
+      <div class="content-section">
+        <h3>Todays games:</h3>
+          <ul class="list-group">
+            {% for matchup in today %}
+            <li class="list-group-item list-group-item-light">{{matchup}}</li>
+            {% endfor %}
+          </ul>
+        </p>
+      </div>
+    </div>
+  </body>
+</div>
+{% endblock content %}

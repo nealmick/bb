@@ -1,0 +1,128 @@
+{% extends "predict/base.html"%}
+
+
+{% block content%}
+  <script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script> <!-- jQuery source -->
+  <body class="background2">
+
+
+      <div class="content-section">
+        {% if prediction is None %}
+          <input onclick="myFunction()" type="button" class="btn btn-outline-info" value="Predict">
+          {%else%}
+          {% if finished %}
+            {% if prediction > .5 and winner == 1 or prediction < .5 and winner == 0 %}
+              <h1><font color="green">Prediction:  {{ prediction }}</font></h1>
+              {% else %}
+              <h1><font color="red">Prediction:  {{ prediction }}</font></h1>
+            {%endif%}
+          {%else%}
+            <h1><font color="#17a2b8" >Prediction:{{ prediction }}</font></h1>
+          {% endif %}
+
+        {% endif %}
+        {% if home_score is not None and visitor_score is not None %}
+          {% if finished %}
+            {%if winner == 1%}
+              <h2><font color="green">{{home}} {{home_score}} </font>- <font color="red">{{visitor}} {{visitor_score}}</font> : {{gamedate}}</h2>
+            {%else%}
+              <h2><font color="red">{{home}} {{home_score}} </font>- <font color="green">{{visitor}} {{visitor_score}}</font> : {{gamedate}}</h2>
+            {%endif%}
+          {%endif%}
+        {%else%}
+          <h2>{{home}} - {{visitor}}  : {{gamedate}}</h2>
+        {% endif %}
+        {%if home_spread is not None and visitor_spread is not None%}
+        <h2>Home Spread: {{home_spread}} Visitor Spread: {{visitor_spread}}</h2>
+        {%endif%}
+        <p></p>
+        <table align="center">
+            <tr>
+              <td>Players</td>
+              <td>#</td>
+              {% for label in labels%}
+                <td>{{label}}</td>
+              {% endfor %}
+            </tr>
+
+
+
+
+            {% for k, v in stats.items %}
+
+              <tr>
+              <td>{{ k }} </td>
+              {%for stat in v%}
+                  {% if forloop.counter == 1 %}
+                      <td >{{stat}}</td>
+                  {%else%}
+                      {% if prediction is None%}
+                        <td class="e oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
+                      {% else %}
+                        <td class="oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
+                      {% endif %}
+                  {%endif%}
+              {%endfor%}
+            </tr>
+            {% endfor %}
+
+
+        </table>
+        <script>
+        var changes = "change=";
+        $(function(){
+            $(".e").click(function(event){
+
+                if($(this).children("input").length > 0)
+                    return false;
+                f = $(this).attr("id");
+                var tdObj = $(this);
+
+                var preText = tdObj.html();
+                var inputObj = $("<input type='number' id='asdf'/>");
+                tdObj.html("");
+                inputObj.width(tdObj.width())
+                    .height(tdObj.height())
+                    .css({border:"0px",fontSize:"17px"})
+                    .val(preText)
+                    .appendTo(tdObj)
+                    .trigger("focus")
+                    .trigger("select");
+
+                inputObj.keyup(function(event){
+                    if(13 == event.which) { // press ENTER-key
+                        var text = $(this).val();
+                        tdObj.html(text);
+                        changes += f+":"+$(this).val()+"-";
+                    }
+                    else if(27 == event.which) {  // press ESC-key
+                        tdObj.html(preText);
+                    }
+
+                  });
+
+
+
+                inputObj.click(function(){
+                    return false;
+                });
+            });
+        });
+
+        function myFunction() {
+            window.location.href = changes;
+
+        }
+        </script>
+      </div>
+      <div class="content-section">
+        <h1>dis be dee area to get chew sum noice stats m8 dank_stat#1</h1>
+      </div>
+
+
+
+
+
+
+  </body>
+{% endblock %}
