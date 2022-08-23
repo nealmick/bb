@@ -23,6 +23,124 @@ import seaborn as sns
 import random
 
 
+class GameListView(ListView, LoginRequiredMixin):
+    model = Game
+    template_name = 'predict/home.html'
+    ordering = ['-date_posted']
+    paginate_by = 10
+    context_object_name = 'games'
+    context = 'games'
+
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        context = super(GameListView, self).get_context_data(**kwargs)
+        x = todaysGames(self)
+        context['today'] = x
+        context['correct'] = Profile.objects.filter(user=user).values('correct')[0]['correct']
+        context['numpred'] =  Profile.objects.filter(user=user).values('predictions')[0]['predictions']
+        if Profile.objects.filter(user=user).values('predictions')[0]['predictions'] >= 1:
+            context['pc'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)
+        else:
+
+            context['pc'] = 'Predict some Games'
+        context['gain'] =  Profile.objects.filter(user=user).values('gain')[0]['gain']
+        context['loss'] =  Profile.objects.filter(user=user).values('loss')[0]['loss']
+        context['lg'] = Profile.objects.filter(user=user).values('gain')[0]['gain'] - Profile.objects.filter(user=user).values('loss')[0]['loss']
+        #context['form'] = GameForm()
+        context['ordering']= ['-date_posted']
+        return context
+    def get_queryset(self, **kwargs):
+        user = self.request.user
+        return Game.objects.filter(author=user).order_by('-date_posted')
+
+    def form_valid(self, form):
+        print('-------------------')
+        form.instance.author = self.request.user
+        season = '2021'
+
+        path = 'csv/'+str(form.instance.pk)+'.csv'
+        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+        x = form.instance.gamedate
+        y = form.instance.home.upper()
+        z = form.instance.visitor.upper()
+        date=x
+        homeAbv=y
+        visitorAbv=z
+        found, gameid = futureGame(date, homeAbv,visitorAbv,path,season,labels)
+        if found:
+            form.instance.gameid = gameid
+        return super().form_valid(form)
+
+
+class TodaysGamesCreate(LoginRequiredMixin, CreateView):
+    model = Game
+    template_name = 'predict/new.html'
+    fields = ['gamedate']
+    csvid = random.randint(1,100000)
+    def form_valid(self, form, **kwargs):
+        form.instance.author = self.request.user
+        season = '2019'
+        form.instance.csvid = self.csvid
+        path = 'csv/'+str(self.request.user)+str(self.csvid)+'.csv'
+        print(path)
+        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+        x = form.instance.gamedate
+        #y = form.instance.home.upper()
+        #z = form.instance.visitor.upper()
+
+
+
+
+
+
+class GameCreateView(LoginRequiredMixin, CreateView):
+    model = Game
+    template_name = 'predict/new.html'
+    fields = ['home', 'visitor','gamedate','home_spread','visitor_spread']
+    csvid = random.randint(1,100000)
+    def form_valid(self, form, **kwargs):
+        form.instance.author = self.request.user
+        season = '2019'
+        form.instance.csvid = self.csvid
+        path = 'csv/'+str(self.request.user)+str(self.csvid)+'.csv'
+        print(path)
+        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+        x = form.instance.gamedate
+        y = form.instance.home.upper()
+        z = form.instance.visitor.upper()
+        date=x
+        homeAbv=y
+        visitorAbv=z
+        found, gameid, playerids = futureGame(date, homeAbv,visitorAbv,path,season,labels)
+        if found:
+
+            form.instance.p0 = playerids[0]
+            form.instance.p1 = playerids[1]
+            form.instance.p2 = playerids[2]
+            form.instance.p3 = playerids[3]
+            form.instance.p4 = playerids[4]
+            form.instance.p5 = playerids[5]
+
+            LABEL_COLUMN = 'winner'
+            LABELS = [0, 1]
+            l = labels
+            #p = predict(l, LABELS,LABEL_COLUMN,path)
+            #form.instance.prediction = float(p[0])
+            form.instance.gameid = gameid
+
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        context = super(GameCreateView, self).get_context_data(**kwargs)
+        x = todaysGames(self)
+        context['today'] = x
+        context['csvid'] = self.csvid
+        print(self.csvid,'---------------------------')
+        return context
+
+
+
 def saveEdit(request,pk,change,**kwargs):
 
     changes = change[7:].split('-')
@@ -247,124 +365,6 @@ def todaysGames(self):
     return games
 
 
-
-
-
-class GameListView(ListView, LoginRequiredMixin):
-    model = Game
-    template_name = 'predict/home.html'
-    ordering = ['-date_posted']
-    paginate_by = 10
-    context_object_name = 'games'
-    context = 'games'
-
-    def get_context_data(self, **kwargs):
-        user = self.request.user
-        context = super(GameListView, self).get_context_data(**kwargs)
-        x = todaysGames(self)
-        context['today'] = x
-        context['correct'] = Profile.objects.filter(user=user).values('correct')[0]['correct']
-        context['numpred'] =  Profile.objects.filter(user=user).values('predictions')[0]['predictions']
-        if Profile.objects.filter(user=user).values('predictions')[0]['predictions'] >= 1:
-            context['pc'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)
-        else:
-
-            context['pc'] = 'Predict some Games'
-        context['gain'] =  Profile.objects.filter(user=user).values('gain')[0]['gain']
-        context['loss'] =  Profile.objects.filter(user=user).values('loss')[0]['loss']
-        context['lg'] = Profile.objects.filter(user=user).values('gain')[0]['gain'] - Profile.objects.filter(user=user).values('loss')[0]['loss']
-        #context['form'] = GameForm()
-        context['ordering']= ['-date_posted']
-        return context
-    def get_queryset(self, **kwargs):
-        user = self.request.user
-        return Game.objects.filter(author=user).order_by('-date_posted')
-
-    def form_valid(self, form):
-        print('-------------------')
-        form.instance.author = self.request.user
-        season = '2021'
-
-        path = 'csv/'+str(form.instance.pk)+'.csv'
-        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-        x = form.instance.gamedate
-        y = form.instance.home.upper()
-        z = form.instance.visitor.upper()
-        date=x
-        homeAbv=y
-        visitorAbv=z
-        found, gameid = futureGame(date, homeAbv,visitorAbv,path,season,labels)
-        if found:
-            form.instance.gameid = gameid
-        return super().form_valid(form)
-
-
-class TodaysGamesCreate(LoginRequiredMixin, CreateView):
-    model = Game
-    template_name = 'predict/new.html'
-    fields = ['gamedate']
-    csvid = random.randint(1,100000)
-    def form_valid(self, form, **kwargs):
-        form.instance.author = self.request.user
-        season = '2019'
-        form.instance.csvid = self.csvid
-        path = 'csv/'+str(self.request.user)+str(self.csvid)+'.csv'
-        print(path)
-        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-        x = form.instance.gamedate
-        #y = form.instance.home.upper()
-        #z = form.instance.visitor.upper()
-
-
-
-
-
-
-class GameCreateView(LoginRequiredMixin, CreateView):
-    model = Game
-    template_name = 'predict/new.html'
-    fields = ['home', 'visitor','gamedate','home_spread','visitor_spread']
-    csvid = random.randint(1,100000)
-    def form_valid(self, form, **kwargs):
-        form.instance.author = self.request.user
-        season = '2019'
-        form.instance.csvid = self.csvid
-        path = 'csv/'+str(self.request.user)+str(self.csvid)+'.csv'
-        print(path)
-        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-        x = form.instance.gamedate
-        y = form.instance.home.upper()
-        z = form.instance.visitor.upper()
-        date=x
-        homeAbv=y
-        visitorAbv=z
-        found, gameid, playerids = futureGame(date, homeAbv,visitorAbv,path,season,labels)
-        if found:
-
-            form.instance.p0 = playerids[0]
-            form.instance.p1 = playerids[1]
-            form.instance.p2 = playerids[2]
-            form.instance.p3 = playerids[3]
-            form.instance.p4 = playerids[4]
-            form.instance.p5 = playerids[5]
-
-            LABEL_COLUMN = 'winner'
-            LABELS = [0, 1]
-            l = labels
-            #p = predict(l, LABELS,LABEL_COLUMN,path)
-            #form.instance.prediction = float(p[0])
-            form.instance.gameid = gameid
-
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        user = self.request.user
-        context = super(GameCreateView, self).get_context_data(**kwargs)
-        x = todaysGames(self)
-        context['today'] = x
-        context['csvid'] = self.csvid
-        print(self.csvid,'---------------------------')
-        return context
 
 
 def futureGame(date,homeAbv,visitorAbv,path, season,labels):
