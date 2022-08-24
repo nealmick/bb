@@ -525,7 +525,7 @@ def writeCSV(data, path, labels):
         csv.write(line+'\n')
 
         #else:
-            #print('+++++##########RED ALERT SUMTHING WENT WRONG AND MADE IT PAST ALL CHECKS FFS')
+            #print('+++++##########RED ALERT SUMTHING WENT WRONG AND MADE IT PAST ALL CHECKS')
     else:
         print('gameid: -------------',data['gameid'],len(data['home_team_players']))
         print('gameid: -------------',data['gameid'],len(data['visitor_team_players']))
