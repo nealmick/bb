@@ -265,7 +265,7 @@ def editGame(request,pk,**kwargs):
             resp.append(full)
 
     c = 0
-    for oof in range(1,7):#replace with deee skrattadaaa ya dig hommie G
+    for oof in range(1,7):#re
         n=17*oof-17
         temp = [str(oof)]
         for f in range(n,n+17):
@@ -454,7 +454,7 @@ def getPlayerAvg(data,season,**kwargs):
             #check if player has been saved
             for splayerid in playerStats:
                 if playerid == splayerid:
-                        data[team+'_team_players'].update({playerid : {}})#here it is again#soo anoying
+                        data[team+'_team_players'].update({playerid : {}})#here it is again
                         for statName in playerStats[playerid]:
                             data[team+'_team_players'][playerid].update({statName :playerStats[playerid][statName]})
                         print('found saved -----------####-------------id: ', playerid)
@@ -467,7 +467,7 @@ def getPlayerAvg(data,season,**kwargs):
 
                 data[team+'_team_players'].update({playerid : {}})
                 print(len(response['data']))
-                if len(response['data']) != 0:#this is sad it means a player didnt play a single game all season lmao poor player
+                if len(response['data']) != 0:#this is sad it means a player didnt play a single game all season :(
                     for statName in response['data'][0]:
                         data[team+'_team_players'][playerid].update({ statName: response['data'][0][statName]})
                     playerStats.update({playerid : {}})
