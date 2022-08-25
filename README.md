@@ -9,7 +9,7 @@ The model was trained over a data set containing the last 20 years of NBA games.
 
 
 
-The main function of this project is to predict future games.  Future games are identified by the teams playing and the date.  The season averages of the players for each team are gathered and the data is then prepared.  Before any predictions are made the stats of players can be modified.  The model loads the weights from training and makes a single prediction.  The prediction is in the form of a sigmoid function. That is a number in the range of 0 to 1.  0 being the away team and 1 being the home team winning.  The prediction is then stored along with the dataset used for the model to predict.  Then once the game is finished and the score is final the prediction can be marked as correct or not.
+The main function of this project is to predict future games.  Future games are identified by the teams playing and the date.  The season averages of the players for each team are gathered and the data is then prepared. The model loads the weights from training and makes a single prediction.  The prediction is in the form of a sigmoid function. That is a number in the range of 0 to 1.  0 being the away team and 1 being the home team winning.  The prediction is then stored along with the dataset used for the model to predict.  Then once the game is finished and the score is final the prediction can be marked as correct or not.
 
 #### Django apps:
 1. bb - main django app
