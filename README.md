@@ -19,7 +19,7 @@ The main function of this project is to predict future games.  Future games are 
 4. users - handles all the users for nba
 
 Basket Ball!
-#### other folders:
+#### other files:
 1. checkpoints - stores trained weights
 2. CSV - stores indevidual csv files for each prediction made
 3. OBJ - stores pickle data files for quick loading player stats
