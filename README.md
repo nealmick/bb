@@ -2,6 +2,7 @@
 
 The model uses the Tensorflow library.
 
+# Basket Ball!
 This project has many functions. 
 Gets today's games and displays them with live scores.
 Keeps track of user predictions metrics such as loss/gain and correct/incorrect.
@@ -18,7 +19,7 @@ The main function of this project is to predict future games.  Future games are 
 3. predict - logic for all predictons
 4. users - handles all the users for nba
 
-Basket Ball!
+
 #### other files:
 1. checkpoints - stores trained weights
 2. CSV - stores indevidual csv files for each prediction made
