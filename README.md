@@ -1,8 +1,6 @@
-# NBA
-
-The model uses the Tensorflow library.
-
 # Basket Ball!
+
+
 This project has many functions. 
 Gets today's games and displays them with live scores.
 Keeps track of user predictions metrics such as loss/gain and correct/incorrect.
