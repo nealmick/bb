@@ -26,5 +26,5 @@ The main function of this project is to predict future games.  Future games are 
 *under development*
 check dev server here:
 
-http://oofgang.xyz:8000/home/
+http://njm.rocks:8000/home/
 
