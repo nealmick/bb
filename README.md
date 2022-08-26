@@ -15,7 +15,7 @@ The main function of this project is to predict future games.  Future games are 
 1. bb - main django app
 2. etc - code for index page
 3. predict - logic for all predictons
-4. users - handles all the users for nba
+4. users - handles all the users
 
 
 #### other files:
