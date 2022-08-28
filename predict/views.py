@@ -204,7 +204,7 @@ def saveEdit(request,pk,change,**kwargs):
 
 
 
-##
+## edit stats before predicton is made.
 def editGame(request,pk,**kwargs):
     context = {}
     user = request.user
@@ -289,6 +289,8 @@ def editGame(request,pk,**kwargs):
     print(players)
 
     return render(request, 'predict/edit.html',context)
+
+##predict all of todays games
 def predictToday(request,**kwargs):
     #print(request)
 
@@ -297,7 +299,7 @@ def predictToday(request,**kwargs):
 
     print('predictToday------------------############-------------')
     return redirect('home-predict')
-
+#get score for pk game
 def getScore(request,pk,**kwargs):
     url = 'https://www.balldontlie.io/api/v1/games/'
     user= request.user
@@ -338,7 +340,7 @@ def getScore(request,pk,**kwargs):
     Game.objects.filter(pk=pk).update(home_score=h)
     Game.objects.filter(pk=pk).update(visitor_score=v)
     return redirect('home-predict')
-
+#gets todays games via date
 def todaysGames(self):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     eastern = timezone('America/Los_Angeles')
@@ -365,7 +367,9 @@ def todaysGames(self):
     return games
 
 
-
+#gets data for fute games 
+#uses saved player stats to speed things up 
+#else rate limit
 
 def futureGame(date,homeAbv,visitorAbv,path, season,labels):
     print(season)
@@ -403,10 +407,11 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
     return found, gameid,playerids
 
 #------------------------------------------------------------------------#
+#sorts players to best 3
 def sortByPlayTime(data):
     derp = ['home', 'visitor']
     for foo in derp:
-        for i in range(3):
+        for i in range(3):##only best 3 left
             maxMin = 0
             id = ''
             for player in data[foo+'_team_players']:
@@ -421,6 +426,7 @@ def sortByPlayTime(data):
                 print('key error')
     return data
 #------------------------------------------------------------------------#
+#converts time to
 def minuteConversion(data):
     #chop seconds off...
     derp = ['home', 'visitor']
@@ -543,6 +549,7 @@ def writeCSVHeader(labels, path):
     csv.close()
     return header
 #------------------------------------------------------------------------#
+#handles api requests
 def req(url):
     proxy = load_obj('proxy')
     dict = {}
@@ -563,9 +570,9 @@ def load_obj(name):
     with open('obj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 #------------------------------------------------------------------------#TensorFlow Time
-
+##predict game
 def predict(l, LABELS,LABEL_COLUMN, path):
-    def sss(l):
+    def sss(l):##creating header
         s = ''
         derp = ['home_', 'visitor_']
         for foo in derp:
@@ -606,6 +613,7 @@ def predict(l, LABELS,LABEL_COLUMN, path):
           **kwargs)
         return dataset
 #------------------------------------------------------------------------#
+#pack numeric features
     class PackNumericFeatures(object):
       def __init__(self, names):
         self.names = names
@@ -616,10 +624,12 @@ def predict(l, LABELS,LABEL_COLUMN, path):
         features['numeric'] = numeric_features
         return features, labels
 #------------------------------------------------------------------------#
+#standerdize
     def normalize_numeric_data(data, mean, std):
         # Center the data
         return (data-mean)/std
 #------------------------------------------------------------------------#
+#prepare dataset
     def prep(file_path, fdsa, s,epochs):
         dataset = get_dataset(file_path, select_columns=create_columns(fdsa), column_defaults = defaults(fdsa),epochs=epochs)
         NUMERIC_FEATURES = create_columns(s)
@@ -636,8 +646,8 @@ def predict(l, LABELS,LABEL_COLUMN, path):
 
         return preprocessing_layer, packed_dataset
 #------------------------------------------------------------------------#
-
     preprocessing_layer, test_dataset = prep('ffasdf.csv', fdsa, s,epochs =1)
+    #define model
     model = tf.keras.Sequential([
         preprocessing_layer,
         tf.keras.layers.Dense(300, activation='relu'),
@@ -646,12 +656,15 @@ def predict(l, LABELS,LABEL_COLUMN, path):
         #tf.keras.layers.Dense(500, activation='relu'),
         tf.keras.layers.Dense(1,activation='sigmoid'),
     ])
+    #compile model
     model.compile(
         loss='binary_crossentropy',
         optimizer='adamax',
         metrics=['accuracy'])
-
+    #load weights
     model.load_weights('./checkpoints/my_checkpoint')
+    #get data set
     preprocessing_layer, test_dataset = prep(path, fdsa, s,epochs = 1)
+    #make predicton
     predictions = model.predict(test_dataset,steps=1)
     return predictions[0]
