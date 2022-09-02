@@ -23,6 +23,13 @@ The main function of this project is to predict future games.  Future games are 
 2. CSV - stores indevidual csv files for each prediction made
 3. OBJ - stores pickle data files for quick loading player stats
 
+#### Libraries:
+Tensorlflow
+Numpy
+Django 
+Pickle
+
+
 *under development*
 check dev server here:
 
