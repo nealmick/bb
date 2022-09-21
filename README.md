@@ -2,8 +2,7 @@
 
 
 This project has many functions. 
-Gets today's games and displays them with live scores.
-Keeps track of user predictions metrics such as loss/gain and correct/incorrect.
+Gets today's games and displays them with live scores aswell as Keeps track of user predictions metrics such as gain, loss, correct and incorrect..
 
 The model was trained over a data set containing the last 20 years of NBA games.  Each game in the data set is broken down to the 3 best players on each team.
 
