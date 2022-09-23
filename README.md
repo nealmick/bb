@@ -24,9 +24,15 @@ The main function of this project is to predict future games.  Future games are 
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
-
+#### Install:
+```bash
+git clone github.com/nealmick/ttt
+cd ttt
+pip install -r requirements.txt
+python3 manage.py runserver
+```
 *under development*
 check dev server here:
-
+# Live
 http://njm.rocks:8000/home/
 
