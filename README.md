@@ -26,7 +26,7 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
 #### Install:
 ```bash
-git clone github.com/nealmick/bb
+git clone https://github.com/nealmick/bb
 cd bb
 pip install -r requirements.txt
 python3 manage.py runserver
