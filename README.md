@@ -1,14 +1,9 @@
 # Basket Ball!
 
 
-This project has many functions. 
-Gets today's games and displays them with live scores aswell as Keeps track of user predictions metrics such as gain, loss, correct and incorrect..
-
-The model was trained over a data set containing the last 20 years of NBA games.  Each game in the data set is broken down to the 3 best players on each team.
+The model predicts NBA game winners in the form of a sigmoid function. First, data is collected for games from the past two decades via an API. Over 20,000 unique games are gathered, organized neatly, and stored.  Each player has 17 total data points.  The top 3 players from each team are selected to be input for each game.  The model is created using Google's Tensorflow library. The model is a series of 3 sequential layers. The first two layers are made up of 300 dense neurons with a ReLU activation function. The last layer is one dense neuron with a sigmoid activation representing the home or away team winning. The loss function is binary cross entropy, and the optimizer is Adamax.  Once training is complete the model weights are saved for use inside a Python Django web application.  The web app is used to interact with and control the model.  New predictions can be made and are identified by the teams playing and the game date.  Once a specific game is identified the players season averages are gathered and can be edited in a table (shown below).  Every game is stored by the user who created it.  Accounts keep track of statistics such as the number of predictions made,  correct predictions, percent correct, prediction gain, and loss.  The main control view is paginated by the 10 last games predicted.  This view also contains today's games updated with live scores, and a summary of user prediction stats.  The web app includes account creation, authentication, and reset.  The project is under development. Below is one example game predicted by the model showing the input and output. Take a look at the development server too!
 
 
-
-The main function of this project is to predict future games.  Future games are identified by the teams playing and the date.  The season averages of the players for each team are gathered and the data is then prepared. The model loads the weights from training and makes a single prediction.  The prediction is in the form of a sigmoid function. That is a number in the range of 0 to 1.  0 being the away team and 1 being the home team winning.  The prediction is then stored along with the dataset used for the model to predict.  Then once the game is finished and the score is final the prediction can be marked as correct or not.
 
 #### Django apps:
 1. bb - main django app
