@@ -5,6 +5,7 @@ The model predicts NBA game winners in the form of a sigmoid function. First, da
 
 
 
+
 #### Django apps:
 1. bb - main django app
 2. etc - code for index page
