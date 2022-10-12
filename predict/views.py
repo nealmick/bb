@@ -22,7 +22,9 @@ import tensorflow as tf
 import seaborn as sns
 import random
 
-###
+
+
+
 class GameListView(ListView, LoginRequiredMixin):
     model = Game
     template_name = 'predict/home.html'
