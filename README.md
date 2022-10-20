@@ -25,6 +25,8 @@ The project is under development.
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
+API: https://www.balldontlie.io/#introduction
+
 #### Install:
 ```bash
 git clone https://github.com/nealmick/bb
