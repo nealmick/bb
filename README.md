@@ -24,8 +24,10 @@ The project is under development.
 3. OBJ - stores pickle object data files for quick loading player stats
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
+# Live
+http://njm.rocks:8000/home/
 
-API: https://www.balldontlie.io/#introduction
+API: https://www.balldontlie.io/
 
 #### Install:
 ```bash
@@ -36,6 +38,5 @@ python3 manage.py runserver
 ```
 *under development*
 check dev server here:
-# Live
-http://njm.rocks:8000/home/
+
 
