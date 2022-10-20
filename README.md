@@ -27,7 +27,6 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 # Live
 http://njm.rocks:8000/home/
 
-API: https://www.balldontlie.io/
 
 #### Install:
 ```bash
@@ -37,6 +36,7 @@ pip install -r requirements.txt
 python3 manage.py runserver
 ```
 *under development*
-check dev server here:
+API used: https://www.balldontlie.io/
+
 
 
