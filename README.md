@@ -28,6 +28,12 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 http://njm.rocks:8000/home/
 
 
+<blockquote class="imgur-embed-pub" lang="en" data-id="Jkwcbtc"><a href="https://imgur.com/Jkwcbtc">View post on imgur.com</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+
+
+
+
+
 #### Install:
 ```bash
 git clone https://github.com/nealmick/bb
