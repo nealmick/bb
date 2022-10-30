@@ -31,7 +31,7 @@ http://njm.rocks:8000/home/
 
 
 
-<img src="https://i.imgur.com/Jkwcbtc.png" width="400" height="400" />
+<img src="https://i.imgur.com/Jkwcbtc.png" width="100wh" height="50vh" />
 
 
 
