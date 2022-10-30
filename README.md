@@ -28,9 +28,10 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 http://njm.rocks:8000/home/
 
 
-<blockquote class="imgur-embed-pub" lang="en" data-id="Jkwcbtc"><a href="https://imgur.com/Jkwcbtc">View post on imgur.com</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
 
 
+
+<img src="https://i.imgur.com/Jkwcbtc.png" width="400" height="400" />
 
 
 
