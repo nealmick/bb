@@ -25,7 +25,7 @@ The project is under development.
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
 # Live
-http://njm.rocks:8000/home/
+https://nbadata.cloud/
 
 
 
