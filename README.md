@@ -24,7 +24,7 @@ The project is under development.
 3. OBJ - stores pickle object data files for quick loading player stats
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
-# Live https://nbadata.cloud/
+# Live: https://nbadata.cloud/
 
 
 
