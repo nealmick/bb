@@ -242,7 +242,7 @@ def editGame(request,pk,**kwargs):
     header.pop(0)
     header.pop(0)
     players = {}
-    oofnog = []#skrt
+    oofnog = []
     for i in range(0,6):
         oofnog.append(g.values('p'+str(i))[0]['p'+str(i)])
     url = 'https://www.balldontlie.io/api/v1/players/'
