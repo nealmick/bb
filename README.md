@@ -10,7 +10,6 @@ The web app is used to interact with and control the model.  New predictions can
 The project is under development.
 
 
-
 #### Django apps:
 1. bb - main django app
 2. etc - code for index page
