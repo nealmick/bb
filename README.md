@@ -7,7 +7,7 @@ The model is created using Google's Tensorflow library. The model is a series of
 
 The web app is used to interact with and control the model.  New predictions can be made and are identified by the teams playing and the game date.  Once a specific game is identified the players season averages are gathered and can be edited in a table.  Every game is stored by the user who created it.  Accounts keep track of statistics such as the number of predictions made,  correct predictions, percent correct, prediction gain, and loss.  The main control view is paginated by the 10 last games predicted and sorted by date.  This view also contains today's games updated with live scores, and a summary of user prediction stats with graphs.  The web app includes account creation, authentication, and reset.  
 
-The project is under development.
+The project is under development...
 
 
 #### Django apps:
