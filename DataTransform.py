@@ -1,4 +1,5 @@
-
+### this is just a bit of code to collect datasets and make one big train data set then split that into train/test
+###filter games with bad stats
 import random
 paths=['2019.csv','2018.csv','2018.csv','2017.csv','2016.csv','2015.csv','2014.csv','2013.csv','2012.csv','2011.csv','2010.csv','2009.csv','2008.csv','2007.csv','2006.csv', '2005.csv','2004.csv','2003.csv','2002.csv','2001.csv','2000.csv']
 lines = []
