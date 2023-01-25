@@ -1,4 +1,3 @@
-
 import requests, json, time, operator, pickle, random
 
 
@@ -16,22 +15,22 @@ loadIds=True
 
 def main(createPlayersByTeam,data,seasons,labels,url):
     for season in seasons:
-        print("season"+season)
-        try:
-            SeasonAverages = load_obj(season+'SeasonAverages')
-        except FileNotFoundError:
-            SeasonAverages = {}
-        playersByTeam = load_obj(season+'playerIdByTeamID')
-        playerIds = combinePlayerIds(playersByTeam)
+        gameids = getGameIds(season)
+        winnersById = {}
+        for id in gameids:
+            winner = getWinner(id,season)
+            winnersById.update({id:winner})
+            save_obj(winnersById, season+'winnersById')
+def getWinner(gameid,season):
 
-        for playerId in playerIds:
-            if playerId not in SeasonAverages:
-                seasonAverage = getSeaonAverage(playerId,season,labels)
-                SeasonAverages.update({playerId:seasonAverage})
-                print(len(SeasonAverages))
-            save_obj(SeasonAverages,season+'SeasonAverages')
-        #getPlayersByGameID(createPlayersByTeam,data,season,url)
-        
+    url = 'https://www.balldontlie.io/api/v1/stats?seasons[]='+str(season)
+    url +='&game_ids[]='+str(gameid)
+    r = req(url)
+    r = r['data'][0]
+    if r['game']['home_team_score'] > r['game']['visitor_team_score']:
+        return 1
+    else:
+        return 0
 
 def getSeaonAverage(playerId,season,labels):
     url = 'https://www.balldontlie.io/api/v1/season_averages?season='+season
@@ -149,6 +148,29 @@ main(createPlayersByTeam,data,seasons,labels,url)
 
 
 '''
+
+
+
+ print("season"+season)
+        try:
+            SeasonAverages = load_obj(season+'SeasonAverages')
+        except FileNotFoundError:
+            SeasonAverages = {}
+        playersByTeam = load_obj(season+'playerIdByTeamID')
+        playerIds = combinePlayerIds(playersByTeam)
+
+        for playerId in playerIds:
+            if playerId not in SeasonAverages:
+                seasonAverage = getSeaonAverage(playerId,season,labels)
+                SeasonAverages.update({playerId:seasonAverage})
+                print(len(SeasonAverages))
+            save_obj(SeasonAverages,season+'SeasonAverages')
+        #getPlayersByGameID(createPlayersByTeam,data,season,url)
+
+
+
+
+
         gameids = getGameIds(season)#gets game ids either from saved if loadids =true or calls get uniGameIDs to get fresh game ids that r uni
         count = 0
         while True:
