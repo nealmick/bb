@@ -16,21 +16,31 @@ loadIds=True
 def main(createPlayersByTeam,data,seasons,labels,url):
     for season in seasons:
         gameids = getGameIds(season)
-        winnersById = {}
+        try:
+            winnersById = load_obj(season+'winnersById')
+        except FileNotFoundError:
+            winnersById = {}
+        print(winnersById)
         for id in gameids:
-            winner = getWinner(id,season)
-            winnersById.update({id:winner})
-            save_obj(winnersById, season+'winnersById')
+            print(winnersById)
+            if id not in winnersById:
+                winner = getWinner(id,season)
+                if winner:
+                    winnersById.update({id:winner})
+                    save_obj(winnersById, season+'winnersById')
+
 def getWinner(gameid,season):
 
     url = 'https://www.balldontlie.io/api/v1/stats?seasons[]='+str(season)
     url +='&game_ids[]='+str(gameid)
     r = req(url)
+    if not r['data']:
+        return False
     r = r['data'][0]
     if r['game']['home_team_score'] > r['game']['visitor_team_score']:
-        return 1
+        return {'winner':1,'home':r['game']['home_team_id'],'visitor':r['game']['visitor_team_id']}
     else:
-        return 0
+        return {'winner':0,'home':r['game']['home_team_id'],'visitor':r['game']['visitor_team_id']}
 
 def getSeaonAverage(playerId,season,labels):
     url = 'https://www.balldontlie.io/api/v1/season_averages?season='+season
