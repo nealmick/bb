@@ -1,5 +1,6 @@
 # Basket Ball!
 
+**Retraining and refactoring currently
 
 The model predicts NBA game winners in the form of a sigmoid function. First, data is collected for games from the past two decades via an API. Over 20,000 unique games are gathered, organized neatly, and stored.  Each player has 17 total data points.  The top 3 players from each team are selected to be input for each game.  
 
