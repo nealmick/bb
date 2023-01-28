@@ -49,10 +49,12 @@ python3 manage.py createsuperuser
 
 
 python3 manage.py runserver
+http://localhost:8000/admin
+http://localhost:8000/
+
 ```
 *under development*
 API used: https://www.balldontlie.io/
-
 
 
 
