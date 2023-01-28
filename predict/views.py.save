@@ -3,11 +3,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Game
-####vc vode testing123
+##
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http.response import HttpResponsePermanentRedirect
-
-
 from django.views.generic import ListView
 from django.views.generic import CreateView
 from django.contrib.auth.models import User
@@ -25,41 +22,8 @@ import tensorflow as tf
 import seaborn as sns
 import random
 #asdfasdf
-TEAMCOLORS = {
-    'ATL':'#E03A3E',
-    'BKN':'#000000',
-    'BOS':'#158248',
-    'CHA':'#1B6D87',
-    'CHI':'#CE1341',
-    'CLE':'#FAB81C',
-    'DAL':'#287DC5',
-    'DEN':'#FBC627',
-    'DET':'#DD1631',
-    'GSW':'#236BB6',
-    'HOU':'#CE1341',
-    'IND':'#FABB30',
-    'LAC':'#2F7ABC',
-    'LAL':'#552583',
-    'MEM':'#6189B9',
-    'MIA':'#980B2E',
-    'MIL':'#06471A',
-    'MIN':'#236192',
-    'NOP':'#E31837',
-    'NYK':'#236BB6',
-    'OKC':'#F05134',
-    'ORL':'#2677BD',
-    'PHI':'#236BB5',
-    'PHX':'#F9A01B',
-    'POR':'#C6122A',
-    'SAC':'#5A2D81',
-    'SAS':'#1c1c1c',
-    'TOR':'#CD1341',
-    'UTA':'#FAA403',
-    'WAS':'#CF142C',
-}
 
-def saveEdit(request,pk,change,**kwargs):
-
+def saveEdit(request,pk,change,**kwargs):z
     changes = change[7:].split('-')
     changes.pop(-1)
     print(changes)
@@ -201,11 +165,9 @@ def editGame(request,pk,**kwargs):
         players.update({ resp[c] : temp })
         c+=1
 
-    context['pk'] = pk
+
     context['stats']= players
     context['home']=g.values('home')[0]['home']
-    context['homecolor']=g.values('homecolor')[0]['homecolor']
-    context['visitorcolor']=g.values('visitorcolor')[0]['visitorcolor']
     context['visitor']=g.values('visitor')[0]['visitor']
     context['gamedate']=g.values('gamedate')[0]['gamedate']
     context['home_score']=g.values('home_score')[0]['home_score']
@@ -276,9 +238,6 @@ def getScore(request,pk,**kwargs):
 
     Game.objects.filter(pk=pk).update(home_score=h)
     Game.objects.filter(pk=pk).update(visitor_score=v)
-    #print(pagenum)
-    #x = redirect("home-predict")
-    #return HttpResponsePermanentRedirect("https://nbadata.cloud/predict/?page="+str(pagenum))
     return redirect('home-predict')
 
 def todaysGames(self):
@@ -299,9 +258,11 @@ def todaysGames(self):
         vfn = r['data'][game]['visitor_team']['full_name']
         vscore = str(r['data'][game]['visitor_team_score'])
         status = r['data'][game]['status']
-
-        foo = {'habv':habv,'hfn':hfn,'hscore':hscore,'vabv':vabv,'vfn':vfn,'vscore':vscore,'status':status,'date':loc_dt.strftime(fmt)}
-        games.append(foo)
+        if hscore != '0' or vscore != '0':
+            x = hfn+' '+hscore+' v '+vfn+' '+vscore+' : '+status
+        else:
+            x = hfn+' '+' v '+vfn+' '+' : '+status
+        games.append(x)
     if len(games)==0:
         games.append('No Games Today')
     return games
@@ -314,7 +275,7 @@ class GameListView(ListView, LoginRequiredMixin):
     model = Game
     template_name = 'predict/home.html'
     ordering = ['-date_posted']
-    paginate_by = 4
+    paginate_by = 7
     context_object_name = 'games'
     context = 'games'
 
@@ -323,7 +284,6 @@ class GameListView(ListView, LoginRequiredMixin):
         context = super(GameListView, self).get_context_data(**kwargs)
         x = todaysGames(self)
         context['today'] = x
-        context['tc'] = TEAMCOLORS
         context['correct'] = Profile.objects.filter(user=user).values('correct')[0]['correct']
         context['numpred'] =  Profile.objects.filter(user=user).values('predictions')[0]['predictions']
         if Profile.objects.filter(user=user).values('predictions')[0]['predictions'] >= 1:
@@ -344,7 +304,7 @@ class GameListView(ListView, LoginRequiredMixin):
     def form_valid(self, form):
         print('-------------------')
         form.instance.author = self.request.user
-        season = '2022'
+        season = '2021'
 
         path = 'csv/'+str(form.instance.pk)+'.csv'
         labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
@@ -365,30 +325,15 @@ class GameListView(ListView, LoginRequiredMixin):
 
 
 
-def quickcreate(request,home,visitor,date):
-    csvid = random.randint(1,100000)
-    season = '2022'
-    labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-    path = 'csv/'+str(request.user)+str(csvid)+'.csv'
-
-    found, gameid, playerids = futureGame(date, home,visitor,path,season,labels)
-
-    obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
-        p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],gameid=gameid)
-
-    return redirect('edit-predict',obj.pk)
-
-
 class GameCreateView(LoginRequiredMixin, CreateView):
     model = Game
     template_name = 'predict/new.html'
-    csvid = random.randint(1,10000000)
     fields = ['home', 'visitor','gamedate']
     
     def form_valid(self, form, **kwargs):
         csvid = random.randint(1,100000)
         form.instance.author = self.request.user
-        season = '2022'
+        season = '2019'
         form.instance.csvid = csvid#############fix here
         print(str(csvid),"csvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
         path = 'csv/'+str(self.request.user)+str(csvid)+'.csv'
@@ -400,9 +345,6 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         date=x
         homeAbv=y
         visitorAbv=z
-        form.instance.homecolor = TEAMCOLORS[y]
-        form.instance.visitorcolor = TEAMCOLORS[z]
-
         found, gameid, playerids = futureGame(date, homeAbv,visitorAbv,path,season,labels)
         if found:
 
@@ -452,7 +394,7 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
             data = nextGame(gameid)
             data.update({'home_team_id':response['data'][game]['home_team']['id']})
             data.update({'visitor_team_id':response['data'][game]['visitor_team']['id']})
-            playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
+            playerIdByTeamID = load_obj('2019PlayerIdByTeamID')
             for player in playerIdByTeamID[str(data['home_team_id'])]:
                 data['home_team_players'].update({ player : nOsTAtsYET})
             for player in playerIdByTeamID[str(data['visitor_team_id'])]:
@@ -477,10 +419,9 @@ def sortByPlayTime(data):
             id = ''
             for player in data[foo+'_team_players']:
                 old = maxMin
-                if 'min' in data[foo+'_team_players'][player]:
-                    maxMin = max(maxMin, int(data[foo+'_team_players'][player]['min']))
-                    if maxMin > old:#this line messed me up i had >= and could figure out why it wasnt working finally got it.
-                        id = player
+                maxMin = max(maxMin, int(data[foo+'_team_players'][player]['min']))
+                if maxMin > old:#this line messed me up i had >= and could figure out why it wasnt working finally got it.
+                    id = player
             try:
                 data[foo+'_good_players'].update({id : data[foo+'_team_players'][id]})
                 data[foo+'_team_players'].pop(int(id), None)
@@ -490,13 +431,11 @@ def sortByPlayTime(data):
 #------------------------------------------------------------------------#
 def minuteConversion(data):
     #chop seconds off...
-    print(data)
     derp = ['home', 'visitor']
     for foo in derp:#iter home visitor
         for player in data[foo+'_team_players']:#iter players
             min = ''
-            if data[foo+'_team_players'][player] != '' and data[foo+'_team_players'][player]:#takes care of non values
-                print(data[foo+'_team_players'][player])
+            if data[foo+'_team_players'][player] != '':#takes care of non values
                 time = data[foo+'_team_players'][player]['min']
                 if str(type(time)) == "<class 'str'>":
                     for char in time:#iter charecters in time
@@ -511,7 +450,7 @@ def minuteConversion(data):
 #gets season average stats by player ids.....
 def getPlayerAvg(data,season,**kwargs):
     url = 'https://www.balldontlie.io/api/v1/season_averages?season='
-    url += season +'&player_ids[]='
+    url += season+'&player_ids[]='
     teams = ['home', 'visitor']
     playerStats = load_obj(season+'playerStats')
     print('loaded # player stats: ', len(playerStats))
@@ -710,7 +649,6 @@ def predict(l, LABELS,LABEL_COLUMN, path):
         preprocessing_layer,
         tf.keras.layers.Dense(300, activation='relu'),
         tf.keras.layers.Dense(300, activation='relu'),
-
         #tf.keras.layers.Dense(1000, activation='relu'),
         #tf.keras.layers.Dense(500, activation='relu'),
         tf.keras.layers.Dense(1,activation='sigmoid'),
@@ -723,6 +661,4 @@ def predict(l, LABELS,LABEL_COLUMN, path):
     model.load_weights('./checkpoints/my_checkpoint')
     preprocessing_layer, test_dataset = prep(path, fdsa, s,epochs = 1)
     predictions = model.predict(test_dataset,steps=1)
-
-
     return predictions[0]

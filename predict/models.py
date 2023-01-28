@@ -6,11 +6,13 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 # Create your models here.
+
+        
 class Game(models.Model):
     CHOICES = (
         ('ATL',	'Atlanta Hawks'),
         ('BKN',	'Brooklyn Nets'),
-        ('BOS',	'Boston Cel tics'),
+        ('BOS',	'Boston Celtics'),
         ('CHA',	'Charlotte Hornets'),
         ('CHI',	'Chicago Bulls'),
         ('CLE',	'Cleveland Cavaliers'),
@@ -40,7 +42,9 @@ class Game(models.Model):
         ('WAS',	'Washington Wizards'),
         )
     home = models.CharField(max_length=3, choices=CHOICES)
+    homecolor = models.CharField(max_length=10)
     visitor = models.CharField(max_length=3, choices=CHOICES)
+    visitorcolor = models.CharField(max_length=10)
     gamedate = models.CharField(max_length=10, default=timezone.now().strftime('%Y-%m-%d'))
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     date_posted = models.DateTimeField(default=timezone.now)
@@ -65,5 +69,10 @@ class Game(models.Model):
     def get_absolute_url(self):
         print('asdff----------',self.csvid)
         #return reverse('edit-predict', args={'csvid': self.csvid,'change':'c'})
+        
         return reverse('edit-predict', kwargs={'pk': self.pk})
+        
+
+
+
         #return reverse('edit-predict')
