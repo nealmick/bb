@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
-
-#each user gets a profile
+# Create your models here.
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
