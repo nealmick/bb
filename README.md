@@ -39,6 +39,8 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 git clone https://github.com/nealmick/bb
 cd bb
 
+python3 -m venv env
+source env/bin/activate
 pip install -r requirements.txt
 
 python3 manage.py makemigrations predict users
