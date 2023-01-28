@@ -38,7 +38,14 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 ```bash
 git clone https://github.com/nealmick/bb
 cd bb
+
 pip install -r requirements.txt
+
+python3 manage.py makemigrations predict users
+python3 manage.py migrate
+python3 manage.py createsuperuser
+
+
 python3 manage.py runserver
 ```
 *under development*
