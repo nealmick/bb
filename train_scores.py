@@ -4,7 +4,7 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
-
+import datetime
 
 path = "csv1/test123.csv"
 current_time = str(time.time())
@@ -25,17 +25,25 @@ x_train, x_test, y_train, y_test = train_test_split(data, np.column_stack((homeS
 #x_test = tf.keras.utils.normalize(x_test, axis=1)
 
 model = tf.keras.Sequential([
+
+    #tf.keras.layers.Dense(2048, activation='relu'),
+    tf.keras.layers.Dense(1024, activation='relu'),
     tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(256, activation='relu'),
-    tf.keras.layers.Dense(128, activation='relu'),
     
     tf.keras.layers.Dense(2, activation='linear'),
 
 
 
 ])
-model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=75, validation_split=0.1, batch_size=32)
+
+log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+
+
+model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+model.fit(x_train, y_train, epochs=65, validation_split=0.1, batch_size=32,callbacks=[tensorboard_callback])
 
 
 def print_predictions(model, x_test, y_test):
