@@ -25,24 +25,39 @@ x_train, x_test, y_train, y_test = train_test_split(data, np.column_stack((homeS
 #x_test = tf.keras.utils.normalize(x_test, axis=1)
 
 model = tf.keras.Sequential([
-
     tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(256, activation='relu'),
+    tf.keras.layers.Dense(128, activation='relu'),
+    
     tf.keras.layers.Dense(2, activation='linear'),
 
 
 
 ])
-model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=50, validation_split=0.1, batch_size=32)
+model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
+model.fit(x_train, y_train, epochs=75, validation_split=0.1, batch_size=32)
 
 
 def print_predictions(model, x_test, y_test):
     y_pred = model.predict(x_test)
+    c = 0
+    total = 0
     for i in range(len(y_pred)):
         print("Predicted home score: {:.2f} | Actual home score: {:.2f}".format(y_pred[i][0], y_test[i][0]))
         print("Predicted visitor score: {:.2f} | Actual visitor score: {:.2f}".format(y_pred[i][1], y_test[i][1]))
 
-        print("-------------------------------------")
+        if y_pred[i][0] > y_pred[i][1] and y_test[i][0] > y_test[i][1]:
+            print("--------------correct-------------")
+            
+            c+=1
+        elif y_pred[i][0] < y_pred[i][1] and y_test[i][0] < y_test[i][1]:
+            print("--------------correct-------------")
+
+            c+=1
+        else:
+            print("--------------wrong-------------")
+
+        total +=1
+    print("correct %:  ", (c/total)*100)
 
 print_predictions(model, x_test, y_test)
