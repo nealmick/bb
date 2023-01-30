@@ -3,7 +3,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Game
-####vc vode testing123
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import HttpResponsePermanentRedirect
 
@@ -220,6 +219,8 @@ def editGame(request,pk,**kwargs):
     return render(request, 'predict/edit.html',context)
 def predictToday(request,**kwargs):
     #print(request)
+    #i want to build one button to predict all games in one go
+    #no more clicking each game
 
 
 
