@@ -1,6 +1,6 @@
 # Basket Ball!
 
-Status: Got scores and over under model working today(1-30).  Integrating new model with web app now.  I may end up deleting database to make this easier, geting rid of old model sigmoid predictions....Okay i will continue tomorrow i have 2022 season averages scraper running overnight, so tommorow i should have everything ready to finish integrations.
+Status: working on new model integrations.
 
 The model predicts NBA game winners in the form of a sigmoid function. First, data is collected for games from the past two decades via an API. Over 20,000 unique games are gathered, organized neatly, and stored.  Each player has 17 total data points.  The top 3 players from each team are selected to be input for each game.  
 
