@@ -26,10 +26,9 @@ x_train, x_test, y_train, y_test = train_test_split(data, np.column_stack((homeS
 
 model = tf.keras.Sequential([
 
-    #tf.keras.layers.Dense(2048, activation='relu'),
-    tf.keras.layers.Dense(1024, activation='relu'),
-    tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(256, activation='relu'),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(64, activation='relu'),
     
     tf.keras.layers.Dense(2, activation='linear'),
 
@@ -43,7 +42,8 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 
 
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=65, validation_split=0.1, batch_size=32,callbacks=[tensorboard_callback])
+model.fit(x_train, y_train, epochs=50, validation_split=0.1, batch_size=16,callbacks=[tensorboard_callback],shuffle=True)
+model.save_weights('./checkpoints/my_checkpoint')
 
 
 def print_predictions(model, x_test, y_test):
@@ -55,15 +55,17 @@ def print_predictions(model, x_test, y_test):
         print("Predicted visitor score: {:.2f} | Actual visitor score: {:.2f}".format(y_pred[i][1], y_test[i][1]))
 
         if y_pred[i][0] > y_pred[i][1] and y_test[i][0] > y_test[i][1]:
-            print("--------------correct-------------")
+
+            print(round(float(y_pred[i][0]) - float(y_pred[i][1])),"--------------correct-------------",round(float(y_test[i][0]) - float(y_test[i][1])))
             
             c+=1
         elif y_pred[i][0] < y_pred[i][1] and y_test[i][0] < y_test[i][1]:
-            print("--------------correct-------------")
+            print(round(float(y_pred[i][1]) - float(y_pred[i][0])), "--------------correct-------------",round(float(y_test[i][1]) - float(y_test[i][0])))
+
 
             c+=1
         else:
-            print("--------------wrong-------------")
+            print(round(float(y_pred[i][0]) - float(y_pred[i][1])),"--------------wrong-------------",round(float(y_test[i][0]) - float(y_test[i][1])))
 
         total +=1
     print("correct %:  ", (c/total)*100)
