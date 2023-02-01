@@ -129,7 +129,7 @@
                   <div class="row">
                     <div class="col-3"style="padding:0">
                       <center>
-                        <p style="margin:0px">{{ game.visitor }} - {{ game.visitor_score }} </p>
+                        <p style="margin:0px">{{ game.visitor }} - {{ game.visitor_score_prediction }} - {{ game.visitor_score }} </p>
                         <img class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
 
                     </center>
@@ -149,10 +149,10 @@
                           </form>
                         {% else%}
 
-                        {% if game.prediction >= .5 and game.winner == 1 or game.prediction < .5 and game.winner == 0 %}
-                        <p style="margin:0px; color:rgb(65, 199, 8)">{{ game.prediction }} <i class="fas fa-check"></i></p>
+                        {% if game.pmscore >= 0 and game.winner == 1 or game.pmscore < 0 and game.winner == 0 %}
+                        <p style="margin:0px; color:rgb(65, 199, 8)">{{ game.pmscore }} <i class="fas fa-check"></i></p>
                           {%else%}
-                        <p style="margin:0px; color:rgb(255, 0, 0)">{{ game.prediction }} <i class="fas fa-times"></i></p>
+                        <p style="margin:0px; color:rgb(255, 0, 0)">{{ game.pmscore }} <i class="fas fa-times"></i></p>
 
 
                           {% endif %}
@@ -173,12 +173,12 @@
                                 ],
                                 datasets: [{
                                   label: 'prediction',
-                                  data: ["{{ game.prediction}}"],
+                                  data: ["{{ game.pmscore }}"],
 
                                   backgroundColor: [
 
                                   {% if game.finished%}
-                                    {% if game.prediction >= .5 and game.winner == 1 or game.prediction < .5 and game.winner == 0 %}
+                                    {% if game.pmscore >= 0 and game.winner == 1 or game.pmscore < 0 and game.winner == 0 %}
                                       'rgb(65, 199, 8)',
                                     {%else%}
                                       'rgb(255, 0, 0)',
@@ -211,11 +211,11 @@
                                   responsive: true,
                                   reverse: true,
 
-                                  start: .5,
+                                  start: 0,
                                   end: 0,
                                   begin: 1,
-                                  base: .5,
-                                  middle: .5,
+                                  base: 0,
+                                  middle: 0,
                                   indexAxis: 'y',
                                   plugins: {
                                       legend: {
@@ -240,8 +240,8 @@
                                 }],
                                   scales: {
                                     x: {
-                                      min: 0,
-                                      max: 1,
+                                      min: -15,
+                                      max: 15,
                                       ticks: {
                                           autoSkip: true,
                                           maxTicksLimit: 4
@@ -254,7 +254,7 @@
                                       min: 0,
                                       max: 1,
                                       
-                                      weight: .5,
+                                      weight: 1,
 
                                     }
                                   }
@@ -268,7 +268,7 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
-                          <p style="margin:0px">{{ game.home }} - {{ game.home_score }} </p>
+                          <p style="margin:0px">{{ game.home }} - {{ game.home_score_prediction }} - {{ game.home_score }} </p>
                       <img class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
 
                         </center>

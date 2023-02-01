@@ -29,7 +29,8 @@
                   <div class="row center col-md-10" style="">
                     <div class="col-3"style="padding:0">
                       <center>
-                        <p style="margin:0px">{{ visitor }} - {{ visitor_score }} </p>
+                        <p style="margin:0px">Predicted Score: {{ pvscore }} </p>
+                        <p style="margin:0px">Actual Score: {{ visitor_score }} </p>
                         <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
 
                     </center>
@@ -37,10 +38,10 @@
                     <div class="col-6"style="padding:0; height: 200px;">
                     	<center>
                         <p style="margin:0px">{{ gamedate }}</p>
-                                {% if prediction is None %}
+                                {% if pmscore is None %}
 						          <input onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
 						          {% else%}
-                        <p style="margin:0px">{{ prediction }}</p>
+                        <p style="margin:0px">{{ pmscore }}</p>
 
 					          	{%endif%}
 
@@ -63,12 +64,13 @@
                                 ],
                                 datasets: [{
                                   label: 'prediction',
-                                  data: ["{{ prediction}}"],
+                                  data: ["{{ pmscore }}"],
+
 
                                   backgroundColor: [
 
                                   {% if finished%}
-                                    {% if prediction >= .5 and winner == 1 or prediction < .5 and winner == 0 %}
+                                    {% if pmscore >= 0 and winner == 1 or pmscore < 0 and winner == 0 %}
                                       'rgb(65, 199, 8)',
                                     {%else%}
                                       'rgb(255, 0, 0)',
@@ -93,19 +95,19 @@
                               };
 
 
-                          let config = {
+                          let config{{game.pk }} = {
                               type: 'bar',
-                              data: data,
+                              data: data{{game.pk }},
                               options: {
                                   maintainAspectRatio: false,
                                   responsive: true,
                                   reverse: true,
 
-                                  start: .5,
+                                  start: 0,
                                   end: 0,
                                   begin: 1,
-                                  base: .5,
-                                  middle: .5,
+                                  base: 0,
+                                  middle: 0,
                                   indexAxis: 'y',
                                   plugins: {
                                       legend: {
@@ -130,8 +132,8 @@
                                 }],
                                   scales: {
                                     x: {
-                                      min: 0,
-                                      max: 1,
+                                      min: -15,
+                                      max: 15,
                                       ticks: {
                                           autoSkip: true,
                                           maxTicksLimit: 4
@@ -144,7 +146,7 @@
                                       min: 0,
                                       max: 1,
                                       
-                                      weight: .5,
+                                      weight: 1,
 
                                     }
                                   }
@@ -158,7 +160,8 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
-                          <p style="margin:0px">{{ home }} - {{ home_score }} </p>
+                          <p style="margin:0px">Predicted Score: {{ phscore }} </p>
+                          <p style="margin:0px">Actual Score: {{ home_score }} </p>
                       <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
 
                         </center>
@@ -201,7 +204,7 @@
 				<div style="overflow: auto; color:white;">
 				<table align="center">
 						<tr>
-							<td>Top 6 Players</td>
+							<td>Input Players</td>
 							<td>#</td>
 							{% for label in labels%}
 								<td>{{label}}</td>

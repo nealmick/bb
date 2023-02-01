@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Game
+####vc vode testing123
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import HttpResponsePermanentRedirect
 
@@ -21,9 +22,11 @@ import functools
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-import seaborn as sns
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
+from sklearn.model_selection import train_test_split
 import random
 #asdfasdf
+playersPerTeam = 9
 TEAMCOLORS = {
     'ATL':'#E03A3E',
     'BKN':'#000000',
@@ -84,10 +87,11 @@ def saveEdit(request,pk,change,**kwargs):
     data = data.split(',')
     header= header.split(',')
     print(path,data,'-------')
-
-    data.pop(0)
+    gameid = data.pop(0)
     header.pop(0)
-    data.pop(0)
+    homeid = data.pop(0)
+    header.pop(0)
+    visitorid = data.pop(0)
     header.pop(0)
 
     labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
@@ -103,7 +107,7 @@ def saveEdit(request,pk,change,**kwargs):
 
     writeCSVHeader(labels, path)
     def w(data, path, g):
-        ss = '1,'+str(g.values('gameid')[0]['gameid'])
+        ss = str(g.values('gameid')[0]['gameid'])+','+homeid+','+visitorid
         for st in data:
             ss+=','+st
         print('$$$$$$$$$',ss)
@@ -114,12 +118,14 @@ def saveEdit(request,pk,change,**kwargs):
     LABEL_COLUMN = 'winner'
     LABELS = [0, 1]
     l = labels
-    p = predict(l, LABELS,LABEL_COLUMN,path)
+    p = predict(path)
     print(p)
 
-    p = float(p[0])
-    g.update(prediction=p)
-
+    #p = float(p[0])
+    g.update(home_score_prediction=round(p[0]))
+    g.update(visitor_score_prediction=round(p[1]))
+    g.update(pmscore=(round(p[0])-round(p[1])))
+    
     return redirect('home-predict')
 
 
@@ -158,21 +164,24 @@ def editGame(request,pk,**kwargs):
             break
     data = data.split(',')
     header= header.split(',')
-    print(data,'ooooof')
-    data.pop(0)
+    #print(data,'ooooof')
     data.pop(0)
     header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
     header.pop(0)
     players = {}
     oofnog = []
-    for i in range(0,6):
+    for i in range(0,18):
+        #print(g.values('p'+str(i))[0]['p'+str(i)])
         oofnog.append(g.values('p'+str(i))[0]['p'+str(i)])
     url = 'https://www.balldontlie.io/api/v1/players/'
     resp = []
-
+    #print(oofnog)
     for id in oofnog:
         obj = load_obj('2019PlayerNamesByID')
-
+        #print(resp)
         found = False
         for x in obj:
 
@@ -189,9 +198,11 @@ def editGame(request,pk,**kwargs):
             ln = r['last_name']
             full = fn+' '+ln
             resp.append(full)
+            obj.update({str(id) : full})
+            save_obj(obj,'2019PlayerNamesByID')
 
     c = 0
-    for oof in range(1,7):
+    for oof in range(1,19):
         n=17*oof-17
         temp = [str(oof)]
         for f in range(n,n+17):
@@ -214,13 +225,16 @@ def editGame(request,pk,**kwargs):
     context['prediction']=g.values('prediction')[0]['prediction']
     context['finished']=g.values('finished')[0]['finished']
     context['winner'] = g.values('winner')[0]['winner']
-    print(players)
+    context['pmscore'] = g.values('pmscore')[0]['pmscore']
+    context['pvscore'] = g.values('visitor_score_prediction')[0]['visitor_score_prediction']
+    context['phscore'] = g.values('home_score_prediction')[0]['home_score_prediction']
+    context['game'] = g
+    context['g'] = g
+    #print(players)
 
     return render(request, 'predict/edit.html',context)
 def predictToday(request,**kwargs):
     #print(request)
-    #i want to build one button to predict all games in one go
-    #no more clicking each game
 
 
 
@@ -245,24 +259,25 @@ def getScore(request,pk,**kwargs):
     print(p.values('gain')[0]['gain'])
     if r['status'] == "Final":
         prediction = Game.objects.filter(pk=pk).values('prediction')[0]['prediction']
+        pmscore = Game.objects.filter(pk=pk).values('pmscore')[0]['pmscore']
         finished = Game.objects.filter(pk=pk).values('finished')[0]['finished']
 
         if not finished: # add not back
-            if prediction >= .5 and h >v:#win p home
+            if pmscore >= 0 and h >v:#win p home
                 asdf = float(p.values('gain')[0]['gain']) + float(prediction) - float(.5)
                 p.update(gain=asdf)
                 p.update(correct=p.values('correct')[0]['correct']+1)
                 Game.objects.filter(pk=pk).update(winner=1)
-            if prediction < .5 and h < v:#win p visitor
+            if pmscore < 0 and h < v:#win p visitor
                 asdf = float(p.values('gain')[0]['gain']) + float(.5) -float(prediction)
                 p.update(gain=asdf)
                 p.update(correct=p.values('correct')[0]['correct']+1)
                 Game.objects.filter(pk=pk).update(winner=0)
-            if prediction < .5 and h > v:#loose p vis
+            if pmscore < 0 and h > v:#loose p vis
                 asdf = float(p.values('loss')[0]['loss']) + float(.5) - float(prediction)
                 p.update(loss=asdf)
                 Game.objects.filter(pk=pk).update(winner=1)
-            if prediction >= .5 and h < v:#loose p home
+            if pmscore >= 0 and h < v:#loose p home
                 print('asdf')
                 asdf = float(p.values('loss')[0]['loss']) + float(prediction) - float(.5)
                 p.update(loss=asdf)
@@ -367,17 +382,23 @@ class GameListView(ListView, LoginRequiredMixin):
 
 
 def quickcreate(request,home,visitor,date):
+    print('testing quick create---------------------')
     csvid = random.randint(1,100000)
     season = '2022'
     labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
     path = 'csv/'+str(request.user)+str(csvid)+'.csv'
-
-    found, gameid, playerids = futureGame(date, home,visitor,path,season,labels)
+    
+    found, gameid, playerids = futureGame(date,home,visitor,path,season,labels)
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
-        p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],gameid=gameid)
+        p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
+        p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
+        p12 = playerids[12], p13 = playerids[13], p14 = playerids[14], p15 = playerids[15], p16 = playerids[16], p17 = playerids[17]
+        
+        ,gameid=gameid)
 
     return redirect('edit-predict',obj.pk)
+    #return redirect('home-predict')
 
 
 class GameCreateView(LoginRequiredMixin, CreateView):
@@ -404,6 +425,7 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         form.instance.homecolor = TEAMCOLORS[y]
         form.instance.visitorcolor = TEAMCOLORS[z]
 
+
         found, gameid, playerids = futureGame(date, homeAbv,visitorAbv,path,season,labels)
         if found:
 
@@ -413,7 +435,18 @@ class GameCreateView(LoginRequiredMixin, CreateView):
             form.instance.p3 = playerids[3]
             form.instance.p4 = playerids[4]
             form.instance.p5 = playerids[5]
-
+            form.instance.p6 = playerids[6]
+            form.instance.p7 = playerids[7]
+            form.instance.p8 = playerids[8]
+            form.instance.p9 = playerids[9]
+            form.instance.p10 = playerids[10]
+            form.instance.p11 = playerids[11]
+            form.instance.p12 = playerids[12]
+            form.instance.p14 = playerids[14]
+            form.instance.p15 = playerids[15]
+            form.instance.p16 = playerids[16]
+            form.instance.p17 = playerids[17]
+            form.instance.p18 = playerids[18]
             LABEL_COLUMN = 'winner'
             LABELS = [0, 1]
             l = labels
@@ -445,70 +478,126 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
     for game in range(len(response['data'])):
         ha = response['data'][game]['home_team']['abbreviation']
         va = response['data'][game]['visitor_team']['abbreviation']
-        
+            
         if ha==homeAbv and va==visitorAbv:
-            print('found---------------')
+            print('found--------123-------')
             found = True
             gameid = response['data'][game]['id']
             data = nextGame(gameid)
+            
+            homeTeamID = str(response['data'][game]['home_team']['id'])
+            visitorTeamID = str(response['data'][game]['visitor_team']['id'])
+            
             data.update({'home_team_id':response['data'][game]['home_team']['id']})
             data.update({'visitor_team_id':response['data'][game]['visitor_team']['id']})
-            playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
-            for player in playerIdByTeamID[str(data['home_team_id'])]:
-                data['home_team_players'].update({ player : nOsTAtsYET})
-            for player in playerIdByTeamID[str(data['visitor_team_id'])]:
-                data['visitor_team_players'].update({ player : nOsTAtsYET})
             data.update({'home_team_score' : response['data'][game]['home_team_score']})
             data.update({'visitor_team_score' : response['data'][game]['home_team_score']})
-            getPlayerAvg(data,season)#gets players stats by player ids
-            minuteConversion(data)#chops off seconds se we only have mins
-            sortByPlayTime(data)#sorts player into two groups good players and team players
+            
+            playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
+            seasonAverages = load_obj('2022SeasonAverages')
+ 
 
+
+            homePlayers = []
+            for player in playerIdByTeamID[homeTeamID]:
+                homePlayers.append(player)
+            visitorPlayers = []
+            for player in playerIdByTeamID[visitorTeamID]:
+                visitorPlayers.append(player)
+            print(homePlayers,visitorPlayers)
+
+
+
+            homeTeam = []
+            visitorTeam = []
+
+            for id in homePlayers:
+                homeTeam.append(seasonAverages[id])
+            for id in visitorPlayers:
+                visitorTeam.append(seasonAverages[id])
+
+
+
+            bestH = []
+            bestHomeIds =[]
+            for i in range(0,playersPerTeam):
+                b = getBestPlayer(homeTeam)
+                min = homeTeam[int(b)][-1]
+                min = min.split(':')[0]
+                homeTeam[b][-1] = min
+                bestH.append(homeTeam[b])
+                bestHomeIds.append(homePlayers[b])
+                homePlayers.pop(b)
+                homeTeam.pop(b)
+
+            bestV = []
+            bestVisitorIds = []
+            for i in range(0,playersPerTeam):
+                b = getBestPlayer(visitorTeam)
+                min = visitorTeam[int(b)][-1]
+                min = min.split(':')[0]
+                visitorTeam[b][-1] = min
+                bestV.append(visitorTeam[b])
+                bestVisitorIds.append(visitorPlayers[b])
+                visitorTeam.pop(b)
+                visitorPlayers.pop(b)
+
+
+            print('visitor team:',len(bestV),bestVisitorIds) 
+            print('home team:',len(bestH),bestHomeIds) 
             writeCSVHeader(labels, path)
-            playerids=writeCSV(data, path, labels)
-    print(found,'---------')
+            writeCSV(gameid,homeTeamID,visitorTeamID,bestH,bestV,path)
+
+            #print('playerid by team-------------',playerIdByTeamID)
+
+            #
+            #playerids=writeCSV(data, path, labels)
+            playerids = bestHomeIds+bestVisitorIds
     return found, gameid,playerids
+#------------------------------------------------------------------------#
+
+def writeCSV(game,homeId,visitorId,bestH,bestV,path):
+    line = str(game)+','+str(homeId)+','+str(visitorId)
+    for player in range(len(bestH)):
+        for stat in range(len(bestH[player])):
+            line += ','+str(bestH[player][stat])
+    for player in range(len(bestV)):
+        for stat in range(len(bestV[player])):
+            line += ','+str(bestV[player][stat])
+
+
+    
+    csv = open(path,'a')
+    csv.write(line+'\n')
+    print(line)
+
+def writeCSVHeader(labels, path,**kwargs):
+    header = 'gameid,home_id,visitor_id'
+    derp = ['home_', 'visitor_']
+    for foo in derp:
+        for i in range(0,playersPerTeam):
+            for label in labels:
+                header+=','+foo+str(i)+'_'+label
+    csv = open(path,'w')
+    csv.write(header+'\n')
+    return header
 
 #------------------------------------------------------------------------#
-def sortByPlayTime(data):
-    derp = ['home', 'visitor']
-    for foo in derp:
-        for i in range(3):
-            maxMin = 0
-            id = ''
-            for player in data[foo+'_team_players']:
-                old = maxMin
-                if 'min' in data[foo+'_team_players'][player]:
-                    maxMin = max(maxMin, int(data[foo+'_team_players'][player]['min']))
-                    if maxMin > old:#this line messed me up i had >= and could figure out why it wasnt working finally got it.
-                        id = player
-            try:
-                data[foo+'_good_players'].update({id : data[foo+'_team_players'][id]})
-                data[foo+'_team_players'].pop(int(id), None)
-            except KeyError:
-                print('key error')
-    return data
-#------------------------------------------------------------------------#
-def minuteConversion(data):
-    #chop seconds off...
-    print(data)
-    derp = ['home', 'visitor']
-    for foo in derp:#iter home visitor
-        for player in data[foo+'_team_players']:#iter players
-            min = ''
-            if data[foo+'_team_players'][player] != '' and data[foo+'_team_players'][player]:#takes care of non values
-                print(data[foo+'_team_players'][player])
-                time = data[foo+'_team_players'][player]['min']
-                if str(type(time)) == "<class 'str'>":
-                    for char in time:#iter charecters in time
-                        if char != ':':
-                            min += str(char)
-                        else:
-                            break
-                    data[foo+'_team_players'][player].update({'min' : min})
-                        #print(data[foo+'_team_players'][player]['min'])
-    return data
-#------------------------------------------------------------------------#
+def getBestPlayer(team):
+    best = ''
+    topMin = 0
+    for player in range(len(team)):
+
+        if len(team[player]) == 0:
+            continue
+        min = team[player][-1]
+        min = min.split(':')[0]
+        #print(min,topMin)
+        if int(min) > int(topMin):
+            best = player
+            topMin = min
+    return best
+
 #gets season average stats by player ids.....
 def getPlayerAvg(data,season,**kwargs):
     url = 'https://www.balldontlie.io/api/v1/season_averages?season='
@@ -569,48 +658,8 @@ def nextGame(gameid):
     #data.update({'visitor_team_id' : 0})
     return data
 
-#------------------------------------------------------------------------#
-def writeCSV(data, path, labels):
-    derp = ['home', 'visitor']
-    if data['home_team_score']>=data['visitor_team_score']:
-        line = '1'
-    else:
-        line = '0'
-    playerids = []
-    if data['gameid'] != 'tooFewPlayers':
-        print('writing----------------------------------')
-        line+=','+str(data['gameid'])
-        for foo in derp:
-            for goodPlayer in data[foo+'_good_players']:
-                playerids.append(str(data[foo+'_good_players'][goodPlayer]['player_id']))
-                for label in labels:
-                    line+=','+str(data[foo+'_good_players'][goodPlayer][label])
-            #for averages
-            #for label in labels:
-                #line+=','+str(data[foo+'_team_players']['avg'][label])
-        c = line.count(',')
-        #if c == 229:
-        csv = open(path,'a')#appending
-        csv.write(line+'\n')
 
-        #else:
-            #print('+++++##########RED ALERT SUMTHING WENT WRONG AND MADE IT PAST ALL CHECKS FFS')
-    else:
-        print('gameid: -------------',data['gameid'],len(data['home_team_players']))
-        print('gameid: -------------',data['gameid'],len(data['visitor_team_players']))
-    return playerids
-#------------------------------------------------------------------------#
-def writeCSVHeader(labels, path):
-    header = 'winner,gameid'
-    derp = ['home_', 'visitor_']
-    for foo in derp:
-        for i in range(1,4):
-            for label in labels:
-                header+=','+foo+str(i)+'_'+label
-    csv = open(path,'w')
-    csv.write(header+'\n')
-    csv.close()
-    return header
+
 #------------------------------------------------------------------------#
 def req(url):
     proxy = load_obj('proxy')
@@ -626,104 +675,87 @@ def req(url):
     return r.json()
 #------------------------------------------------------------------------#
 def save_obj(obj, name):
-    with open('obj/'+ name + '.pkl', 'wb') as f:
+    with open('updatedObj/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
 def load_obj(name):
-    with open('obj/' + name + '.pkl', 'rb') as f:
+    with open('updatedObj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 #------------------------------------------------------------------------#TensorFlow Time lets get it####################
 
-def predict(l, LABELS,LABEL_COLUMN, path):
-    def sss(l):
-        s = ''
-        derp = ['home_', 'visitor_']
-        for foo in derp:
-            for i in range(1,4):
-                for label in l:
-                    s+=foo+str(i)+'_'+label+','
-        return s
-#------------------------------------------------------------------------#
-    foo = 'winner,gameid,'
-    s = sss(l)
-    fdsa = foo + s
-#------------------------------------------------------------------------#
-    def create_columns(s):
-        csv_columns = []
-        a = ''
-        for char in s:
-            if char != ',':
-                a += char
-            else:
-                csv_columns.append(a)
-                a = ''
-        return csv_columns
-#------------------------------------------------------------------------#
-    def defaults(fdsa):
-        d = []
-        for i in range(0,len(create_columns(fdsa))):
-            d.append(0.0)
-        return d
-#------------------------------------------------------------------------#
-    def get_dataset(file_path,epochs, **kwargs):
-        dataset = tf.data.experimental.make_csv_dataset(
-          file_path,
-          batch_size= 25,
-          label_name=LABEL_COLUMN,
-          na_value="?",
-          num_epochs=epochs,
-          ignore_errors=True,
-          **kwargs)
-        return dataset
-#------------------------------------------------------------------------#
-    class PackNumericFeatures(object):
-      def __init__(self, names):
-        self.names = names
-      def __call__(self, features, labels):
-        numeric_features = [features.pop(name) for name in self.names]
-        numeric_features = [tf.cast(feat, tf.float32) for feat in numeric_features]
-        numeric_features = tf.stack(numeric_features, axis=-1)
-        features['numeric'] = numeric_features
-        return features, labels
-#------------------------------------------------------------------------#
-    def normalize_numeric_data(data, mean, std):
-        # Center the data
-        return (data-mean)/std
-#------------------------------------------------------------------------#
-    def prep(file_path, fdsa, s,epochs):
-        dataset = get_dataset(file_path, select_columns=create_columns(fdsa), column_defaults = defaults(fdsa),epochs=epochs)
-        NUMERIC_FEATURES = create_columns(s)
-        packed_dataset = dataset.map(PackNumericFeatures(NUMERIC_FEATURES))
-        desc = pd.read_csv(file_path)[NUMERIC_FEATURES].describe()
-        #print(desc)
-        MEAN = np.array(desc.T['mean'])
-        STD = np.array(desc.T['std'])
-        normalizer = functools.partial(normalize_numeric_data, mean=MEAN, std=STD)
-        numeric_column = tf.feature_column.numeric_column('numeric', shape=[len(NUMERIC_FEATURES)])
-        numeric_columns = [numeric_column]
-        numeric_layer = tf.keras.layers.DenseFeatures(numeric_columns)
-        preprocessing_layer = tf.keras.layers.DenseFeatures(numeric_columns)
+def predict(path):
 
-        return preprocessing_layer, packed_dataset
-#------------------------------------------------------------------------#
+    data = pd.read_csv(path)
 
-    preprocessing_layer, test_dataset = prep('ffasdf.csv', fdsa, s,epochs =1)
+    data.drop(['gameid'], axis=1, inplace=True)
+
+
+    data = data.values
+    data = data.astype(float)
+
+
+    #x_train = tf.keras.utils.normalize(x_train, axis=1)
+    #x_test = tf.keras.utils.normalize(x_test, axis=1)
+
     model = tf.keras.Sequential([
-        preprocessing_layer,
-        tf.keras.layers.Dense(300, activation='relu'),
-        tf.keras.layers.Dense(300, activation='relu'),
 
-        #tf.keras.layers.Dense(1000, activation='relu'),
-        #tf.keras.layers.Dense(500, activation='relu'),
-        tf.keras.layers.Dense(1,activation='sigmoid'),
+        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(64, activation='relu'),
+        
+        tf.keras.layers.Dense(2, activation='linear'),
+
+
+
     ])
-    model.compile(
-        loss='binary_crossentropy',
-        optimizer='adamax',
-        metrics=['accuracy'])
-
     model.load_weights('./checkpoints/my_checkpoint')
-    preprocessing_layer, test_dataset = prep(path, fdsa, s,epochs = 1)
-    predictions = model.predict(test_dataset,steps=1)
+
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+
+    p = model.predict(data)
+    return(p[0])
 
 
-    return predictions[0]
+
+
+
+#------------------------------------------------------------------------#
+def sortByPlayTime(data):
+    derp = ['home', 'visitor']
+    for foo in derp:
+        for i in range(3):
+            maxMin = 0
+            id = ''
+            for player in data[foo+'_team_players']:
+                old = maxMin
+                if 'min' in data[foo+'_team_players'][player]:
+                    maxMin = max(maxMin, int(data[foo+'_team_players'][player]['min']))
+                    if maxMin > old:#this line messed me up i had >= and could figure out why it wasnt working finally got it.
+                        id = player
+            try:
+                data[foo+'_good_players'].update({id : data[foo+'_team_players'][id]})
+                data[foo+'_team_players'].pop(int(id), None)
+            except KeyError:
+                print('key error')
+    return data
+#------------------------------------------------------------------------#
+def minuteConversion(data):
+    #chop seconds off...
+    print(data)
+    derp = ['home', 'visitor']
+    for foo in derp:#iter home visitor
+        for player in data[foo+'_team_players']:#iter players
+            min = ''
+            if data[foo+'_team_players'][player] != '' and data[foo+'_team_players'][player]:#takes care of non values
+                print(data[foo+'_team_players'][player])
+                time = data[foo+'_team_players'][player]['min']
+                if str(type(time)) == "<class 'str'>":
+                    for char in time:#iter charecters in time
+                        if char != ':':
+                            min += str(char)
+                        else:
+                            break
+                    data[foo+'_team_players'][player].update({'min' : min})
+                        #print(data[foo+'_team_players'][player]['min'])
+    return data
+#------------------------------------------------------------------------#
