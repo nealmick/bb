@@ -1,6 +1,6 @@
 # Basket Ball!
 
-Status: Got  new score model integrated, still going to be errors tonight when games start.  For now the main features are working, quick create with todays games, stat editing, scores, are all working.  main two things that i need to fix are gain and loss donut, and also future game new game form docent work.  I will upload the new predict django app soon and finish updating repo, but for now repo is out of data compared to live.... im gona get dinner now dont set anything on fire.
+Status: Got  new score model integrated. looking good so far no errors... have to see when the first game finishs.
 
 The model predicts NBA game winners in the form of a sigmoid function. First, data is collected for games from the past two decades via an API. Over 20,000 unique games are gathered, organized neatly, and stored.  Each player has 17 total data points.  The top 3 players from each team are selected to be input for each game.  
 
