@@ -6,8 +6,6 @@ Developed with Python utilizing the TensorFlow library, the model is trained on 
 
 
 
-The model outputs two linear values represent the home and visitor scores. The loss function is MSE, and the optimizer is Adamax.  Once training is complete the model weights are saved for use inside a Python Django web application.  The web app is used to interact with and control the model.  New predictions can be made and are identified by the teams playing and the game date.  Once a specific game is identified the players season averages are gathered and can be edited in a table.  Every game is stored by the user who created it.  Accounts keep track of statistics such as the number of predictions made,  correct predictions, percent correct, prediction gain, and loss.  The main control view is paginated by the 4 last games predicted and sorted by date.  This view also contains today's games updated with live scores, and a summary of user prediction stats with graphs.  The web app includes account creation, authentication, and reset.  
-
 The project is under development...
 
 
