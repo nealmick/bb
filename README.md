@@ -1,6 +1,5 @@
 # Basket Ball!
 
-Status: Got  new score model integrated. looking good so far no errors... have to see when the first game finished. Yea just fixed error with game end status. temp fix on live, will fix fully tomorrow, but first game was correct! im excited to see how this new model performs, alot of the updated ive made will make it easier to experiment with other models too.  ive tried a convolution and recurrent models aswell.  i may even make options to select different models....  
 
 
 The model predicts NBA game winners in the form of a sigmoid function. First, data is collected for games from the past two decades via an API. Over 20,000 unique games are gathered, organized neatly, and stored.  Each player has 17 total data points.  The top 3 players from each team are selected to be input for each game.  
