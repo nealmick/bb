@@ -140,7 +140,7 @@
 
                         
                         {% if not game.finished%}
-                          <form action="{% url 'get-score' game.pk %}" method="get">
+                          <form action="{% url 'get-score' game.pk page_obj.number %}" method="get">
                             <div>
                               <p style="margin-bottom: 0px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey-secondary" value="Get Score" name="mybtn"> </p>
 

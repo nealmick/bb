@@ -178,7 +178,7 @@ def editGame(request,pk,**kwargs):
         oofnog.append(g.values('p'+str(i))[0]['p'+str(i)])
     url = 'https://www.balldontlie.io/api/v1/players/'
     resp = []
-    #print(oofnog)
+    print(oofnog)
     for id in oofnog:
         obj = load_obj('2019PlayerNamesByID')
         #print(resp)
@@ -186,7 +186,7 @@ def editGame(request,pk,**kwargs):
         for x in obj:
 
 
-
+            
             if int(x) == int(id):
                 found = True
                 print('found-------')
@@ -242,7 +242,7 @@ def predictToday(request,**kwargs):
     print('predictToday------------------############-------------')
     return redirect('home-predict')
 
-def getScore(request,pk,**kwargs):
+def getScore(request,pk,page_num,**kwargs):
     url = 'https://www.balldontlie.io/api/v1/games/'
     user= request.user
     g = Game.objects.filter(pk=pk).values('gameid')
@@ -264,23 +264,23 @@ def getScore(request,pk,**kwargs):
 
         if not finished: # add not back
             if pmscore >= 0 and h >v:#win p home
-                asdf = float(p.values('gain')[0]['gain']) + float(prediction) - float(.5)
-                p.update(gain=asdf)
+                #asdf = float(p.values('gain')[0]['gain']) + float(prediction) - float(.5)
+                #p.update(gain=asdf)
                 p.update(correct=p.values('correct')[0]['correct']+1)
                 Game.objects.filter(pk=pk).update(winner=1)
             if pmscore < 0 and h < v:#win p visitor
-                asdf = float(p.values('gain')[0]['gain']) + float(.5) -float(prediction)
-                p.update(gain=asdf)
+                #asdf = float(p.values('gain')[0]['gain']) + float(.5) -float(prediction)
+                #p.update(gain=asdf)
                 p.update(correct=p.values('correct')[0]['correct']+1)
                 Game.objects.filter(pk=pk).update(winner=0)
             if pmscore < 0 and h > v:#loose p vis
-                asdf = float(p.values('loss')[0]['loss']) + float(.5) - float(prediction)
-                p.update(loss=asdf)
+                #asdf = float(p.values('loss')[0]['loss']) + float(.5) - float(prediction)
+                #p.update(loss=asdf)
                 Game.objects.filter(pk=pk).update(winner=1)
             if pmscore >= 0 and h < v:#loose p home
                 print('asdf')
-                asdf = float(p.values('loss')[0]['loss']) + float(prediction) - float(.5)
-                p.update(loss=asdf)
+                #asdf = float(p.values('loss')[0]['loss']) + float(prediction) - float(.5)
+                #p.update(loss=asdf)
                 Game.objects.filter(pk=pk).update(winner=0)
             print(Game.objects.filter(pk=pk).values('winner')[0]['winner'])
             p.update(predictions=p.values('predictions')[0]['predictions']+1)
@@ -294,8 +294,11 @@ def getScore(request,pk,**kwargs):
     Game.objects.filter(pk=pk).update(visitor_score=v)
     #print(pagenum)
     #x = redirect("home-predict")
-    #return HttpResponsePermanentRedirect("https://nbadata.cloud/predict/?page="+str(pagenum))
-    return redirect('home-predict')
+    re = reverse('home-predict') + "?page="+str(page_num)
+    print(re)
+    return HttpResponsePermanentRedirect(re)
+    #return HttpResponsePermanentRedirect("https://nbadata.cloud/predict/?page="+str(page_num))
+    #return redirect('home-predict')
 
 def todaysGames(self):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
@@ -387,7 +390,7 @@ def quickcreate(request,home,visitor,date):
     season = '2022'
     labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
     path = 'csv/'+str(request.user)+str(csvid)+'.csv'
-    
+    print(home,visitor)
     found, gameid, playerids = futureGame(date,home,visitor,path,season,labels)
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
@@ -411,6 +414,7 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         csvid = random.randint(1,100000)
         form.instance.author = self.request.user
         season = '2022'
+        
         form.instance.csvid = csvid#############fix here
         print(str(csvid),"csvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
         path = 'csv/'+str(self.request.user)+str(csvid)+'.csv'
@@ -425,8 +429,10 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         form.instance.homecolor = TEAMCOLORS[y]
         form.instance.visitorcolor = TEAMCOLORS[z]
 
+        print(homeAbv,visitorAbv)
 
         found, gameid, playerids = futureGame(date, homeAbv,visitorAbv,path,season,labels)
+        print('after',playerids)
         if found:
 
             form.instance.p0 = playerids[0]
@@ -442,11 +448,11 @@ class GameCreateView(LoginRequiredMixin, CreateView):
             form.instance.p10 = playerids[10]
             form.instance.p11 = playerids[11]
             form.instance.p12 = playerids[12]
+            form.instance.p13 = playerids[13]
             form.instance.p14 = playerids[14]
             form.instance.p15 = playerids[15]
             form.instance.p16 = playerids[16]
             form.instance.p17 = playerids[17]
-            form.instance.p18 = playerids[18]
             LABEL_COLUMN = 'winner'
             LABELS = [0, 1]
             l = labels
@@ -553,6 +559,7 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
             #
             #playerids=writeCSV(data, path, labels)
             playerids = bestHomeIds+bestVisitorIds
+            print('before',playerids)
     return found, gameid,playerids
 #------------------------------------------------------------------------#
 
