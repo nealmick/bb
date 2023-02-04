@@ -3,38 +3,31 @@ import requests, json, time, operator, pickle, random
 
 
 url = 'https://www.balldontlie.io/api/v1/'
-seasons = ['2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007','2006','2005']
+#seasons = ['2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007','2006','2005']
 seasons.reverse()
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']#added min
 createPlayersByTeam = False
 loadIds=True#load saved unigameid or fetch new.... used in getGameIds()
 
 def main(seasons,labels,url):
-    collectGames(seasons,labels,url)
+    
 
+        season = '2022'
+        print("season"+season)
+        try:
+            SeasonAverages = load_obj(season+'SeasonAverages')
+        except FileNotFoundError:
+            SeasonAverages = {}
+        playersByTeam = load_obj(season+'playerIdByTeamID')
+        playerIds = combinePlayerIds(playersByTeam)
 
-
-
-#collect's game info
-def collectGames(seasons,labels,url):
-    for season in seasons:
-            gameids = getGameIds(season)
-            try:
-                games = load_obj(season+'Games')
-            except FileNotFoundError:
-                games = {}
-            games = {}
-            print(games)
-            for id in gameids:
-                #if id not in winnersById:
-                game = getGame(id,season)
-
-                if game:
-                    games.update({id:game})
-                    save_obj(games, season+'Games')
-                    print(id, games[id]['winner'],games[id]['date'],games[id]['home_id'],games[id]['home_score'],games[id]['visitor_id'],games[id]['visitor_score'])
-                    print(len(games[id]['data']))
-
+        for playerId in playerIds:
+            if playerId not in SeasonAverages:
+                seasonAverage = getSeaonAverage(playerId,season,labels)
+                SeasonAverages.update({playerId:seasonAverage})
+                print(len(SeasonAverages))
+            save_obj(SeasonAverages,season+'SeasonAverages')
+        #getPlayersByGameID(createPlayersByTeam,data,season,url)
 
 
 #returns game info
@@ -190,6 +183,33 @@ main(seasons,labels,url)
 
 
 '''
+    collectGames(seasons,labels,url)
+
+
+
+
+    #collect's game info
+    def collectGames(seasons,labels,url):
+        for season in seasons:
+                gameids = getGameIds(season)
+                try:
+                    games = load_obj(season+'Games')
+                except FileNotFoundError:
+                    games = {}
+                games = {}
+                print(games)
+                for id in gameids:
+                    #if id not in winnersById:
+                    game = getGame(id,season)
+
+                    if game:
+                        games.update({id:game})
+                        save_obj(games, season+'Games')
+                        print(id, games[id]['winner'],games[id]['date'],games[id]['home_id'],games[id]['home_score'],games[id]['visitor_id'],games[id]['visitor_score'])
+                        print(len(games[id]['data']))
+
+
+
 
 
 
