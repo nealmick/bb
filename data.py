@@ -1,11 +1,15 @@
 import requests, json, time, operator, pickle, random
-#seasons = ['2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007','2006','2005']
-seasons = ['2019']
+#seasons = ['2022','2021','2020','2019']#,'2015']#,'2014']#,'2013','2012','2011']
+seasons = ['2022','2021','2020','2019','2018','2017','2016']
+#seasons = ['2019']
 seasons.reverse()
-labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-playersPerTeam = 5
 
-def main(labels,seasons,**kwargs):    
+labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+playersPerTeam = 9
+path = "csv1/test123.csv"
+def main(labels,seasons,**kwargs):
+    writeCSVHeader(labels, path)
+
     for season in seasons:
         print('Season:', season)
 
@@ -14,7 +18,7 @@ def main(labels,seasons,**kwargs):
         seasonAverages = load_obj(season+'SeasonAverages')
 
         for game in games:
-            
+
             g=games[game]
             print(game, g['winner'],g['date'],g['home_id'],g['home_score'],g['visitor_id'],g['visitor_score'])
 
@@ -30,7 +34,7 @@ def main(labels,seasons,**kwargs):
             bestH = []
             for i in range(0,playersPerTeam):
                 b = getBestPlayer(homeTeam)
-                min = homeTeam[b][-1]
+                min = homeTeam[int(b)][-1]
                 min = min.split(':')[0]
                 homeTeam[b][-1] = min
                 bestH.append(homeTeam[b])
@@ -39,18 +43,18 @@ def main(labels,seasons,**kwargs):
             bestV = []
             for i in range(0,playersPerTeam):
                 b = getBestPlayer(visitorTeam)
-                min = visitorTeam[b][-1]
+                min = visitorTeam[int(b)][-1]
                 min = min.split(':')[0]
                 visitorTeam[b][-1] = min
                 bestV.append(visitorTeam[b])
                 visitorTeam.pop(b)
 
+            writeCSV(game,g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],bestH,bestV,path)
 
 
 
-
-def writeCSV(game, w,bestH,bestV,path):
-    line = str(w)+','+str(game)
+def writeCSV(game, homeScore,visitorScore,homeId,visitorId,bestH,bestV,path):
+    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(homeId)+','+str(visitorId)
     for player in range(len(bestH)):
         for stat in range(len(bestH[player])):
             line += ','+str(bestH[player][stat])
@@ -68,11 +72,11 @@ def writeCSV(game, w,bestH,bestV,path):
     csv.write(line+'\n')
     print(line)
 
-def writeCSVHeader(labels, path):
-    header = 'winner,gameid'
+def writeCSVHeader(labels, path,**kwargs):
+    header = 'home_score,visitor_score,gameid,home_id,visitor_id'
     derp = ['home_', 'visitor_']
     for foo in derp:
-        for i in range(0,5):
+        for i in range(0,playersPerTeam):
             for label in labels:
                 header+=','+foo+str(i)+'_'+label
     csv = open(path,'w')
