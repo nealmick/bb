@@ -122,9 +122,9 @@ def saveEdit(request,pk,change,**kwargs):
     print(p)
 
     #p = float(p[0])
-    g.update(home_score_prediction=round(p[0]))
-    g.update(visitor_score_prediction=round(p[1]))
-    g.update(pmscore=(round(p[0])-round(p[1])))
+    g.update(home_score_prediction=round(p[0],2))
+    g.update(visitor_score_prediction=round(p[1],2))
+    g.update(pmscore=p[0]-p[1])
     
     return redirect('home-predict')
 
@@ -178,7 +178,7 @@ def editGame(request,pk,**kwargs):
         oofnog.append(g.values('p'+str(i))[0]['p'+str(i)])
     url = 'https://www.balldontlie.io/api/v1/players/'
     resp = []
-    print(oofnog)
+    #print(oofnog)
     for id in oofnog:
         obj = load_obj('2019PlayerNamesByID')
         #print(resp)
@@ -186,7 +186,7 @@ def editGame(request,pk,**kwargs):
         for x in obj:
 
 
-            
+
             if int(x) == int(id):
                 found = True
                 print('found-------')
@@ -226,6 +226,9 @@ def editGame(request,pk,**kwargs):
     context['finished']=g.values('finished')[0]['finished']
     context['winner'] = g.values('winner')[0]['winner']
     context['pmscore'] = g.values('pmscore')[0]['pmscore']
+
+    context['pmactual'] = int(g.values('home_score')[0]['home_score'])-int(g.values('visitor_score')[0]['visitor_score'])
+
     context['pvscore'] = g.values('visitor_score_prediction')[0]['visitor_score_prediction']
     context['phscore'] = g.values('home_score_prediction')[0]['home_score_prediction']
     context['game'] = g
@@ -242,7 +245,8 @@ def predictToday(request,**kwargs):
     print('predictToday------------------############-------------')
     return redirect('home-predict')
 
-def getScore(request,pk,page_num,**kwargs):
+def getScore(request,pk,**kwargs):
+    print('getttttttttttting score')
     url = 'https://www.balldontlie.io/api/v1/games/'
     user= request.user
     g = Game.objects.filter(pk=pk).values('gameid')
@@ -261,26 +265,26 @@ def getScore(request,pk,page_num,**kwargs):
         prediction = Game.objects.filter(pk=pk).values('prediction')[0]['prediction']
         pmscore = Game.objects.filter(pk=pk).values('pmscore')[0]['pmscore']
         finished = Game.objects.filter(pk=pk).values('finished')[0]['finished']
-
+        
         if not finished: # add not back
             if pmscore >= 0 and h >v:#win p home
-                #asdf = float(p.values('gain')[0]['gain']) + float(prediction) - float(.5)
-                #p.update(gain=asdf)
+                asdf = float(p.values('gain')[0]['gain'])
+                p.update(gain=asdf+abs(pmscore))
                 p.update(correct=p.values('correct')[0]['correct']+1)
                 Game.objects.filter(pk=pk).update(winner=1)
             if pmscore < 0 and h < v:#win p visitor
-                #asdf = float(p.values('gain')[0]['gain']) + float(.5) -float(prediction)
-                #p.update(gain=asdf)
+                asdf = float(p.values('gain')[0]['gain']) 
+                p.update(gain=asdf+abs(pmscore))
                 p.update(correct=p.values('correct')[0]['correct']+1)
                 Game.objects.filter(pk=pk).update(winner=0)
             if pmscore < 0 and h > v:#loose p vis
-                #asdf = float(p.values('loss')[0]['loss']) + float(.5) - float(prediction)
-                #p.update(loss=asdf)
+                asdf = float(p.values('loss')[0]['loss']) 
+                p.update(loss=asdf+abs(pmscore))
                 Game.objects.filter(pk=pk).update(winner=1)
             if pmscore >= 0 and h < v:#loose p home
                 print('asdf')
-                #asdf = float(p.values('loss')[0]['loss']) + float(prediction) - float(.5)
-                #p.update(loss=asdf)
+                asdf = float(p.values('loss')[0]['loss']) 
+                p.update(loss=asdf+abs(pmscore))
                 Game.objects.filter(pk=pk).update(winner=0)
             print(Game.objects.filter(pk=pk).values('winner')[0]['winner'])
             p.update(predictions=p.values('predictions')[0]['predictions']+1)
@@ -294,11 +298,8 @@ def getScore(request,pk,page_num,**kwargs):
     Game.objects.filter(pk=pk).update(visitor_score=v)
     #print(pagenum)
     #x = redirect("home-predict")
-    re = reverse('home-predict') + "?page="+str(page_num)
-    print(re)
-    return HttpResponsePermanentRedirect(re)
-    #return HttpResponsePermanentRedirect("https://nbadata.cloud/predict/?page="+str(page_num))
-    #return redirect('home-predict')
+    #return HttpResponsePermanentRedirect(reverse('home-predict') + "?page="+str(page_num))
+    return redirect('home-predict')
 
 def todaysGames(self):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
@@ -333,7 +334,7 @@ class GameListView(ListView, LoginRequiredMixin):
     model = Game
     template_name = 'predict/home.html'
     ordering = ['-date_posted']
-    paginate_by = 4
+    paginate_by = 20
     context_object_name = 'games'
     context = 'games'
 
@@ -386,11 +387,24 @@ class GameListView(ListView, LoginRequiredMixin):
 
 def quickcreate(request,home,visitor,date):
     print('testing quick create---------------------')
+
+
+
     csvid = random.randint(1,100000)
     season = '2022'
     labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
     path = 'csv/'+str(request.user)+str(csvid)+'.csv'
-    print(home,visitor)
+
+
+
+
+
+
+
+
+    spread = getSpread(home,visitor)
+    print('spread: ', spread)
+
     found, gameid, playerids = futureGame(date,home,visitor,path,season,labels)
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
@@ -398,10 +412,64 @@ def quickcreate(request,home,visitor,date):
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
         p12 = playerids[12], p13 = playerids[13], p14 = playerids[14], p15 = playerids[15], p16 = playerids[16], p17 = playerids[17]
         
-        ,gameid=gameid)
+        ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1])
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
+def getSpread(h,v):
+    spreadURL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds?markets=h2h,spreads,totals&regions=us&apiKey=88bd4b51d72f5affbbdfe5fb6d9d68fe'
+    CHOICES = {
+    'ATL' :'Atlanta Hawks',
+    'BKN':	'Brooklyn Nets',
+    'BOS':	'Boston Celtics',
+    'CHA':	'Charlotte Hornets',
+    'CHI':	'Chicago Bulls',
+    'CLE':	'Cleveland Cavaliers',
+    'DAL':	'Dallas Mavericks',
+    'DEN':	'Denver Nuggets',
+    'DET':	'Detroit Pistons',
+    'GSW':	'Golden State Warriors',
+    'HOU':	'Houston Rockets',
+    'IND':	'Indiana Pacers',
+    'LAC':	'Los Angeles Clippers',
+    'LAL':	'Los Angeles Lakers',
+    'MEM':	'Memphis Grizzlies',
+    'MIA':	'Miami Heat',
+    'MIL':	'Milwaukee Bucks',
+    'MIN':	'Minnesota Timberwolves',
+    'NOP':	'New Orleans Pelicans',
+    'NYK':	'New York Knicks',
+    'OKC':	'Oklahoma City Thunder',
+    'ORL':	'Orlando Magic',
+    'PHI':	'Philadelphia 76ers',
+    'PHX':	'Phoenix Suns',
+    'POR':	'Portland Trail Blazers',
+    'SAC':	'Sacramento Kings',
+    'SAS':	'San Antonio Spurs',
+    'TOR':	'Toronto Raptors',
+    'UTA':	'Utah Jazz',
+    'WAS':	'Washington Wizards',
+    }
+    h = CHOICES[h]
+    v = CHOICES[v]
+    spreadr = reqSpread(spreadURL)
+
+    vistorSpread = 0
+    homeSpread = 0
+
+    for provider in spreadr:
+        for game in provider['bookmakers']:
+            if game['title'] == 'FanDuel':
+                if game['markets'][1]['outcomes'][0]['name'] == v and game['markets'][1]['outcomes'][1]['name'] == h:
+                    vistorSpread = game['markets'][1]['outcomes'][0]['point']
+                    homeSpread = game['markets'][1]['outcomes'][1]['point']
+                    break
+                if game['markets'][1]['outcomes'][0]['name'] == h and game['markets'][1]['outcomes'][1]['name'] == v:
+                    homeSpread = game['markets'][1]['outcomes'][0]['point']
+                    vistorSpread = game['markets'][1]['outcomes'][1]['point']
+                    print('found eror wiht spread here 123123123--------------------------')
+    print(h,homeSpread,' - ',v,vistorSpread)
+    return [homeSpread,vistorSpread]
 
 
 class GameCreateView(LoginRequiredMixin, CreateView):
@@ -470,7 +538,6 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         #context['csvid'] = self.csvid
         #print(self.csvid,'---------------------------')
         return context
-
 
 def futureGame(date,homeAbv,visitorAbv,path, season,labels):
     print(season)
@@ -559,7 +626,6 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
             #
             #playerids=writeCSV(data, path, labels)
             playerids = bestHomeIds+bestVisitorIds
-            print('before',playerids)
     return found, gameid,playerids
 #------------------------------------------------------------------------#
 
@@ -724,7 +790,9 @@ def predict(path):
 
 
 
-
+def reqSpread(url):
+    r = requests.get(url)
+    return r.json()
 
 #------------------------------------------------------------------------#
 def sortByPlayTime(data):

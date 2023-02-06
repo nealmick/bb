@@ -29,30 +29,35 @@
                   <div class="row center col-md-10" style="">
                     <div class="col-3"style="padding:0">
                       <center>
+                        <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+
                         <p style="margin:0px">Predicted Score: {{ pvscore }} </p>
                         <p style="margin:0px">Actual Score: {{ visitor_score }} </p>
-                        <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+                        <p style="margin:0px">Visitor Spread: {{ visitor_spread }} </p>
 
                     </center>
                     </div>
                     <div class="col-6"style="padding:0; height: 200px;">
-                    	<center>
+                      <center>
                         <p style="margin:0px">{{ gamedate }}</p>
-                          {% if pmscore == 0 %}
-						          <input onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
-						          {% else%}
-                        <p style="margin:0px">{{ pmscore }}</p>
-
-					          	{%endif%}
-
-					    
-                    	</center>
-                        <center>
-
                         <div style="height: 125px !important;">
                         <canvas  id="c" ></canvas>
                         </div>
                         </center>
+                    	<center>
+                        {% if pmscore == 0 %}
+						          <input style="margin-top:5px" onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
+						          {% else%}
+                        <p style="margin:0px">{{ pmscore|floatformat:2 }}</p>
+                        <p style="margin:0px">{{ pmactual }}</p>
+
+					          	{%endif%}
+                      <p style="margin:0px">FanDuel </p>
+                      
+
+					    
+                    	</center>
+
 
 
 
@@ -132,8 +137,8 @@
                                 }],
                                   scales: {
                                     x: {
-                                      min: -15,
-                                      max: 15,
+                                      min: -10,
+                                      max: 10,
                                       ticks: {
                                           autoSkip: true,
                                           maxTicksLimit: 4
@@ -160,9 +165,11 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
+                          <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+
                           <p style="margin:0px">Predicted Score: {{ phscore }} </p>
                           <p style="margin:0px">Actual Score: {{ home_score }} </p>
-                      <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+                          <p style="margin:0px">Home Spread: {{ home_spread }} </p>
 
                         </center>
                     </div>
@@ -174,7 +181,7 @@
 
 
                   {% if game.prediction is None %}
-
+                  
 
                   {% else %}
                   {% if not finished%}
@@ -222,7 +229,7 @@
 									{% if forloop.counter == 1 %}
 											<td >{{stat}}</td>
 									{%else%}
-                      {% if pmscore == 0%}
+											{% if pmscore == '0'%}
 												<td class="e oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
 											{% else %}
 												<td class="oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>

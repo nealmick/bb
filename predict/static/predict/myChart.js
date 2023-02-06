@@ -64,14 +64,12 @@ const aconfig = {
 const adata2 = {
     labels: [
       'Gain',
-      'Possible Gain',
 
       'Loss',
-      'Possible Loss',
     ],
     datasets: [{
       label: 'data',
-      data: [gain, possibleGain,loss,possibleLoss],
+      data: [gain,loss],
       backgroundColor: [
         'rgba(75, 192, 192, 0.2)',  
         'rgba(87, 87, 87,.2)',

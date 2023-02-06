@@ -10,36 +10,36 @@ import datetime
         
 class Game(models.Model):
     CHOICES = (
-        ('ATL',	'Atlanta Hawks'),
-        ('BKN',	'Brooklyn Nets'),
-        ('BOS',	'Boston Celtics'),
-        ('CHA',	'Charlotte Hornets'),
-        ('CHI',	'Chicago Bulls'),
-        ('CLE',	'Cleveland Cavaliers'),
-        ('DAL',	'Dallas Mavericks'),
-        ('DEN',	'Denver Nuggets'),
-        ('DET',	'Detroit Pistons'),
-        ('GSW',	'Golden State Warriors'),
-        ('HOU',	'Houston Rockets'),
-        ('IND',	'Indiana Pacers'),
-        ('LAC',	'Los Angeles Clippers'),
-        ('LAL',	'Los Angeles Lakers'),
-        ('MEM',	'Memphis Grizzlies'),
-        ('MIA',	'Miami Heat'),
-        ('MIL',	'Milwaukee Bucks'),
-        ('MIN',	'Minnesota Timberwolves'),
-        ('NOP',	'New Orleans Pelicans'),
-        ('NYK',	'New York Knicks'),
-        ('OKC',	'Oklahoma City Thunder'),
-        ('ORL',	'Orlando Magic'),
-        ('PHI',	'Philadelphia 76ers'),
-        ('PHX',	'Phoenix Suns'),
-        ('POR',	'Portland Trail Blazers'),
-        ('SAC',	'Sacramento Kings'),
-        ('SAS',	'San Antonio Spurs'),
-        ('TOR',	'Toronto Raptors'),
-        ('UTA',	'Utah Jazz'),
-        ('WAS',	'Washington Wizards'),
+        ('ATL', 'Atlanta Hawks'),
+        ('BKN', 'Brooklyn Nets'),
+        ('BOS', 'Boston Celtics'),
+        ('CHA', 'Charlotte Hornets'),
+        ('CHI', 'Chicago Bulls'),
+        ('CLE', 'Cleveland Cavaliers'),
+        ('DAL', 'Dallas Mavericks'),
+        ('DEN', 'Denver Nuggets'),
+        ('DET', 'Detroit Pistons'),
+        ('GSW', 'Golden State Warriors'),
+        ('HOU', 'Houston Rockets'),
+        ('IND', 'Indiana Pacers'),
+        ('LAC', 'Los Angeles Clippers'),
+        ('LAL', 'Los Angeles Lakers'),
+        ('MEM', 'Memphis Grizzlies'),
+        ('MIA', 'Miami Heat'),
+        ('MIL', 'Milwaukee Bucks'),
+        ('MIN', 'Minnesota Timberwolves'),
+        ('NOP', 'New Orleans Pelicans'),
+        ('NYK', 'New York Knicks'),
+        ('OKC', 'Oklahoma City Thunder'),
+        ('ORL', 'Orlando Magic'),
+        ('PHI', 'Philadelphia 76ers'),
+        ('PHX', 'Phoenix Suns'),
+        ('POR', 'Portland Trail Blazers'),
+        ('SAC', 'Sacramento Kings'),
+        ('SAS', 'San Antonio Spurs'),
+        ('TOR', 'Toronto Raptors'),
+        ('UTA', 'Utah Jazz'),
+        ('WAS', 'Washington Wizards'),
         )
     home = models.CharField(max_length=3, choices=CHOICES)
     homecolor = models.CharField(max_length=10)
@@ -57,9 +57,9 @@ class Game(models.Model):
     visitor_spread = models.CharField(null=True, blank=True, max_length=10)
     winner = models.IntegerField(null=True, blank=True, default=0)
     csvid = models.CharField(null=True, blank=True, max_length=10)
-    home_score_prediction = models.CharField(null=True, blank=True, max_length=4)
-    visitor_score_prediction = models.CharField(null=True, blank=True, max_length=4)
-    pmscore = models.IntegerField(null=True, blank=True, default=0)
+    home_score_prediction = models.CharField(null=True, blank=True, max_length=10)
+    visitor_score_prediction = models.CharField(null=True, blank=True, max_length=10)
+    pmscore = models.FloatField(null=True, blank=True, default=0)
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)

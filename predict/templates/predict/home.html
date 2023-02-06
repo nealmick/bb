@@ -97,18 +97,17 @@
 
 
 
-        <div class="col-lg-6" style="margin-bottom: 10px;padding-left:0px">
+        <div class="col-lg-6 " style="margin-bottom: 10px;padding-left:0px">
 
-          <div class="content-section"style="height:100%; min-height: 753px;overflow-y:scroll;overflow-x:hidden">
+          <div class="content-section "style="height:100%; min-height: 753px;max-height: 790px;overflow-y:scroll;overflow-x:hidden">
           {% if request.user.is_authenticated %}
-          <h2 >Your Games</h2>
           {% for game in games %}
 
 
             {% if game.p0 is None %}
                 <div class="ff" >
 
-              <article class="media content-section ff">
+              <article  class="media content-section ff">
               <p style="margin-bottom: 0px;">
                 <font color="red">Error game not found</font>: Invalid Input.  Make sure the game date is correct and visitor/home team are not miss-matched.  Try again or click on one of today's games.  
 
@@ -121,7 +120,7 @@
             <a href="{% url 'edit-predict' game.pk%}">
             <div class="" >
 
-              <article id="game" class="content-section"style="">
+              <article id="game" class="content-section"style="margin-top: 10px;padding-top:8px;">
                 <!--
                   background: linear-gradient(90deg, {{game.visitorcolor}} 0%, rgba(248,248,248,1) 30%, rgba(248,248,248,1) 50%, rgba(248,248,248,1) 70%, {{game.homecolor}} 100%);
                 -->
@@ -129,8 +128,8 @@
                   <div class="row">
                     <div class="col-3"style="padding:0">
                       <center>
-                        <p style="margin:0px">{{ game.visitor }} - {{ game.visitor_score_prediction }} - {{ game.visitor_score }} </p>
-                        <img class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
+                        <p style="margin:0px">{{ game.visitor }} - {{ game.visitor_score }} </p>
+                        <img class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
 
                     </center>
                     </div>
@@ -140,7 +139,7 @@
 
                         
                         {% if not game.finished%}
-                          <form action="{% url 'get-score' game.pk page_obj.number %}" method="get">
+                          <form action="{% url 'get-score' game.pk  %}" method="get">
                             <div>
                               <p style="margin-bottom: 0px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey-secondary" value="Get Score" name="mybtn"> </p>
 
@@ -150,9 +149,9 @@
                         {% else%}
 
                         {% if game.pmscore >= 0 and game.winner == 1 or game.pmscore < 0 and game.winner == 0 %}
-                        <p style="margin:0px; color:rgb(65, 199, 8)">{{ game.pmscore }} <i class="fas fa-check"></i></p>
+                        <p style="margin:0px; color:rgb(65, 199, 8)">{{ game.pmscore |floatformat:2 }} <i class="fas fa-check"></i></p>
                           {%else%}
-                        <p style="margin:0px; color:rgb(255, 0, 0)">{{ game.pmscore }} <i class="fas fa-times"></i></p>
+                        <p style="margin:0px; color:rgb(255, 0, 0)">{{ game.pmscore  |floatformat:2 }} <i class="fas fa-times"></i></p>
 
 
                           {% endif %}
@@ -240,8 +239,8 @@
                                 }],
                                   scales: {
                                     x: {
-                                      min: -15,
-                                      max: 15,
+                                      min: -10,
+                                      max: 10,
                                       ticks: {
                                           autoSkip: true,
                                           maxTicksLimit: 4
@@ -268,7 +267,7 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
-                          <p style="margin:0px">{{ game.home }} - {{ game.home_score_prediction }} - {{ game.home_score }} </p>
+                          <p style="margin:0px">{{ game.home }} - {{ game.home_score }} </p>
                       <img class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
 
                         </center>
@@ -346,6 +345,13 @@
 {{ correct|json_script:"correct" }}
 {{ gain|json_script:"gain" }}
 {{ loss|json_script:"loss" }}
+
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
