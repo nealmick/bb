@@ -58,10 +58,10 @@ http://localhost:8000/admin
 http://localhost:8000/
 
 
-## Make a dataset:
+## Make a Dataset:
 python3 data.py
 
-## Inspect dataset if you want:
+## Inspect Dataset:
 python3
 df = pd.read_csv("csv/test123.csv")
 df.head()
