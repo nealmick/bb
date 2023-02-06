@@ -57,7 +57,7 @@ python3 data.py
 ## note: this will overwrite your trained weights in the checkpoints folder.
 ## so make a copy or change path if you dont want the web app model weights effected by retraining.
 ## variables to mess with would be epochs and batch size....
-## If you make change things like number of layers it wont integrate with web app.
+## If you change things like number of layers it wont integrate with web app.
 
 python3 train_scores.py
 
