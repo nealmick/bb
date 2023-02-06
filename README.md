@@ -82,7 +82,9 @@ http://localhost:6007/
 
 ```
 *under development*
+
 API used for stats: https://www.balldontlie.io/
+
 API used for spread: https://the-odds-api.com/
 
 
