@@ -61,13 +61,13 @@ http://localhost:8000/
 ## Make a Dataset:
 python3 data.py
 
-## Review your dataset with excell or somthing here: csv/test123.csv 
 
 ## Train on the dataset:
 ## note: this will overwrite your trained weights in the checkpoints folder.
 ## so make a copy or change path if you dont want the web app model weights effected.
 ## variables to mess with would be epochs and batch size....
 ## If you change things like number of layers it wont integrate with web app.
+## Also your training dataset can be opened with excel or somthing here: csv/test123.csv 
 
 python3 train_scores.py
 
