@@ -61,7 +61,7 @@ python3 data.py
 
 python3 train_scores.py
 
-## review your model training logs with tensorboard:
+## now review your model training logs with TensorBoard:
 ##start tensorboard server:
 tensorboard --logdir logs/fit
 
