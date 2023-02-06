@@ -124,7 +124,7 @@ def req(url):
     dict.update({'http' : proxy[p]})
     r = requests.get(url)
     print('proxy: ', proxy[p], 'url: ', url, 'response: ', r)
-    if str(r) != '<Response [200]>':#means we request too fast..fast af boi so like anything under 1 r/sec cause error at 60 seconds in....
+    if str(r) != '<Response [200]>':#means we request too fast..
         time.sleep(30)
         req(url)
     time.sleep(1.5)
