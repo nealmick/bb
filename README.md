@@ -31,22 +31,30 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 <img src="https://i.imgur.com/LY7u9xB.png" width="600" height="300" />
 
 #### Install:
+
 ```bash
+
 git clone https://github.com/nealmick/bb
 cd bb
 
+## install requirements
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 
+## make database
 python3 manage.py makemigrations predict users
 python3 manage.py migrate
+## Create your user
 python3 manage.py createsuperuser
 
-
+## start server
 python3 manage.py runserver
 
+## admin url
 http://localhost:8000/admin
+
+## webapp url
 http://localhost:8000/
 
 
