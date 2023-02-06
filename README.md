@@ -81,6 +81,14 @@ tensorboard --logdir logs/fit
 http://localhost:6007/
 
 ```
+
+# TensorBoard:
+<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
+<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
+<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
+<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
+
+
 *under development*
 
 API used for stats: https://www.balldontlie.io/
