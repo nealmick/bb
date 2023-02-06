@@ -67,7 +67,7 @@ python3 data.py
 ## so make a copy or change path if you dont want the web app model weights effected.
 ## variables to mess with would be epochs and batch size....
 ## If you change things like number of layers it wont integrate with web app.
-## Also your training dataset can be opened with excel or somthing here: csv/test123.csv 
+## Also your training dataset can be opened with excel or somthing else here: csv/test123.csv 
 
 python3 train_scores.py
 
