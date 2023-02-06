@@ -61,7 +61,7 @@ http://localhost:8000/
 ## Make a Dataset:
 python3 data.py
 
-## Inspect Dataset your dataset here: csv/test123.csv 
+## Review your dataset with excell or somthing here: csv/test123.csv 
 
 ## Train on the dataset:
 ## note: this will overwrite your trained weights in the checkpoints folder.
