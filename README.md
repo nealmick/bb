@@ -49,6 +49,24 @@ python3 manage.py runserver
 http://localhost:8000/admin
 http://localhost:8000/
 
+
+## Make a dataset:
+python3 data.py
+
+## Train on the dataset:
+## note: this will overwrite your trained weights in the checkpoints folder.
+## so make a copy or change path if you dont want the web app model weights effected by retraining.
+## variables to mess with would be epochs and batch size....
+## If you make change things like number of layers it wont integrate with web app.
+
+python3 train_scores.py
+
+## review your model training logs with tensorboard:
+##start tensorboard server:
+tensorboard --logdir logs/fit
+
+http://localhost:6007/
+
 ```
 *under development*
 API used: https://www.balldontlie.io/
