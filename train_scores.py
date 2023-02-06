@@ -6,7 +6,7 @@ from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoi
 from sklearn.model_selection import train_test_split
 import datetime
 
-path = "csv1/test123.csv"
+path = "csv/test123.csv"
 current_time = str(time.time())
 
 data = pd.read_csv(path)
