@@ -61,6 +61,11 @@ http://localhost:8000/
 ## Make a dataset:
 python3 data.py
 
+## Inspect dataset if you want:
+python3
+df = pd.read_csv("csv/test123.csv")
+df.head()
+
 ## Train on the dataset:
 ## note: this will overwrite your trained weights in the checkpoints folder.
 ## so make a copy or change path if you dont want the web app model weights effected.
