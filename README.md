@@ -70,9 +70,9 @@ python3 data.py
 python3 train_scores.py
 
 ## now review your model training logs with TensorBoard:
-##start tensorboard server:
+## start tensorboard server:
 tensorboard --logdir logs/fit
-
+## TensorBoard URL
 http://localhost:6007/
 
 ```
