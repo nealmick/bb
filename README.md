@@ -83,11 +83,10 @@ http://localhost:6007/
 ```
 
 # TensorBoard:
-<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
-<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
-<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
-<img src="https://i.imgur.com/opg7vk4.png" width="600" height="300" />
-
+<img src="https://i.imgur.com/P8hmfxM.png" width="800" height="300" />
+<img src="https://i.imgur.com/opg7vk4.png" width="800" height="300" />
+<img src="https://i.imgur.com/Ha6OHxn.png" width="800" height="300" />
+<img src="https://i.imgur.com/Zu3YQrU.png" width="800" height="300" />
 
 *under development*
 
