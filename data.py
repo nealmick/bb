@@ -1,12 +1,12 @@
 import requests, json, time, operator, pickle, random
 #seasons = ['2022','2021','2020','2019']#,'2015']#,'2014']#,'2013','2012','2011']
-seasons = ['2022','2021','2020','2019','2018','2017','2016']
+seasons = ['2022','2021','2020','2019','2018']
 #seasons = ['2019']
 seasons.reverse()
 
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
 playersPerTeam = 9
-path = "csv1/test123.csv"
+path = "csv/test123.csv"
 def main(labels,seasons,**kwargs):
     writeCSVHeader(labels, path)
 
