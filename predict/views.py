@@ -222,6 +222,8 @@ def editGame(request,pk,**kwargs):
     context['visitor_score']=g.values('visitor_score')[0]['visitor_score']
     context['home_spread']=g.values('home_spread')[0]['home_spread']
     context['visitor_spread']=g.values('visitor_spread')[0]['visitor_spread']
+    context['dk_home_spread']=g.values('dk_home_spread')[0]['dk_home_spread']
+    context['dk_visitor_spread']=g.values('dk_visitor_spread')[0]['dk_visitor_spread']
     context['prediction']=g.values('prediction')[0]['prediction']
     context['finished']=g.values('finished')[0]['finished']
     context['winner'] = g.values('winner')[0]['winner']
@@ -412,7 +414,7 @@ def quickcreate(request,home,visitor,date):
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
         p12 = playerids[12], p13 = playerids[13], p14 = playerids[14], p15 = playerids[15], p16 = playerids[16], p17 = playerids[17]
         
-        ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1])
+        ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3])
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
@@ -456,7 +458,8 @@ def getSpread(h,v):
 
     vistorSpread = 0
     homeSpread = 0
-
+    dk_vistorSpread = 0
+    dk_homeSpread = 0
     for provider in spreadr:
         for game in provider['bookmakers']:
             if game['title'] == 'FanDuel':
@@ -467,9 +470,22 @@ def getSpread(h,v):
                 if game['markets'][1]['outcomes'][0]['name'] == h and game['markets'][1]['outcomes'][1]['name'] == v:
                     homeSpread = game['markets'][1]['outcomes'][0]['point']
                     vistorSpread = game['markets'][1]['outcomes'][1]['point']
-                    print('found eror wiht spread here 123123123--------------------------')
+                    break
+
+    for provider in spreadr:
+        for game in provider['bookmakers']:
+            if game['title'] == 'DraftKings':
+                if game['markets'][1]['outcomes'][0]['name'] == v and game['markets'][1]['outcomes'][1]['name'] == h:
+                    dk_vistorSpread = game['markets'][1]['outcomes'][0]['point']
+                    dk_homeSpread = game['markets'][1]['outcomes'][1]['point']
+                    break
+                if game['markets'][1]['outcomes'][0]['name'] == h and game['markets'][1]['outcomes'][1]['name'] == v:
+                    dk_homeSpread = game['markets'][1]['outcomes'][0]['point']
+                    dk_vistorSpread = game['markets'][1]['outcomes'][1]['point']
+                    break
+
     print(h,homeSpread,' - ',v,vistorSpread)
-    return [homeSpread,vistorSpread]
+    return [homeSpread,vistorSpread,dk_homeSpread,dk_vistorSpread]
 
 
 class GameCreateView(LoginRequiredMixin, CreateView):

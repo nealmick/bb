@@ -55,6 +55,9 @@ class Game(models.Model):
     finished = models.BooleanField(default=False)
     home_spread = models.CharField(null=True, blank=True, max_length=10)
     visitor_spread = models.CharField(null=True, blank=True, max_length=10)
+    dk_home_spread = models.CharField(null=True, blank=True, max_length=10)
+    dk_visitor_spread = models.CharField(null=True, blank=True, max_length=10)
+
     winner = models.IntegerField(null=True, blank=True, default=0)
     csvid = models.CharField(null=True, blank=True, max_length=10)
     home_score_prediction = models.CharField(null=True, blank=True, max_length=10)

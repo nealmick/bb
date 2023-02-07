@@ -33,7 +33,8 @@
 
                         <p style="margin:0px">Predicted Score: {{ pvscore }} </p>
                         <p style="margin:0px">Actual Score: {{ visitor_score }} </p>
-                        <p style="margin:0px">Visitor Spread: {{ visitor_spread }} </p>
+                        <p style="margin:0px"> {{ visitor_spread }} </p>
+                        <p style="margin:0px"> {{ dk_visitor_spread }} </p>
 
                     </center>
                     </div>
@@ -46,13 +47,17 @@
                         </center>
                     	<center>
                         {% if pmscore == 0 %}
-						          <input style="margin-top:5px" onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
+						          <input style="margin-top:5px;margin-bottom:7px" onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
+                      <br>
 						          {% else%}
                         <p style="margin:0px">{{ pmscore|floatformat:2 }}</p>
                         <p style="margin:0px">{{ pmactual }}</p>
 
 					          	{%endif%}
-                      <p style="margin:0px">FanDuel </p>
+                      <a style="margin:0px;color:#010100 !important" target="_blank"href="https://sportsbook.fanduel.com/navigation/nba">FanDuel </a>
+                      <br>
+                      <a style="margin:0px;color:#010100 !important" target="_blank"href="https://sportsbook.draftkings.com/leagues/basketball/nba">DraftKings </a>
+
                       
 
 					    
@@ -169,7 +174,8 @@
 
                           <p style="margin:0px">Predicted Score: {{ phscore }} </p>
                           <p style="margin:0px">Actual Score: {{ home_score }} </p>
-                          <p style="margin:0px">Home Spread: {{ home_spread }} </p>
+                          <p style="margin:0px"> {{ home_spread }} </p>
+                          <p style="margin:0px"> {{ dk_home_spread }} </p>
 
                         </center>
                     </div>
