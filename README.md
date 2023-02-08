@@ -87,9 +87,15 @@ http://localhost:6007/
 
 # Under Development*
 
-Dataset for team games played(GP), won(W), and loss(L) https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
 
-API used for stats: https://www.balldontlie.io/ rate limit: 1 request per second
+
+API used for future games played(GP), won(W), and loss(L):
+https://github.com/swar/nba_api
+
+Dataset used for past games played(GP), won(W), and loss(L):
+https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
+
+API used for most data: https://www.balldontlie.io/ rate limit: 1 request per second
 
 API used for spread: https://the-odds-api.com/ rate limit: 500 request per month
 
