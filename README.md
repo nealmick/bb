@@ -103,6 +103,8 @@ this is gona be a problem if alot of people start using this project.
 that api is hit once per game.  we on free trier.  
 paid tier is 20$/month     20,000request/month
 
+oh but ill generate like 5 api keys and randomly choose one to use that will work!
+did that same thing with proxies when they ip banned me for making too many requests on the other api. haha
 
 
 
