@@ -90,6 +90,7 @@ http://localhost:6007/
 API used for stats: https://www.balldontlie.io/ rate limit: 1 request per second
 
 API used for spread: https://the-odds-api.com/ rate limit: 500 request per month
+
 this is gona be a problem if alot of people start using this project.
 that api is hit once per game.  we on free trier.  
 paid tier is 20$/month     20,000request/month
