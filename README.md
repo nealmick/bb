@@ -87,7 +87,7 @@ http://localhost:6007/
 
 # Under Development*
 
-Dataset for team games played(GP), won(W), and lost(L) https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
+Dataset for team games played(GP), won(W), and loss(L) https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
 
 API used for stats: https://www.balldontlie.io/ rate limit: 1 request per second
 
