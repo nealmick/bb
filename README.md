@@ -90,7 +90,7 @@ http://localhost:6007/
 
 
 API used for future games played(GP), won(W), and loss(L):
-https://github.com/swar/nba_api
+https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
 Dataset used for past games played(GP), won(W), and loss(L):
 https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
