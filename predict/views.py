@@ -1,30 +1,37 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
+from datetime import datetime
+from pytz import timezone
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.template import loader
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Game
-####vc vode testing123
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http.response import HttpResponsePermanentRedirect
-
-
 from django.views.generic import ListView
 from django.views.generic import CreateView
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http.response import HttpResponsePermanentRedirect
+
+from .models import Game
 from users.models import Profile
+
+
+
 from tensorflow.keras import *
-from datetime import datetime
-from pytz import timezone
-from django.template import loader
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+
+
 import requests, json, time, operator, pickle, random
 import functools
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
-from sklearn.model_selection import train_test_split
-import random
+
+
+
+
 #asdfasdf
 playersPerTeam = 9
 TEAMCOLORS = {
@@ -233,6 +240,13 @@ def editGame(request,pk,**kwargs):
 
     context['pvscore'] = g.values('visitor_score_prediction')[0]['visitor_score_prediction']
     context['phscore'] = g.values('home_score_prediction')[0]['home_score_prediction']
+
+    context['hw'] = g.values('home_games_won')[0]['home_games_won']
+    context['hl'] = g.values('home_games_loss')[0]['home_games_loss']
+
+    context['vw'] = g.values('visitor_games_won')[0]['visitor_games_won']
+    context['vl'] = g.values('visitor_games_loss')[0]['visitor_games_loss']
+
     context['game'] = g
     context['g'] = g
     #print(players)
@@ -405,21 +419,98 @@ def quickcreate(request,home,visitor,date):
 
 
     spread = getSpread(home,visitor)
+
+    stats = getTeamData(home,visitor)
+    homeTeamStats = stats[0]
+    visitorTeamStats = stats[1]
+
     print('spread: ', spread)
 
-    found, gameid, playerids = futureGame(date,home,visitor,path,season,labels)
+    found, gameid, playerids = futureGame(homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels)
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
         p12 = playerids[12], p13 = playerids[13], p14 = playerids[14], p15 = playerids[15], p16 = playerids[16], p17 = playerids[17]
         
-        ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3])
+        ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
+        home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
+        visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2])
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
+
+def getTeamData(home,visitor):
+    
+    convert = {
+        'ATL' :'ATL',
+        'BKN':	'BKN',
+        'BOS':	'BOS',
+        'CHA':	'CHA',
+        'CHI':	'CHI',
+        'CLE':	'CLE',
+        'DAL':	'DAL',
+        'DEN':	'DEN',
+        'DET':	'DET',
+        'GSW':	'GS',
+        'HOU':	'HOU',
+        'IND':	'IND',
+        'LAC':	'LAC',
+        'LAL':	'LAL',
+        'MEM':	'MEM',
+        'MIA':	'MIA',
+        'MIL':	'MIL',
+        'MIN':	'MIN',
+        'NOP':	'NO',
+        'NYK':	'NY',
+        'OKC':	'OKC',
+        'ORL':	'ORL',
+        'PHI':	'PHI',
+        'PHX':	'PHO',
+        'POR':	'POR',
+        'SAC':	'SAC',
+        'SAS':	'SA',
+        'TOR':	'TOR',
+        'UTA':	'UTA',
+        'WAS':	'WAS',
+        }
+    h=convert[home]
+    v=convert[visitor]
+
+    url = "https://tank01-fantasy-stats.p.rapidapi.com/getNBATeams"
+
+    querystring = {"schedules":"true","rosters":"true"}
+
+    headers = {
+        "X-RapidAPI-Key": "c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342",
+        "X-RapidAPI-Host": "tank01-fantasy-stats.p.rapidapi.com"
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring).json()
+    r = response['body']
+    teamStats = {}
+    for team in range(len(r)):
+        print(r[team]['teamAbv'])
+        W = r[team]['wins']
+        L = r[team]['loss']
+        GP = int(W)+int(L) 
+        teamStats.update({r[team]['teamAbv']:[GP,W,L]})
+
+    print(teamStats)
+    #save_obj(teamStats,"teamStats")
+        
+
+    return [teamStats[h],teamStats[v]]
+
+
 def getSpread(h,v):
-    key = ''
+    keys = ['f003fe2f0e443e7bfece9c357b90c20d',
+            'ea5ba76fd8807efa3b484121888f0f70',
+            'ccd995270783b8fd83bef5a433877e9f',
+            '790780270afebabec377041febe25c8a',
+            '463ef39f21a0ecba3cf87bcbd280fb2f'
+    ]
+    key = random.choice(keys)
     spreadURL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds?markets=h2h,spreads,totals&regions=us&apiKey='+key
     CHOICES = {
     'ATL' :'Atlanta Hawks',
@@ -556,7 +647,7 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         #print(self.csvid,'---------------------------')
         return context
 
-def futureGame(date,homeAbv,visitorAbv,path, season,labels):
+def futureGame(homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels):
     print(season)
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     url+=date
@@ -636,7 +727,7 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
             print('visitor team:',len(bestV),bestVisitorIds) 
             print('home team:',len(bestH),bestHomeIds) 
             writeCSVHeader(labels, path)
-            writeCSV(gameid,homeTeamID,visitorTeamID,bestH,bestV,path)
+            writeCSV(homeTeamStats,visitorTeamStats,gameid,homeTeamID,visitorTeamID,bestH,bestV,path)
 
             #print('playerid by team-------------',playerIdByTeamID)
 
@@ -646,8 +737,13 @@ def futureGame(date,homeAbv,visitorAbv,path, season,labels):
     return found, gameid,playerids
 #------------------------------------------------------------------------#
 
-def writeCSV(game,homeId,visitorId,bestH,bestV,path):
-    line = str(game)+','+str(homeId)+','+str(visitorId)
+def writeCSV(homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,path):
+    line = str(game)+','+str(homeId)
+    for stat in homeTeamStats:
+        line+=','+str(stat)
+    line += ','+str(visitorId)
+    for stat in visitorTeamStats:
+        line+=','+str(stat)
     for player in range(len(bestH)):
         for stat in range(len(bestH[player])):
             line += ','+str(bestH[player][stat])
@@ -656,13 +752,14 @@ def writeCSV(game,homeId,visitorId,bestH,bestV,path):
             line += ','+str(bestV[player][stat])
 
 
+
     
     csv = open(path,'a')
     csv.write(line+'\n')
     print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'gameid,home_id,visitor_id'
+    header = 'gameid,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
@@ -789,18 +886,16 @@ def predict(path):
 
     model = tf.keras.Sequential([
 
-        tf.keras.layers.Dense(256, activation='relu'),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(64, activation='relu'),
-        
-        tf.keras.layers.Dense(2, activation='linear'),
-
+    tf.keras.layers.Dense(512, activation='LeakyReLU'),
+    tf.keras.layers.Dense(256, activation='LeakyReLU'),
+    
+    tf.keras.layers.Dense(2, activation='linear'),
 
 
     ])
     model.load_weights('./checkpoints/my_checkpoint')
 
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
 
     p = model.predict(data)
     return(p[0])
