@@ -89,19 +89,19 @@ http://localhost:6007/
 
 
 
-API used for future games won(W), and loss(L), rate limit 100 / day (1 key): 
+API used for future games won(W), and loss(L). rate limit 100 / day (1 key):
 
 https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
-Dataset used for past games won(W), and loss(L):
+Dataset used for past games won(W), and loss(L).
 
 https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
 
-API used for scores, games, and playerstats, rate limit: 1 / second:
+API used for scores, games, and playerstats. rate limit 1 / second
 
 https://www.balldontlie.io/
 
-API used for spread future, rate limit: 500 / month (I have 5 keys :)
+API used for spread future. rate limit 500 / month (I have 5 keys :)
 
 https://the-odds-api.com/
 
