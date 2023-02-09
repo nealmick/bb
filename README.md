@@ -98,7 +98,11 @@ https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
 API used for most data: https://www.balldontlie.io/ rate limit: 1 request per second
 
 API used for spread: https://the-odds-api.com/ rate limit: 500 request per month
-
+Okay we just hit this rate limit ^
+that was 500 games in like a few days guess more people using then i thougt....
+for now i quickly generated a new api key for the live server i will try to bypass ratelimit tonight.
+if you want a local version to work go to the odds api site and get an api key, then paste here:
+https://github.com/nealmick/bb/blob/074abbf42525a8c7c074a8b977cf56bd83f40a61/predict/views.py#L422
 
 
 
