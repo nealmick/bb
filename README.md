@@ -89,9 +89,7 @@ http://localhost:6007/
 
 
 
-API used for future games won(W), and loss(L). rate limit 100 / day (1 key):
-
-today we are at 32 requests so we gona hit limit already gona have to fix this very soon.
+API used for future games won(W), and loss(L). rate limit 100 / day (3 keys):
 
 https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
@@ -103,7 +101,7 @@ API used for scores, games, and playerstats. rate limit 1 / second
 
 https://www.balldontlie.io/
 
-API used for spread future. rate limit 500 / month (I have 5 keys :)
+API used for spread future. rate limit 500 / month (5 keys)
 
 https://the-odds-api.com/
 
