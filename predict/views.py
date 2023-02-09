@@ -481,8 +481,15 @@ def getTeamData(home,visitor):
 
     querystring = {"schedules":"true","rosters":"true"}
 
+
+    keys = ['d5015b2f83mshf83f5a65af02d87p15bce4jsn65761633c9f4',
+            'c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342',
+            '34ce533e29msh77a2e454f160d9ap1ceebbjsnc0a35cdc76f1'
+            ]
+    key = random.choice(keys)
+    
     headers = {
-        "X-RapidAPI-Key": "c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342",
+        "X-RapidAPI-Key": key,
         "X-RapidAPI-Host": "tank01-fantasy-stats.p.rapidapi.com"
     }
 
