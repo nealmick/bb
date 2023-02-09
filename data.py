@@ -1,27 +1,45 @@
 import requests, json, time, operator, pickle, random
+import pandas as pd
+from datetime import datetime
 #seasons = ['2022','2021','2020','2019']#,'2015']#,'2014']#,'2013','2012','2011']
-seasons = ['2022','2021','2020','2019','2018']
+seasons = ['2020','2019','2018','2017','2016']#,'2015','2014']#,'2013','2012']#,'2008','2007','2006']
+seasonsCSV = ['2020-21','2019-20','2018-19','2017-18','2016-17']#,'2015-16','2014-15']#,'2013-14','2012-13']
 #seasons = ['2019']
+
 seasons.reverse()
+seasonsCSV.reverse()
 
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
 playersPerTeam = 9
-path = "csv/test123.csv"
+path = "csv/train.csv"
 def main(labels,seasons,**kwargs):
     writeCSVHeader(labels, path)
-
-    for season in seasons:
+    
+    numnotfound = 0
+    for s in range(len(seasons)):
+        season=seasons[s]
+        seasonCSV=seasonsCSV[s]
         print('Season:', season)
-
+        teamNamesById = load_obj('teamNamesById')
+        teamAbvById = load_obj('teamAbvById')
+        nba_api_teamids = load_obj("apiTeamIdsByAbv")
         games = load_obj(season+'Games')
         playerIdByTeamID = load_obj(season+'PlayerIdByTeamID')
         seasonAverages = load_obj(season+'SeasonAverages')
-
+        
         for game in games:
 
             g=games[game]
+          
             print(game, g['winner'],g['date'],g['home_id'],g['home_score'],g['visitor_id'],g['visitor_score'])
-
+            try:
+                homeTeamStats = g['homeTeamStats']
+                visitorTeamStats =g['visitorTeamStats']
+            except KeyError:
+                print('# stats not found-------------',numnotfound)
+                numnotfound+=1
+                continue
+            print(homeTeamStats,visitorTeamStats)
             homePlayerIds = playerIdByTeamID[str(g['home_id'])]
             visitorPlayerIds = playerIdByTeamID[str(g['visitor_id'])]
             homeTeam = []
@@ -49,12 +67,17 @@ def main(labels,seasons,**kwargs):
                 bestV.append(visitorTeam[b])
                 visitorTeam.pop(b)
 
-            writeCSV(game,g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],bestH,bestV,path)
+            writeCSV(game,g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path)
 
 
 
-def writeCSV(game, homeScore,visitorScore,homeId,visitorId,bestH,bestV,path):
-    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(homeId)+','+str(visitorId)
+def writeCSV(game, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path):
+    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(homeId)
+    for stat in homeTeamStats:
+        line+=','+str(stat)
+    line += ','+str(visitorId)
+    for stat in visitorTeamStats:
+        line+=','+str(stat)
     for player in range(len(bestH)):
         for stat in range(len(bestH[player])):
             line += ','+str(bestH[player][stat])
@@ -70,10 +93,10 @@ def writeCSV(game, homeScore,visitorScore,homeId,visitorId,bestH,bestV,path):
         return ''
     csv = open(path,'a')
     csv.write(line+'\n')
-    print(line)
+    #print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'home_score,visitor_score,gameid,home_id,visitor_id'
+    header = 'home_score,visitor_score,gameid,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
@@ -135,5 +158,8 @@ def req(url):
 
 
 main(labels,seasons)
-
-
+'''
+seasonsCSV = ['2021-22']
+seasons = ['2022']
+path = "csv/test.csv"
+main(labels,seasons)'''
