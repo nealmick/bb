@@ -239,7 +239,7 @@
 									{% if forloop.counter == 1 %}
 											<td >{{stat}}</td>
 									{%else%}
-											{% if pmscore == '0'%}
+											{% if pmscore == 0%}
 												<td class="e oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
 											{% else %}
 												<td class="oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
