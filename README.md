@@ -67,7 +67,7 @@ python3 data.py
 ## so make a copy or change path if you dont want the web app model weights effected.
 ## variables to mess with would be epochs and batch size....
 ## If you change things like number of layers it wont integrate with web app.
-## Also your training dataset can be opened with excel or somthing else here: csv/test123.csv 
+## Also your training dataset can be opened with excel or somthing else here: csv/train.csv 
 
 python3 train_scores.py
 
@@ -89,18 +89,16 @@ http://localhost:6007/
 
 
 
-API used for future games played(GP), won(W), and loss(L):
+API used for future games played(GP), won(W), and loss(L), rate limit 100 / day (1 key): 
 https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
 Dataset used for past games played(GP), won(W), and loss(L):
 https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
 
-API used for most data: https://www.balldontlie.io/ rate limit: 1 request per second
+API used for most data: https://www.balldontlie.io/ rate limit: 1 / second
 
-API used for spread: https://the-odds-api.com/ rate limit: 500 request per month.
+API used for spread: https://the-odds-api.com/ rate limit: 500 / month. I have 5 keys :)
 
-It would be helpful if anyone could register a few free keys and email them to me that would be wonderful and will increase our capacity.
-I registered 5 keys thats 2500 game requests a month. but they blocking some emails.
 
 
 
