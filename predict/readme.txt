@@ -1,4 +1,5 @@
 # Django app for most website functions.
+
 ```
 views.py - game views for list, edit, and create. also future game and predict functions. also get score, spread, and other data related tasks.
 
