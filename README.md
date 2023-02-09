@@ -91,6 +91,8 @@ http://localhost:6007/
 
 API used for future games won(W), and loss(L). rate limit 100 / day (1 key):
 
+today we are at 32 requests so we gona hit limit already gona have to fix this very soon.
+
 https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
 Dataset used for past games won(W), and loss(L).
