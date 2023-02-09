@@ -419,7 +419,8 @@ def quickcreate(request,home,visitor,date):
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
 def getSpread(h,v):
-    spreadURL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds?markets=h2h,spreads,totals&regions=us&apiKey=88bd4b51d72f5affbbdfe5fb6d9d68fe'
+    key = ''
+    spreadURL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds?markets=h2h,spreads,totals&regions=us&apiKey='+key
     CHOICES = {
     'ATL' :'Atlanta Hawks',
     'BKN':	'Brooklyn Nets',
