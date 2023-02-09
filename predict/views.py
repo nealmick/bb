@@ -105,7 +105,7 @@ def saveEdit(request,pk,change,**kwargs):
 
     for c in changes:
         x = c.split(':')
-        n=17*int(x[0])-17+int(x[1])
+        n=19*int(x[0])-19+int(x[1])
         data[n-2]=x[2]
         print(n)
         print(data[n-2])
