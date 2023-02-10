@@ -98,14 +98,27 @@ def saveEdit(request,pk,change,**kwargs):
     header.pop(0)
     homeid = data.pop(0)
     header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
     visitorid = data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
     header.pop(0)
 
     labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-
+    print(header)
+    print(data)
     for c in changes:
         x = c.split(':')
-        n=19*int(x[0])-19+int(x[1])
+        n=17*int(x[0])-17+int(x[1])
         data[n-2]=x[2]
         print(n)
         print(data[n-2])
@@ -114,17 +127,19 @@ def saveEdit(request,pk,change,**kwargs):
 
     writeCSVHeader(labels, path)
     def w(data, path, g):
-        ss = str(g.values('gameid')[0]['gameid'])+','+homeid+','+visitorid
+        hgp = int(g.values('home_games_won')[0]['home_games_won'])+int(g.values('home_games_loss')[0]['home_games_loss'])
+        vgp = int(g.values('visitor_games_won')[0]['visitor_games_won'])+int(g.values('visitor_games_loss')[0]['visitor_games_loss'])
+        ss = str(g.values('gameid')[0]['gameid'])+','+homeid+','+str(hgp)
+        ss+=','+str(int(g.values('home_games_won')[0]['home_games_won']))+','+str(int(g.values('home_games_loss')[0]['home_games_loss']))
+        ss+=','+visitorid+','+str(vgp)
+        ss+=','+str(int(g.values('visitor_games_won')[0]['visitor_games_won']))+','+str(int(g.values('visitor_games_loss')[0]['visitor_games_loss']))
         for st in data:
             ss+=','+st
         print('$$$$$$$$$',ss)
         printp=(path)
         f = open(path,'a')
         f.write(ss+'\n')
-    w(data, path,g)
-    LABEL_COLUMN = 'winner'
-    LABELS = [0, 1]
-    l = labels
+    w(data, path,g)  
     p = predict(path)
     print(p)
 
