@@ -182,6 +182,14 @@ def editGame(request,pk,**kwargs):
     header.pop(0)
     data.pop(0)
     header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
+    data.pop(0)
+    header.pop(0)
     players = {}
     oofnog = []
     for i in range(0,18):
