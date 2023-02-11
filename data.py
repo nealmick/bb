@@ -2,8 +2,8 @@ import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
 #seasons = ['2022','2021','2020','2019']#,'2015']#,'2014']#,'2013','2012','2011']
-seasons = ['2020','2019','2018','2017','2016','2015','2014','2015','2014']#,'2012']
-seasonsCSV = ['2019-20','2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
+seasons = ['2019','2018','2017','2016','2015','2014','2015','2014']#,'2012']
+seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
 #seasons = ['2019']
 
 seasons.reverse()
@@ -176,9 +176,9 @@ def req(url):
 
 
 
-#main(labels,seasons)
+main(labels,seasons)
 
-seasonsCSV = ['2021-22']
-seasons = ['2021']
+seasonsCSV = ['2020-21']
+seasons = ['2020']
 path = "csv/test.csv"
 main(labels,seasons)
