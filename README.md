@@ -67,9 +67,9 @@ python3 data.py
 ## so make a copy or change path if you dont want the web app model weights effected.
 ## variables to mess with would be epochs and batch size....
 ## If you change things like number of layers it wont integrate with web app.
-## Also your training dataset can be opened with excel or somthing else here: csv/train.csv 
+## Also your training dataset can be found here: csv/train.csv 
 
-python3 train_scores.py
+python3 train.py
 
 ## now review your model training logs with TensorBoard:
 ## start tensorboard server:
