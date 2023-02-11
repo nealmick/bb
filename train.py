@@ -42,7 +42,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 #model.load_weights('./checkpoints/my_checkpoint')
 #creating and training model then saving
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=50, validation_split=0.2, batch_size=32 ,callbacks=[tensorboard_callback],shuffle=True)
+model.fit(x_train, y_train, epochs=25, validation_split=0.2, batch_size=32 ,callbacks=[tensorboard_callback],shuffle=True)
 model.save_weights('./checkpoints/my_checkpoint')
 
 
@@ -87,36 +87,50 @@ def print_prediction(model,data):
             correct = True
         spreadError = abs(spread[i]-pmscore)
         predictionError = abs(pmp-pmscore)
-        '''
-        if not correct and spreadError > predictionError:
-            correct=True
-        '''
+       #print(spreadError,predictionError)
 
-        if correct:
-            c+=1
+
+        pred = '' #prediction with spread 0 or 1
+        if spread[i]>pmp and pmp <0:
+            pred = 0
+        elif spread[i]>pmp and pmp >0:
+            pred = 0
+        elif spread[i]<pmp and pmp <0:
+            pred = 1
+        elif spread[i]<pmp and pmp >0:
+            pred = 1
+        swin = ''#winner with spread 0 or 1 
+        if spread[i]>pmscore and pmscore <0:
+            swin = 0
+        elif spread[i]>pmscore and pmscore >0:
+            swin = 0
+        elif spread[i]<pmscore and pmscore <0:
+            swin = 1
+        elif spread[i]<pmscore and pmscore >0:
+            swin = 1
+
+        if pred == 0 and swin == 0:
+            ev +=1
+            print('correct agaist spread',pred,swin)
+        elif pred == 1 and swin == 1:
+            ev +=1
+            print('correct agaist spread',pred,swin)
+        else:
+            print('wrong agaist spread',pred,swin)
+
+        #prediction - spread > 0 and winner 1
+        #prediction - spread < 0 and winner 0
+
+
+
 
         print('spread:',spreadCorrect,spread[i], 'prediction: ',correct,round(p[i][0]),round(p[i][1]),'=',round(p[i][0]-p[i][1]),' actual:' ,homeTestScore[i],visitorTestScore[i],'=',pmscore)
 
-
-        '''
-        spreadError = abs(spread[i]-pmscore)
-        predictionError = abs(pmp-pmscore)
-
-        print('spread error:', spreadError,'prediction error:', predictionError)
-
-        if spreadError < predictionError:
-            print(' game lost aginst spread.   currently at', round(ev/n*100),'%')
-
-        else:
-            ev+=1
-            print('game won against spread. currently at', round(ev/n*100),'%')
-
-        '''
-
         print('#-------------------------------------------#')
-
+        if correct:
+            c+=1
     print('percent correct winners: ', c/n*100,'%')
     print('spread percent correct winners: ', s/n*100,'%')
-    #print('expected value: ', ev/n*100,'%')
+    print('expected value: ', ev/n*100,'%')
 print_prediction(model, data)
 
