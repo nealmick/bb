@@ -33,7 +33,7 @@ import pandas as pd
 
 
 #asdfasdf
-playersPerTeam = 9
+playersPerTeam = 7
 TEAMCOLORS = {
     'ATL':'#E03A3E',
     'BKN':'#000000',
@@ -128,8 +128,9 @@ def saveEdit(request,pk,change,**kwargs):
     writeCSVHeader(labels, path)
     def w(data, path, g):
         hgp = int(g.values('home_games_won')[0]['home_games_won'])+int(g.values('home_games_loss')[0]['home_games_loss'])
+        spread = str(g.values('home_spread')[0]['home_spread'])
         vgp = int(g.values('visitor_games_won')[0]['visitor_games_won'])+int(g.values('visitor_games_loss')[0]['visitor_games_loss'])
-        ss = str(g.values('gameid')[0]['gameid'])+','+homeid+','+str(hgp)
+        ss = str(g.values('gameid')[0]['gameid'])+','+spread+','+homeid+','+str(hgp)
         ss+=','+str(int(g.values('home_games_won')[0]['home_games_won']))+','+str(int(g.values('home_games_loss')[0]['home_games_loss']))
         ss+=','+visitorid+','+str(vgp)
         ss+=','+str(int(g.values('visitor_games_won')[0]['visitor_games_won']))+','+str(int(g.values('visitor_games_loss')[0]['visitor_games_loss']))
@@ -205,9 +206,11 @@ def editGame(request,pk,**kwargs):
     header.pop(0)
     data.pop(0)
     header.pop(0)
+    data.pop(0)
+    header.pop(0)
     players = {}
     oofnog = []
-    for i in range(0,18):
+    for i in range(0,14):
         #print(g.values('p'+str(i))[0]['p'+str(i)])
         oofnog.append(g.values('p'+str(i))[0]['p'+str(i)])
     url = 'https://www.balldontlie.io/api/v1/players/'
@@ -236,7 +239,7 @@ def editGame(request,pk,**kwargs):
             save_obj(obj,'2019PlayerNamesByID')
 
     c = 0
-    for oof in range(1,19):
+    for oof in range(1,15):
         n=17*oof-17
         temp = [str(oof)]
         for f in range(n,n+17):
@@ -452,13 +455,13 @@ def quickcreate(request,home,visitor,date):
     visitorTeamStats = stats[1]
 
     print('spread: ', spread)
-
-    found, gameid, playerids = futureGame(homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels)
+    
+    found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels)
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
-        p12 = playerids[12], p13 = playerids[13], p14 = playerids[14], p15 = playerids[15], p16 = playerids[16], p17 = playerids[17]
+        p12 = playerids[12], p13 = playerids[13]
         
         ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
@@ -659,10 +662,7 @@ class GameCreateView(LoginRequiredMixin, CreateView):
             form.instance.p11 = playerids[11]
             form.instance.p12 = playerids[12]
             form.instance.p13 = playerids[13]
-            form.instance.p14 = playerids[14]
-            form.instance.p15 = playerids[15]
-            form.instance.p16 = playerids[16]
-            form.instance.p17 = playerids[17]
+
             LABEL_COLUMN = 'winner'
             LABELS = [0, 1]
             l = labels
@@ -681,7 +681,7 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         #print(self.csvid,'---------------------------')
         return context
 
-def futureGame(homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels):
+def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels):
     print(season)
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     url+=date
@@ -761,7 +761,7 @@ def futureGame(homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, seas
             print('visitor team:',len(bestV),bestVisitorIds) 
             print('home team:',len(bestH),bestHomeIds) 
             writeCSVHeader(labels, path)
-            writeCSV(homeTeamStats,visitorTeamStats,gameid,homeTeamID,visitorTeamID,bestH,bestV,path)
+            writeCSV(spread,homeTeamStats,visitorTeamStats,gameid,homeTeamID,visitorTeamID,bestH,bestV,path)
 
             #print('playerid by team-------------',playerIdByTeamID)
 
@@ -771,8 +771,8 @@ def futureGame(homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, seas
     return found, gameid,playerids
 #------------------------------------------------------------------------#
 
-def writeCSV(homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,path):
-    line = str(game)+','+str(homeId)
+def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,path):
+    line = str(game)+','+str(spread)+','+str(homeId)
     for stat in homeTeamStats:
         line+=','+str(stat)
     line += ','+str(visitorId)
@@ -793,7 +793,7 @@ def writeCSV(homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,pa
     print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'gameid,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
+    header = 'gameid,spread,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
@@ -920,8 +920,9 @@ def predict(path):
 
     model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(512, activation='LeakyReLU'),
-    tf.keras.layers.Dense(256, activation='LeakyReLU'),
+
+    tf.keras.layers.Dense(64, activation='LeakyReLU'),
+    tf.keras.layers.Dense(32, activation='LeakyReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
 
@@ -929,7 +930,7 @@ def predict(path):
     ])
     model.load_weights('./checkpoints/my_checkpoint')
 
-    model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     p = model.predict(data)
     return(p[0])
