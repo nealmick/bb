@@ -648,7 +648,13 @@ class GameCreateView(LoginRequiredMixin, CreateView):
 
         print(homeAbv,visitorAbv)
 
-        found, gameid, playerids = futureGame(date, homeAbv,visitorAbv,path,season,labels)
+        spread = getSpread(homeAbv,visitorAbv)
+
+        stats = getTeamData(homeAbv,visitorAbv)
+        homeTeamStats = stats[0]
+        visitorTeamStats = stats[1]
+
+        found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date, homeAbv,visitorAbv,path,season,labels)
         print('after',playerids)
         if found:
 
@@ -666,6 +672,16 @@ class GameCreateView(LoginRequiredMixin, CreateView):
             form.instance.p11 = playerids[11]
             form.instance.p12 = playerids[12]
             form.instance.p13 = playerids[13]
+            form.instance.home_spread=spread[0]
+            form.instance.visitor_spread=spread[1]
+            form.instance.dk_home_spread=spread[2]
+            form.instance.dk_visitor_spread=spread[3]
+            form.instance.home_games_won=homeTeamStats[1]
+            form.instance.home_games_loss=homeTeamStats[2]
+            form.instance.visitor_games_won=visitorTeamStats[1]
+            form.instance.visitor_games_loss=visitorTeamStats[2]
+
+
 
             LABEL_COLUMN = 'winner'
             LABELS = [0, 1]
