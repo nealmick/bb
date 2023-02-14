@@ -180,5 +180,7 @@ main(labels,seasons)
 
 seasonsCSV = ['2020-21']
 seasons = ['2020']
+
 path = "csv/test.csv"
+
 main(labels,seasons)
