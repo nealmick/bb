@@ -28,7 +28,7 @@ import requests, json, time, operator, pickle, random
 import functools
 import numpy as np
 import pandas as pd
-
+import csv
 
 
 
@@ -66,6 +66,39 @@ TEAMCOLORS = {
     'UTA':'#FAA403',
     'WAS':'#CF142C',
 }
+
+
+
+
+
+
+def exportGames(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="export.csv"'
+    header = ['gameid','gamedate','home','visitor','home_score','visitor_score','home_score_prediction','visitor_score_prediction','home_spread','visitor_spread','home_games_won','home_games_loss','visitor_games_won','visitor_games_loss','pmscore']    
+    
+    writer = csv.writer(response)
+
+    writer.writerow(header)
+    user = request.user
+    qs = Game.objects.filter(author=user)
+    lines = []
+    for game in qs:
+        g = [game.gameid,game.gamedate,game.home,game.visitor,game.home_score,game.visitor_score,
+        game.home_score_prediction,game.visitor_score_prediction,game.home_spread,game.visitor_spread,
+        game.home_games_won,game.home_games_loss,game.visitor_games_won,game.visitor_games_loss,game.pmscore]
+        line = []
+        for s in g:
+            line.append(str(s))
+        lines.append(line)
+
+    for line in lines:
+        writer.writerow(line)
+
+    return response
+
+
 
 def saveEdit(request,pk,change,**kwargs):
 
