@@ -924,9 +924,8 @@ def predict(path):
 
     model = tf.keras.Sequential([
 
-
-    tf.keras.layers.Dense(128, activation='ReLU'),
-    tf.keras.layers.Dense(64, activation='ReLU'),
+    tf.keras.layers.Dense(128, activation='LeakyReLU'),
+    tf.keras.layers.Dense(64, activation='LeakyReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
 
@@ -934,7 +933,7 @@ def predict(path):
     ])
     model.load_weights('./checkpoints/my_checkpoint')
 
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adamx', loss='mean_squared_error', metrics=['accuracy'])
 
     p = model.predict(data)
     return(p[0])
