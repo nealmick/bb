@@ -933,7 +933,7 @@ def predict(path):
     ])
     model.load_weights('./checkpoints/my_checkpoint')
 
-    model.compile(optimizer='adamx', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
 
     p = model.predict(data)
     return(p[0])
