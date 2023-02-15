@@ -33,10 +33,9 @@
 
                         <p style="margin:0px">Predicted Score: {{ pvscore }} </p>
                         <p style="margin:0px">Actual Score: {{ visitor_score }} </p>
-                        <p style="margin:0px">{{ vw }}/{{ vl }} </p>
+                        <p style="margin:0px">{{ vw }} {{ vl }} {{ visitor_streak }} </p>
 
-                        <p style="margin:0px"> {{ visitor_spread }} </p>
-                        <p style="margin:0px"> {{ dk_visitor_spread }} </p>
+                        <p style="margin:0px"> {{ visitor_spread }} {{ dk_visitor_spread }}</p>
 
                     </center>
                     </div>
@@ -56,11 +55,11 @@
                         <p style="margin:0px;margin-left: 7px !important;">{{ pmactual }}</p>
 
 					          	{%endif%}
-                      <p style="margin:0px;margin-left: 7px !important;">Win/Loss</p>
-                      <a style="margin:0px;color:#010100 !important;margin-left: 7px !important;" target="_blank"href="https://sportsbook.fanduel.com/navigation/nba">FanDuel </a>
+                      <p style="margin:0px;margin-left: 7px !important;">Win / Loss / Streak</p>
+                      <a style="margin:0px;color:#010100 !important;margin-left: 7px !important;" target="_blank"href="https://sportsbook.fanduel.com/navigation/nba">FanDuel  / <a style="margin:0px;color:#010100 !important;" target="_blank"href="https://sportsbook.draftkings.com/leagues/basketball/nba">DraftKings </a>
+                    </a>
                       <br>
-                      <a style="margin:0px;color:#010100 !important;margin-left: 7px !important;" target="_blank"href="https://sportsbook.draftkings.com/leagues/basketball/nba">DraftKings </a>
-
+                      
                       
 
 					    
@@ -177,9 +176,8 @@
 
                           <p style="margin:0px">Predicted Score: {{ phscore }} </p>
                           <p style="margin:0px">Actual Score: {{ home_score }} </p>
-                          <p style="margin:0px">{{ hw }}/{{ hl }} </p>
-                          <p style="margin:0px"> {{ home_spread }} </p>
-                          <p style="margin:0px"> {{ dk_home_spread }} </p>
+                          <p style="margin:0px">{{ hw }} {{ hl }} {{ home_streak }}</p>
+                          <p style="margin:0px"> {{ home_spread }} {{ dk_home_spread }}</p>
 
                         </center>
                     </div>
