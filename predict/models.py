@@ -67,6 +67,10 @@ class Game(models.Model):
     home_games_loss = models.CharField(null=True, blank=True, max_length=10)
     visitor_games_won = models.CharField(null=True, blank=True, max_length=10)
     visitor_games_loss = models.CharField(null=True, blank=True, max_length=10)
+
+    visitor_streak = models.CharField(null=True, blank=True, max_length=10)
+    home_streak = models.CharField(null=True, blank=True, max_length=10)
+    
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)
