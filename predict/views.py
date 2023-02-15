@@ -314,6 +314,8 @@ def editGame(request,pk,**kwargs):
     context['vw'] = g.values('visitor_games_won')[0]['visitor_games_won']
     context['vl'] = g.values('visitor_games_loss')[0]['visitor_games_loss']
 
+    context['home_streak'] = g.values('home_streak')[0]['home_streak']
+    context['visitor_streak'] = g.values('visitor_streak')[0]['visitor_streak']
     context['game'] = g
     context['g'] = g
     #print(players)
@@ -490,6 +492,8 @@ def quickcreate(request,home,visitor,date):
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
     visitorTeamStats = stats[1]
+    home_streak = homeTeamStats.pop(-1)
+    visitor_streak = visitorTeamStats.pop(-1)
 
     print('spread: ', spread)
     
@@ -502,7 +506,7 @@ def quickcreate(request,home,visitor,date):
         
         ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
-        visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2])
+        visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak)
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
@@ -565,10 +569,14 @@ def getTeamData(home,visitor):
     teamStats = {}
     for team in range(len(r)):
         print(r[team]['teamAbv'])
+        steak = r[team]['currentStreak']['result']
+        steakLength = r[team]['currentStreak']['length']
+        if steak == 'L':
+            steakLength = int(steakLength) * -1
         W = r[team]['wins']
         L = r[team]['loss']
         GP = int(W)+int(L) 
-        teamStats.update({r[team]['teamAbv']:[GP,W,L]})
+        teamStats.update({r[team]['teamAbv']:[GP,W,L,steakLength]})
 
     print(teamStats)
     #save_obj(teamStats,"teamStats")
