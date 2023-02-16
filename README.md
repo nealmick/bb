@@ -81,8 +81,10 @@ http://localhost:6007/
 
 
 ## Evaluate Model:
-## Note: run this before trainning to see results on current model in checkpoints folder.
+## Note: run this before training to see results on current model in checkpoints folder.
+
 python3 eval.py
+
 
 ```
 
