@@ -71,11 +71,17 @@ python3 data.py
 
 python3 train.py
 
+
+
 ## now review your model training logs with TensorBoard:
 ## start tensorboard server:
 tensorboard --logdir logs/fit
 ## TensorBoard URL
 http://localhost:6007/
+
+
+##Evalute Model:
+python3 eval.py
 
 ```
 
