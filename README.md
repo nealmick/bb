@@ -80,7 +80,7 @@ tensorboard --logdir logs/fit
 http://localhost:6007/
 
 
-##Evalute Model:
+##Evaluate Model:
 python3 eval.py
 
 ```
