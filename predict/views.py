@@ -694,7 +694,9 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         stats = getTeamData(homeAbv,visitorAbv)
         homeTeamStats = stats[0]
         visitorTeamStats = stats[1]
-
+        home_streak = homeTeamStats.pop(-1)
+        visitor_streak = visitorTeamStats.pop(-1)
+        
         found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date, homeAbv,visitorAbv,path,season,labels)
         print('after',playerids)
         if found:
