@@ -99,7 +99,7 @@
 
         <div class="col-lg-6 " style="margin-bottom: 10px;padding-left:0px">
 
-          <div class="content-section "style="height:100%; min-height: 753px;max-height: 790px;overflow-y:scroll;overflow-x:hidden">
+          <div id="gamescroll"class="content-section "style="height:100%; min-height: 753px;max-height: 790px;overflow-y:scroll;overflow-x:hidden">
           {% if request.user.is_authenticated %}
           {% for game in games %}
 
@@ -139,7 +139,7 @@
 
                         
                         {% if not game.finished%}
-                          <form action="{% url 'get-score' game.pk  %}" method="get">
+                          <form id="get_score" action="{% url 'get-score' game.pk %}" method="get">
                             <div>
                               <p style="margin-bottom: 0px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey-secondary" value="Get Score" name="mybtn"> </p>
 
@@ -338,7 +338,26 @@
 
 
 
+<script>
+    var mainScrollArea = document.getElementById('gamescroll');
+    var scrollTimeout;
 
+    window.onload = function () {
+      if(window.location.href == localStorage.getItem('lastUrl')) {
+        mainScrollArea.scrollTop = localStorage.getItem('scrollTop');
+      } else {
+        localStorage.setItem('lastUrl', window.location.href);
+        localStorage.setItem('scrollTop', 0);
+      }
+    }
+
+    mainScrollArea.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function() {
+        localStorage.setItem('scrollTop', mainScrollArea.scrollTop);
+      }, 100)
+    });
+</script>
 
 
 {{ numpred|json_script:"np" }}
