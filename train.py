@@ -41,7 +41,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 
 #model.load_weights('./checkpoints/my_checkpoint')
 #creating and training model then saving
-model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 model.fit(x_train, y_train, epochs=25, validation_split=0.2, batch_size=32 ,callbacks=[tensorboard_callback],shuffle=True)
 model.save_weights('./checkpoints/my_checkpoint')
 
@@ -66,6 +66,17 @@ def print_prediction(model,data):
     n = 0#count all
     s = 0#count spread correct winner
     ev = 0#count expected value
+
+
+
+    evMargin3Count = 0#count expected 
+    evMargin3 = 0# expected margin
+    evMargin2Count = 0#count expected 
+    evMargin2 = 0# expected margin
+    evMargin1Count = 0#count e~xpected 
+    evMargin1 = 0# expected margin
+
+
     for i in range(len(p)):
         correct = False#if prediction is correct winner
         spreadCorrect = False#if spread is correct winner
@@ -108,7 +119,7 @@ def print_prediction(model,data):
             swin = 1
         elif spread[i]<pmscore and pmscore >0:
             swin = 1
-
+        mcorrect = True
         if pred == 0 and swin == 0:
             ev +=1
             print('correct agaist spread',pred,swin)
@@ -116,10 +127,29 @@ def print_prediction(model,data):
             ev +=1
             print('correct agaist spread',pred,swin)
         else:
+            mcorrect = False
+
             print('wrong agaist spread',pred,swin)
+
+
+        if abs(pmp)-abs(spread[i]) > 3 or abs(pmp)-abs(spread[i]) < -3:
+            evMargin3Count+=1
+            if mcorrect:
+                evMargin3+=1
+        if abs(pmp)-abs(spread[i]) > 2 or abs(pmp)-abs(spread[i]) < -2:
+            evMargin2Count+=1
+            if mcorrect:
+                evMargin2+=1
+
+        if abs(pmp)-abs(spread[i]) > 1 or abs(pmp)-abs(spread[i]) < -1:
+            evMargin1Count+=1
+            if mcorrect:
+                evMargin1+=1
+
 
         #prediction - spread > 0 and winner 1
         #prediction - spread < 0 and winner 0
+        
 
 
 
@@ -131,6 +161,9 @@ def print_prediction(model,data):
             c+=1
     print('percent correct winners: ', c/n*100,'%')
     print('spread percent correct winners: ', s/n*100,'%')
-    print('expected value: ', ev/n*100,'%')
+    print('expected value all games: ', ev/n*100,'%')
+    print('expected value over 1 point margins: ',evMargin1,'/',evMargin1Count,'=', evMargin1/evMargin1Count*100,'%')
+    print('expected value over 2 point margins: ',evMargin2,'/',evMargin2Count,'=', evMargin2/evMargin2Count*100,'%')
+    print('expected value over 3 point margins: ',evMargin3,'/',evMargin3Count,'=', evMargin3/evMargin3Count*100,'%')
 print_prediction(model, data)
 
