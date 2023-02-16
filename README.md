@@ -80,7 +80,8 @@ tensorboard --logdir logs/fit
 http://localhost:6007/
 
 
-##Evaluate Model:
+## Evaluate Model:
+## Note: run this before trainning to see results on current model in checkpoints folder.
 python3 eval.py
 
 ```
