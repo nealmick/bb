@@ -10,7 +10,17 @@ class Profile(models.Model):
     correct = models.IntegerField(default=0)
     loss = models.DecimalField(decimal_places=4, max_digits=10, default=0)
     gain = models.DecimalField(decimal_places=4, max_digits=10, default=0)
-    
+    ev_won = models.IntegerField(default=0)
+    ev_margin1 = models.IntegerField(default=0)
+    ev_margin2 = models.IntegerField(default=0)
+    ev_margin3 = models.IntegerField(default=0)
+
+    ev_won_count = models.IntegerField(default=0)
+    ev_margin1_count = models.IntegerField(default=0)
+    ev_margin2_count = models.IntegerField(default=0)
+    ev_margin3_count = models.IntegerField(default=0)
+
+
     def __str__(self):
         return f'{self.user.username} Profile'
     def save(self, *args, **kawrgs):
