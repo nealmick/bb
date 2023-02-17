@@ -2,12 +2,12 @@ import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
 #seasons = ['2022','2021','2020','2019']#,'2015']#,'2014']#,'2013','2012','2011']
-seasons = ['2019','2018','2017','2016','2015','2014','2015','2014']#,'2012']
-seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
+seasons = ['2020','2019','2018','2017','2016','2015','2014','2015','2014']#,'2012']
+#seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
 #seasons = ['2019']
 
 seasons.reverse()
-seasonsCSV.reverse()
+#seasonsCSV.reverse()
 
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
 playersPerTeam = 7
@@ -86,11 +86,11 @@ def main(labels,seasons,**kwargs):
                 bestV.append(visitorTeam[b])
                 visitorTeam.pop(b)
 
-            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path)
+            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season)
 
 
 
-def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path):
+def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season):
     line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)
     for stat in homeTeamStats:
         line+=','+str(stat)
@@ -103,13 +103,15 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
     for player in range(len(bestV)):
         for stat in range(len(bestV[player])):
             line += ','+str(bestV[player][stat])
+    
 
 
-    foo = random.randint(0,20)
-    if foo == 10:
-        csv = open('test.csv','a')
-        csv.write(line+'\n')
-        return ''
+    if season == '2020':
+        foo = random.randint(0,2)
+        if foo == 2:
+            csv = open('csv/test.csv','a')
+            csv.write(line+'\n')
+            return ''
     csv = open(path,'a')
     csv.write(line+'\n')
     #print(line)
@@ -123,7 +125,7 @@ def writeCSVHeader(labels, path,**kwargs):
                 header+=','+foo+str(i)+'_'+label
     csv = open(path,'w')
     csv.write(header+'\n')
-    csv = open('test.csv','w')
+    csv = open('csv/test.csv','w')
     csv.write(header+'\n')
     return header
 
@@ -178,9 +180,3 @@ def req(url):
 
 main(labels,seasons)
 
-seasonsCSV = ['2020-21']
-seasons = ['2020']
-
-path = "csv/test.csv"
-
-main(labels,seasons)
