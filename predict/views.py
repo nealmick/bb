@@ -508,26 +508,37 @@ class GameListView(ListView, LoginRequiredMixin):
             context['pc'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)
             context['pw'] = (round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)-100)*-1
             context['extraCorrect'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)-round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
+            context['ev_margin1'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
+            context['ev_margin1_count'] = Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count']
+            context['ev_margin1_pct'] = round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
+
+
+            context['ev_margin2'] = Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2']
+            context['ev_margin2_count'] = Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count']
+            context['ev_margin2_pct'] = round(Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2'] /Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count'] *100)
+
+            context['ev_margin3'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
+            context['ev_margin3_count'] = Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count']
+            context['ev_margin3_pct'] = round(Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3'] /Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count'] *100)
+
 
         else:
+            context['ev_margin1'] = 0
+            context['ev_margin1_count'] = 0
+            context['ev_margin1_pct'] = 0
+            context['ev_margin2'] = 0
+            context['ev_margin2_count'] =0
+            context['ev_margin2_pct'] = 0
+            context['ev_margin3'] = 0
+            context['ev_margin3_count'] = 0
+            context['ev_margin3_pct'] = 0
+
 
             context['pc'] = '0'
         context['gain'] =  Profile.objects.filter(user=user).values('gain')[0]['gain']
         context['loss'] =  Profile.objects.filter(user=user).values('loss')[0]['loss']
         context['lg'] = Profile.objects.filter(user=user).values('gain')[0]['gain'] - Profile.objects.filter(user=user).values('loss')[0]['loss']
-        context['ev_margin1'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
-        context['ev_margin1_count'] = Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count']
-        context['ev_margin1_pct'] = round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
-
-
-        context['ev_margin2'] = Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2']
-        context['ev_margin2_count'] = Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count']
-        context['ev_margin2_pct'] = round(Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2'] /Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count'] *100)
-
-        context['ev_margin3'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
-        context['ev_margin3_count'] = Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count']
-        context['ev_margin3_pct'] = round(Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3'] /Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count'] *100)
-
+        
         #context['form'] = GameForm()
         context['ordering']= ['-date_posted']
         return context
