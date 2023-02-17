@@ -355,7 +355,7 @@ def getScore(request,pk,**kwargs):
         visitor_score = Game.objects.filter(pk=pk).values('visitor_score')[0]['visitor_score']
 
         if not finished: # add not back
-            spread = float(spread)
+            spread = float(spread) * -1
             if pmscore >= 0 and h >v:#win p home
                 asdf = float(p.values('gain')[0]['gain'])
                 p.update(gain=asdf+abs(pmscore))
@@ -386,6 +386,7 @@ def getScore(request,pk,**kwargs):
             Game.objects.filter(pk=pk).update(margin=margin)
             pred = ''
             print(spread,pmp,)
+
             if spread>pmp and pmp <0 or spread>pmp and pmp >0:
                 pred = 0
 
