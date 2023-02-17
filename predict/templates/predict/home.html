@@ -48,9 +48,9 @@
               </div>  
             <div class="col-lg-6" style="margin-top:10px;margin-bottom:10px">
               <ul class="list-group"style="margin-left:5%">
-                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Gain: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ gain }}</p></li>
-                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Loss: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ loss }}</p></li>
-                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Total: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ lg }}</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Margin 1: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ ev_margin1 }}/{{ev_margin1_count}} {{ev_margin1_pct}}%</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Margin 2: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ ev_margin2 }}/{{ev_margin2_count}} {{ev_margin2_pct}}%</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Margin 3: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ ev_margin3 }}/{{ev_margin3_count}} {{ev_margin3_pct}}%</p></li>
 
 
               </ul>
@@ -120,7 +120,7 @@
             <a href="{% url 'edit-predict' game.pk%}">
             <div class="" >
 
-              <article id="game" class="content-section"style="margin-top: 10px;padding-top:8px;">
+              <article id="game" class="content-section gameScroll"style="margin-top: 10px;padding-top:8px;">
                 <!--
                   background: linear-gradient(90deg, {{game.visitorcolor}} 0%, rgba(248,248,248,1) 30%, rgba(248,248,248,1) 50%, rgba(248,248,248,1) 70%, {{game.homecolor}} 100%);
                 -->
@@ -355,7 +355,7 @@
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(function() {
         localStorage.setItem('scrollTop', mainScrollArea.scrollTop);
-      }, 100)
+      }, 300)
     });
 </script>
 
@@ -364,6 +364,11 @@
 {{ correct|json_script:"correct" }}
 {{ gain|json_script:"gain" }}
 {{ loss|json_script:"loss" }}
+
+{{ extraCorrect|json_script:"extraCorrect" }}
+{{ pw|json_script:"pw" }}
+{{ ev_margin1|json_script:"ev_margin1" }}
+{{ ev_margin1_pct|json_script:"ev_margin1_pct" }}
 
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
