@@ -350,8 +350,12 @@ def getScore(request,pk,**kwargs):
         prediction = Game.objects.filter(pk=pk).values('prediction')[0]['prediction']
         pmscore = Game.objects.filter(pk=pk).values('pmscore')[0]['pmscore']
         finished = Game.objects.filter(pk=pk).values('finished')[0]['finished']
-        
+        spread = Game.objects.filter(pk=pk).values('home_spread')[0]['home_spread']
+        home_score = Game.objects.filter(pk=pk).values('home_score')[0]['home_score']
+        visitor_score = Game.objects.filter(pk=pk).values('visitor_score')[0]['visitor_score']
+
         if not finished: # add not back
+            spread = float(spread)
             if pmscore >= 0 and h >v:#win p home
                 asdf = float(p.values('gain')[0]['gain'])
                 p.update(gain=asdf+abs(pmscore))
@@ -374,6 +378,75 @@ def getScore(request,pk,**kwargs):
             print(Game.objects.filter(pk=pk).values('winner')[0]['winner'])
             p.update(predictions=p.values('predictions')[0]['predictions']+1)
 
+
+
+            pmp = pmscore
+            pmscore = int(visitor_score)-int(home_score)
+            margin = abs(pmp)-abs(spread)
+            Game.objects.filter(pk=pk).update(margin=margin)
+            pred = ''
+            print(spread,pmp,)
+            if spread>pmp and pmp <0 or spread>pmp and pmp >0:
+                pred = 0
+
+            elif spread<pmp and pmp <0 or spread<pmp and pmp >0:
+                pred = 1
+
+            swin = ''#winner with spread 0 or 1 
+            if spread>pmscore and pmscore <0:
+                swin = 0
+            elif spread>pmscore and pmscore >0:
+                swin = 0
+            elif spread<pmscore and pmscore <0:
+                swin = 1
+            elif spread<pmscore and pmscore >0:
+                swin = 1
+    
+            print('pred , swin :',pred,swin)
+            mcorrect = False
+            if pred == 0 and swin == 0:
+                mcorrect = True
+                Game.objects.filter(pk=pk).update(ev_won='1')
+
+                print('correct agaist spread',pred,swin)
+            elif pred == 1 and swin == 1:
+                Game.objects.filter(pk=pk).update(ev_won='1')
+                mcorrect = True
+                print('correct agaist spread',pred,swin)
+            else:
+                Game.objects.filter(pk=pk).update(ev_won='0')
+                mcorrect = False
+                print('wrong agaist spread',pred,swin)
+
+
+
+            if abs(pmp-spread) > 3:
+                if mcorrect:
+                    Game.objects.filter(pk=pk).update(ev_margin3='1')
+                    asdf = int(p.values('ev_margin3')[0]['ev_margin3']) 
+                    p.update(ev_margin3=asdf+1)
+                asdf = int(p.values('ev_margin3_count')[0]['ev_margin3_count']) 
+                p.update(ev_margin3_count=asdf+1)
+            if abs(pmp-spread) > 2:
+                if mcorrect:
+                    Game.objects.filter(pk=pk).update(ev_margin2='1')
+                    asdf = int(p.values('ev_margin2')[0]['ev_margin2']) 
+                    p.update(ev_margin2=asdf+1)
+                asdf = int(p.values('ev_margin2_count')[0]['ev_margin2_count']) 
+                p.update(ev_margin2_count=asdf+1)
+            if abs(pmp-spread) > 1:
+                if mcorrect:
+                    Game.objects.filter(pk=pk).update(ev_margin1='1')
+                    asdf = int(p.values('ev_margin1')[0]['ev_margin1']) 
+                    p.update(ev_margin1=asdf+1)
+                asdf = int(p.values('ev_margin1_count')[0]['ev_margin1_count']) 
+                p.update(ev_margin1_count=asdf+1)
+
+            if mcorrect:
+                asdf = int(p.values('ev_won')[0]['ev_won']) 
+                p.update(ev_won=asdf+1)
+            asdf = int(p.values('ev_won_count')[0]['ev_won_count']) 
+            p.update(ev_won_count=asdf+1)
 
 
 
@@ -433,12 +506,28 @@ class GameListView(ListView, LoginRequiredMixin):
         context['numpred'] =  Profile.objects.filter(user=user).values('predictions')[0]['predictions']
         if Profile.objects.filter(user=user).values('predictions')[0]['predictions'] >= 1:
             context['pc'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)
+            context['pw'] = (round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)-100)*-1
+            context['extraCorrect'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)-round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
+
         else:
 
             context['pc'] = '0'
         context['gain'] =  Profile.objects.filter(user=user).values('gain')[0]['gain']
         context['loss'] =  Profile.objects.filter(user=user).values('loss')[0]['loss']
         context['lg'] = Profile.objects.filter(user=user).values('gain')[0]['gain'] - Profile.objects.filter(user=user).values('loss')[0]['loss']
+        context['ev_margin1'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
+        context['ev_margin1_count'] = Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count']
+        context['ev_margin1_pct'] = round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
+
+
+        context['ev_margin2'] = Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2']
+        context['ev_margin2_count'] = Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count']
+        context['ev_margin2_pct'] = round(Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2'] /Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count'] *100)
+
+        context['ev_margin3'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
+        context['ev_margin3_count'] = Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count']
+        context['ev_margin3_pct'] = round(Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3'] /Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count'] *100)
+
         #context['form'] = GameForm()
         context['ordering']= ['-date_posted']
         return context

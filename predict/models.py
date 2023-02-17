@@ -71,6 +71,14 @@ class Game(models.Model):
     visitor_streak = models.CharField(null=True, blank=True, max_length=10)
     home_streak = models.CharField(null=True, blank=True, max_length=10)
     
+
+    ev_won = models.CharField(null=True, blank=True, max_length=10)
+    ev_margin1 = models.CharField(null=True, blank=True, max_length=10)
+    ev_margin2 = models.CharField(null=True, blank=True, max_length=10)
+    ev_margin3 = models.CharField(null=True, blank=True, max_length=10)
+    margin = models.CharField(null=True, blank=True, max_length=10)
+
+
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)
