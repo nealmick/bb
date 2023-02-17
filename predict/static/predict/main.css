@@ -1,7 +1,9 @@
 
 
 
-
+.gameScroll ::-webkit-scrollbar {
+  display: inline;
+}
 body {
   animation: fadeInAnimation ease .5s;
   animation-iteration-count: 1;
