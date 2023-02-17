@@ -1,0 +1,90 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content%}
+{% if request.user.is_authenticated %}
+
+<body class="">
+
+
+
+
+
+
+
+        
+        <div class="col-lg-6" style="margin-top:25px;margin-top:25px;">
+
+          <div class="content-section"style="height:100%; max-height: 600px;overflow-y:scroll;overflow-x:hidden;">
+              <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+              <legend class="border-bottom mb-4">Get Game Stats</legend>
+              {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+              <button class="btn btn-grey" type="submit">Get Stats</button>
+            </div>
+          </form>
+          </div>
+        </div>
+
+
+
+
+
+
+        <div class="col-lg-6">
+
+          <div class="content-section"style="margin-top:25px;margin-bottom:0px;height: 438px;overflow-y:scroll;overflow-x:hidden">
+
+            <h3 >Todays games:</h3>
+
+              <ul class="list-group">
+                {% for matchup in today %}
+                <li id="game" class="list-group-item list-group-item-light" style="padding:10px;min-height: 50px;">
+                  {% if matchup == "No Games Today" %}
+                  <p style="margin: 0px;font-size: 16px">No Games Today</p>
+                  {% else %}
+
+                <a style="color: #333333 !important"href="{% url 'quick-create' matchup.habv matchup.vabv matchup.date%}">
+
+                    {% if matchup.vscore > 1 %}
+                      <p style="margin: 0px;font-size: 16px">{{matchup.vfn}} {{matchup.vscore}} :  {{matchup.hscore}} {{matchup.hfn}} : {{matchup.status}}</p>
+                    {% else %}
+                    <p style="margin: 0px;font-size: 16px">{{matchup.vfn}} @ {{matchup.hfn}} : {{matchup.status}}</p>
+                    {% endif %}
+
+                </a>
+                </li>
+
+                {%endif%}
+                {% endfor %}
+
+
+              </ul>
+              </div>
+
+
+
+        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+    {% endif %}
+
+
+
+
+
+
+{% endblock content %}

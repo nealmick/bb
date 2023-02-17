@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- icons 
+<div class="background3"id="bkgrnd"style="height:100%;width:100%!important;"></div>
+
+<div class="background2"id="bkgrnd"style="opacity:.4;top:0px;position: fixed;width:100%;overflow:hidden;overflow-y:hidden"></div>
+
+    -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'predict/main.css'%}">
+    <link rel="shortcut icon" type="image/ico" href="{% static 'foo.ico' %}"/>
+    <title>Predictions!</title>
+
+  </head>
+  <div class="background3"style="top:0;position: fixed;"></div>
+  <body class="">
+      <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel">
+          <div class="container">
+            <a class="navbar-brand mr-4" href="{% url 'home-page'%}"><h2 style="margin-bottom: 0px; color:#F8F8F8"><i class="fa fa-basketball-ball"></i> Predictions</h2></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+              <div class="navbar-nav mr-auto" id="navigation-bar">
+                <!-- Navbar Right Side 
+
+                <a class="nav-item nav-link" href="{% url 'home-page'%}"><i class="fa fa-home"></i><span> Home</span></a>
+                <a class="nav-item nav-link" href="https://nealmick.com/contact/"><i class="far fa-address-card"></i><span> Contact</span></a>
+                -->
+
+              </div>
+              <div class="navbar-nav" id="navigation-bar" >
+
+                {% if user.is_authenticated %}
+                  <a class="nav-item nav-link" href="{% url 'new-predict' %}"><i class="fas fa-plus "></i><span class=""> New Prediction</span></a>
+                  <a class="nav-item nav-link" href="{% url 'home-predict' %}"><i class="fas fa-list-ul"></i><span> My Predictions</span></a>
+                  <a class="nav-item nav-link" href="{% url 'profile' %}"><i class="far fa-user"></i></i><span> Profile</span></a>
+                  <a class="nav-item nav-link" href="{% url 'logout'%}"><i class="fas fa-sign-in-alt"></i><span> Logout</span></a>
+                {% else %}
+                  <a class="nav-item nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i><span> Login</span></a>
+                  <a class="nav-item nav-link" href="{% url 'register'%}"><i class="far fa-user"></i><span> Register</span></a>
+                {% endif %}
+                </ul>
+              </div>
+        </nav>
+      </header>
+
+      <main role="main" class="container">
+        <div class="row" >
+
+            {% if messages%}
+              {% for mesage in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% block f %}{% endblock %}
+            {% block content %}{% endblock %}
+    </div>
+
+
+    </main>
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
