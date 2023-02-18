@@ -7,6 +7,8 @@
 
 
 {% block content%}
+
+
 <body class="row" style="overflow-x: hidden;">
 
 
@@ -67,7 +69,43 @@
 
           <div class="content-section"style="height: 438px;overflow-y:scroll;overflow-x:hidden">
 
-            <h3 id=""  >Today's Games</h3>
+            
+
+
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+        
+            <!-- Include Bootstrap DateTimePicker CDN -->
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css"rel="stylesheet">
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
+
+              
+            <input style="height:48px;padding: 3px;padding-left:7px;margin-bottom: 5px;" class="form-control dateh list-group-item list-group-item-light" type="text" id="Datetimepicker"/>  
+
+    
+        <script>
+    
+            // Below code sets format to the
+            // datetimepicker having id as
+            // datetime
+            $('#Datetimepicker').datetimepicker({
+              defaultDate: '{{dateselector}}',
+              format: 'YYYY-MM-DD',
+   
+            });
+            $('#Datetimepicker').datetimepicker().on('dp.change', function (event) {
+              date = document.getElementById("Datetimepicker").value
+              var url = window.location.href;
+              window.location.href = "{% url 'home-predict' %}date/"+ date
+     
+            });
+  
+            
+        </script>
 
               <ul class="list-group">
                 {% for matchup in today %}
@@ -358,6 +396,8 @@
       }, 300)
     });
 </script>
+
+
 
 
 {{ numpred|json_script:"np" }}
