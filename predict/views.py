@@ -429,21 +429,21 @@ def getScore(request,pk,**kwargs):
 
 
 
-            if abs(pmp-spread) > 3:
+            if abs(margin) > 3:
                 if mcorrect:
                     Game.objects.filter(pk=pk).update(ev_margin3='1')
                     asdf = int(p.values('ev_margin3')[0]['ev_margin3']) 
                     p.update(ev_margin3=asdf+1)
                 asdf = int(p.values('ev_margin3_count')[0]['ev_margin3_count']) 
                 p.update(ev_margin3_count=asdf+1)
-            if abs(pmp-spread) > 2:
+            if margin > 2:
                 if mcorrect:
                     Game.objects.filter(pk=pk).update(ev_margin2='1')
                     asdf = int(p.values('ev_margin2')[0]['ev_margin2']) 
                     p.update(ev_margin2=asdf+1)
                 asdf = int(p.values('ev_margin2_count')[0]['ev_margin2_count']) 
                 p.update(ev_margin2_count=asdf+1)
-            if abs(pmp-spread) > 1:
+            if abs(margin) > 1:
                 if mcorrect:
                     Game.objects.filter(pk=pk).update(ev_margin1='1')
                     asdf = int(p.values('ev_margin1')[0]['ev_margin1']) 
