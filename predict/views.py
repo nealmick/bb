@@ -331,6 +331,7 @@ def predictToday(request,**kwargs):
     return redirect('home-predict')
 
 def getScore(request,pk,**kwargs):
+    print('b')
     print('getttttttttttting score')
     url = 'https://www.balldontlie.io/api/v1/games/'
     user= request.user
@@ -355,7 +356,7 @@ def getScore(request,pk,**kwargs):
         visitor_score = Game.objects.filter(pk=pk).values('visitor_score')[0]['visitor_score']
 
         if not finished: # add not back
-            spread = float(spread) * -1
+            spread = float(spread)
             if pmscore >= 0 and h >v:#win p home
                 asdf = float(p.values('gain')[0]['gain'])
                 p.update(gain=asdf+abs(pmscore))
@@ -381,19 +382,25 @@ def getScore(request,pk,**kwargs):
 
 
             pmp = pmscore
-            pmscore = int(visitor_score)-int(home_score)
+            pmscore = int(h)-int(v)
             margin = abs(pmp)-abs(spread)
             Game.objects.filter(pk=pk).update(margin=margin)
             pred = ''
-            print(spread,pmp,)
+            print(spread,pmp)
 
-            if spread>pmp and pmp <0 or spread>pmp and pmp >0:
+            if spread>pmp and pmp <0:
                 pred = 0
-
-            elif spread<pmp and pmp <0 or spread<pmp and pmp >0:
+            elif spread>pmp and pmp >0:
+                pred = 0
+            elif spread<pmp and pmp <0:
+                pred = 1
+            elif spread<pmp and pmp >0:
                 pred = 1
 
             swin = ''#winner with spread 0 or 1 
+            print(spread,pmscore)
+            print(float(spread)<float(pmscore))
+            print(float(pmscore)>0)
             if spread>pmscore and pmscore <0:
                 swin = 0
             elif spread>pmscore and pmscore >0:
@@ -402,7 +409,8 @@ def getScore(request,pk,**kwargs):
                 swin = 1
             elif spread<pmscore and pmscore >0:
                 swin = 1
-    
+            print('swin',swin)
+            print('pred:',pred)
             print('pred , swin :',pred,swin)
             mcorrect = False
             if pred == 0 and swin == 0:
@@ -417,7 +425,7 @@ def getScore(request,pk,**kwargs):
             else:
                 Game.objects.filter(pk=pk).update(ev_won='0')
                 mcorrect = False
-                print('wrong agaist spread',pred,swin)
+                print('wrong agaist spread pred:',pred,' swin',swin)
 
 
 
@@ -460,13 +468,13 @@ def getScore(request,pk,**kwargs):
     #return HttpResponsePermanentRedirect(reverse('home-predict') + "?page="+str(page_num))
     return redirect('home-predict')
 
-def todaysGames(self):
+def todaysGames(self,date):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     eastern = timezone('America/Los_Angeles')
     fmt = '%Y-%m-%d'
     loc_dt = datetime.now(eastern)
     #naive_dt = datetime.now()
-    url+=loc_dt.strftime(fmt)
+    url+=date
     print(url)
     r = req(url)
     games = []
@@ -479,7 +487,7 @@ def todaysGames(self):
         vscore = str(r['data'][game]['visitor_team_score'])
         status = r['data'][game]['status']
 
-        foo = {'habv':habv,'hfn':hfn,'hscore':hscore,'vabv':vabv,'vfn':vfn,'vscore':vscore,'status':status,'date':loc_dt.strftime(fmt)}
+        foo = {'habv':habv,'hfn':hfn,'hscore':hscore,'vabv':vabv,'vfn':vfn,'vscore':vscore,'status':status,'date':date}
         games.append(foo)
     if len(games)==0:
         games.append('No Games Today')
@@ -498,9 +506,19 @@ class GameListView(ListView, LoginRequiredMixin):
     context = 'games'
 
     def get_context_data(self, **kwargs):
+        try:
+            dateSelected = self.kwargs['dateSelected']
+        except KeyError:
+            eastern = timezone('America/Los_Angeles')
+            fmt = '%Y-%m-%d'
+            loc_dt = datetime.now(eastern)
+            #naive_dt = datetime.now()
+            dateSelected =loc_dt.strftime(fmt)
+             
+        print(dateSelected)
         user = self.request.user
         context = super(GameListView, self).get_context_data(**kwargs)
-        x = todaysGames(self)
+        x = todaysGames(self,dateSelected)
         context['today'] = x
         context['tc'] = TEAMCOLORS
         context['correct'] = Profile.objects.filter(user=user).values('correct')[0]['correct']
@@ -518,10 +536,12 @@ class GameListView(ListView, LoginRequiredMixin):
             context['ev_margin2_count'] = Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count']
             context['ev_margin2_pct'] = round(Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2'] /Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count'] *100)
 
-            context['ev_margin3'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
+            context['ev_margin3'] = Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3']
             context['ev_margin3_count'] = Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count']
-            context['ev_margin3_pct'] = round(Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3'] /Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count'] *100)
-
+            try:
+                context['ev_margin3_pct'] = round(Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3'] /Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count'] *100)
+            except ZeroDivisionError:
+                context['ev_margin3_pct'] = 0
 
         else:
             context['ev_margin1'] = 0
@@ -541,6 +561,8 @@ class GameListView(ListView, LoginRequiredMixin):
         context['lg'] = Profile.objects.filter(user=user).values('gain')[0]['gain'] - Profile.objects.filter(user=user).values('loss')[0]['loss']
         
         #context['form'] = GameForm()
+        context['dateselector'] = dateSelected
+
         context['ordering']= ['-date_posted']
         return context
     def get_queryset(self, **kwargs):

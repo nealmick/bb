@@ -292,6 +292,11 @@ text-shadow: 0px 0px 6px rgba(255,255,255,0.3)
   border: 1px solid #969696;
 
 }
+
+.dateh:hover{
+  border: 1px solid #969696;
+
+}
 #login-button:hover{
   border-color: #17a2b8;
   background-color:#A9A9A9;

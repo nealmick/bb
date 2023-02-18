@@ -11,6 +11,7 @@ urlpatterns = [
     path('new/<str:home>/<str:visitor>/<str:date>/', views.quickcreate, name='quick-create'),
 
     path('', GameListView.as_view() , name='home-predict'),
+    path('date/<str:dateSelected>', GameListView.as_view() , name='home-predict'),
     path('#<int:pk>', views.getScore , name='get-score'),
     #path('predicttoday/', views.predictToday , name='predict-today'),
 
