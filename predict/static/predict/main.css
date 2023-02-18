@@ -1,4 +1,10 @@
 
+.datepicker {
+  background: rgba(248, 248, 248,.8);
+  padding: 10px 20px;
+  border-radius: 7px;
+  border: 1px solid rgba(248, 248, 248,1);
+  }
 
 
 .datepicker table tr td.active, .datepicker table tr td.active:hover { background: rgba(75,192,192,.6);text-shadow: none;}
