@@ -28,6 +28,7 @@ def main(labels,seasons,**kwargs):
         seasonAverages = load_obj(season+'SeasonAverages')
         #df = pd.read_excel('../Odds-Data-Clean/'+seasonCSV+'.xlsx')
         #f = df.to_dict()
+        foo = 0
         c = 0
         count = 0
         for game in games:
@@ -85,12 +86,12 @@ def main(labels,seasons,**kwargs):
                 visitorTeam[b][-1] = min
                 bestV.append(visitorTeam[b])
                 visitorTeam.pop(b)
+            foo+=1
+            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo)
 
-            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season)
 
 
-
-def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season):
+def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo):
     line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)
     for stat in homeTeamStats:
         line+=','+str(stat)
@@ -107,11 +108,11 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
 
 
     if season == '2020':
-        foo = random.randint(0,2)
-        if foo == 2:
+        if foo > 900:
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''
+
     csv = open(path,'a')
     csv.write(line+'\n')
     #print(line)
