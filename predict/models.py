@@ -78,7 +78,10 @@ class Game(models.Model):
     ev_margin3 = models.CharField(null=True, blank=True, max_length=10)
     margin = models.CharField(null=True, blank=True, max_length=10)
 
+    homeInjury = models.CharField(null=True, blank=True, max_length=1000)
+    visitorInjury = models.CharField(null=True, blank=True, max_length=1000)
 
+    
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)

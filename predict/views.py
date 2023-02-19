@@ -316,6 +316,15 @@ def editGame(request,pk,**kwargs):
 
     context['home_streak'] = g.values('home_streak')[0]['home_streak']
     context['visitor_streak'] = g.values('visitor_streak')[0]['visitor_streak']
+
+    hi = g.values('homeInjury')[0]['homeInjury'].split(',')
+    context['home_injury'] = len(hi)-1
+    context['home_injuries'] = g.values('homeInjury')[0]['homeInjury']
+    vi = g.values('visitorInjury')[0]['visitorInjury'].split(',')
+
+    context['visitor_injury'] = len(vi)-1
+    context['visitor_injuries'] = g.values('visitorInjury')[0]['visitorInjury']
+    
     context['game'] = g
     context['g'] = g
     #print(players)
@@ -621,26 +630,36 @@ def quickcreate(request,home,visitor,date):
 
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
+    homeTeamInjury = homeTeamStats.pop(-1)
+    
     visitorTeamStats = stats[1]
+    
+    visitorTeamInjury = visitorTeamStats.pop(-1)
+    
     home_streak = homeTeamStats.pop(-1)
     visitor_streak = visitorTeamStats.pop(-1)
 
     print('spread: ', spread)
     
     found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels)
+    homeInjury = ''
+    for player in homeTeamInjury:
+        homeInjury += ','+player
+    visitorInjury = ''
+    for player in visitorTeamInjury:
+        visitorInjury += ','+player
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
-        p12 = playerids[12], p13 = playerids[13]
-        
-        ,gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
+        p12 = playerids[12], p13 = playerids[13],
+        gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
-        visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak)
+        visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
+        homeInjury=homeInjury, visitorInjury=visitorInjury)
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
-
 def getTeamData(home,visitor):
     
     convert = {
@@ -705,10 +724,18 @@ def getTeamData(home,visitor):
             steakLength = int(steakLength) * -1
         W = r[team]['wins']
         L = r[team]['loss']
-        GP = int(W)+int(L) 
-        teamStats.update({r[team]['teamAbv']:[GP,W,L,steakLength]})
+        GP = int(W)+int(L)
+        c = 0
+        injuries = []
+        for player in r[team]['Roster']:
+            if r[team]['Roster'][player]['injury']['injDate'] != '':
+                c+=1
+                #print(r[team]['Roster'][player]['injury']['injDate'])
+                #print(r[team]['Roster'][player]['nbaComName'])
+                injuries.append(r[team]['Roster'][player]['nbaComName'])
+        teamStats.update({r[team]['teamAbv']:[GP,W,L,steakLength,injuries]})
 
-    print(teamStats)
+    #print(teamStats)
     #save_obj(teamStats,"teamStats")
         
 
@@ -1121,7 +1148,7 @@ def predict(path):
     ])
     model.load_weights('./checkpoints/my_checkpoint')
 
-    model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     p = model.predict(data)
     return(p[0])
