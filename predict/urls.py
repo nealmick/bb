@@ -7,6 +7,7 @@ urlpatterns = [
     path('new/', GameCreateView.as_view(), name='new-predict'),
     path('edit/<int:pk>/', views.editGame, name='edit-predict'),
     path('edit/<int:pk>/<str:change>', views.saveEdit, name='save-edit'),
+    path('edit/<int:pk>/remove/<str:player>', views.removePlayer, name='remove-player'),
 
     path('new/<str:home>/<str:visitor>/<str:date>/', views.quickcreate, name='quick-create'),
 

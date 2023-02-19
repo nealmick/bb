@@ -81,6 +81,8 @@ class Game(models.Model):
     homeInjury = models.CharField(null=True, blank=True, max_length=1000)
     visitorInjury = models.CharField(null=True, blank=True, max_length=1000)
 
+    removed_players = models.CharField(null=True, blank=True, max_length=1000)
+
     
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)

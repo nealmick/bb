@@ -70,6 +70,80 @@ TEAMCOLORS = {
 
 
 
+def removePlayer(request,pk,player):
+    print(pk)
+    print(player)
+    obj = load_obj('2019PlayerNamesByID')
+    player_id =''
+    for id in obj:
+        if obj[id] == player:
+            print(id)
+            player_id = id
+            break
+
+    g = Game.objects.filter(pk=pk)
+
+    home = g.values('home')[0]['home']
+    visitor = g.values('visitor')[0]['visitor']
+    csvid = g.values('csvid')[0]['csvid']
+    date = g.values('gamedate')[0]['gamedate']
+
+    removed_players=g.values('removed_players')[0]['removed_players']
+
+    if removed_players is not None:
+        removed_players = json.loads(removed_players)
+        removed_players.append(str(player_id))
+    else:
+        removed_players = []
+        removed_players.append(str(player_id))
+    removed_players_dump = json.dumps(removed_players)
+    season = '2022'
+    labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+    path = 'csv/'+str(request.user)+str(csvid)+'.csv'
+
+
+
+
+
+
+
+    spread = getSpread(home,visitor)
+
+    stats = getTeamData(home,visitor)
+    homeTeamStats = stats[0]
+    homeTeamInjury = homeTeamStats.pop(-1)
+    
+    visitorTeamStats = stats[1]
+    
+    visitorTeamInjury = visitorTeamStats.pop(-1)
+    
+    home_streak = homeTeamStats.pop(-1)
+    visitor_streak = visitorTeamStats.pop(-1)
+
+    print('spread: ', spread)
+    
+    found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
+
+
+    homeInjury = ''
+    for player in homeTeamInjury:
+        homeInjury += ','+player
+    visitorInjury = ''
+    for player in visitorTeamInjury:
+        visitorInjury += ','+player
+
+    g.update(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
+        p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
+        p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
+        p12 = playerids[12], p13 = playerids[13],
+        gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
+        home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
+        visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
+        homeInjury=homeInjury, visitorInjury=visitorInjury,removed_players=removed_players_dump)
+    return redirect('edit-predict',pk)
+
+
+
 
 
 def exportGames(request):
@@ -317,14 +391,26 @@ def editGame(request,pk,**kwargs):
     context['home_streak'] = g.values('home_streak')[0]['home_streak']
     context['visitor_streak'] = g.values('visitor_streak')[0]['visitor_streak']
 
-    hi = g.values('homeInjury')[0]['homeInjury'].split(',')
-    context['home_injury'] = len(hi)-1
-    context['home_injuries'] = g.values('homeInjury')[0]['homeInjury']
-    vi = g.values('visitorInjury')[0]['visitorInjury'].split(',')
+    hi = g.values('homeInjury')[0]['homeInjury']
+    if hi is None:
+        context['home_injury'] = 0
+        context['home_injuries'] = 0
+    else:
+        hi = hi.split(',')
+        context['home_injury'] = len(hi)-1
+        context['home_injuries'] = g.values('homeInjury')[0]['homeInjury']
 
-    context['visitor_injury'] = len(vi)-1
-    context['visitor_injuries'] = g.values('visitorInjury')[0]['visitorInjury']
-    
+
+    vi = g.values('visitorInjury')[0]['visitorInjury']
+    if vi is None:
+        context['visitor_injury'] = 0
+        context['visitor_injuries'] = 0
+       
+    else:
+        vi = vi.split(',')
+        context['visitor_injury'] = len(vi)-1
+        context['visitor_injuries'] = g.values('visitorInjury')[0]['visitorInjury']
+        
     context['game'] = g
     context['g'] = g
     #print(players)
@@ -640,8 +726,8 @@ def quickcreate(request,home,visitor,date):
     visitor_streak = visitorTeamStats.pop(-1)
 
     print('spread: ', spread)
-    
-    found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels)
+    removed_players = []
+    found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
     homeInjury = ''
     for player in homeTeamInjury:
         homeInjury += ','+player
@@ -901,7 +987,8 @@ class GameCreateView(LoginRequiredMixin, CreateView):
         #print(self.csvid,'---------------------------')
         return context
 
-def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels):
+def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels,removed_players):
+    print('removed player:',removed_players)
     print(season)
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     url+=date
@@ -935,10 +1022,16 @@ def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,pat
 
             homePlayers = []
             for player in playerIdByTeamID[homeTeamID]:
-                homePlayers.append(player)
+                if str(player) not in removed_players:
+                    homePlayers.append(player)
+                else:
+                    print('found removed player ', player)
             visitorPlayers = []
             for player in playerIdByTeamID[visitorTeamID]:
-                visitorPlayers.append(player)
+                if str(player) not in removed_players:
+                    visitorPlayers.append(player)
+                else:
+                    print('found removed player ', player)
             print(homePlayers,visitorPlayers)
 
 
@@ -947,10 +1040,15 @@ def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,pat
             visitorTeam = []
 
             for id in homePlayers:
-                homeTeam.append(seasonAverages[id])
+                if player not in removed_players:
+                    homeTeam.append(seasonAverages[id])
+                else:
+                    print('removed player: ', id)
             for id in visitorPlayers:
-                visitorTeam.append(seasonAverages[id])
-
+                if player not in removed_players:
+                    visitorTeam.append(seasonAverages[id])
+                else:
+                    print('removed player: ', id)
 
 
             bestH = []

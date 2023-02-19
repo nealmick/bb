@@ -238,8 +238,18 @@
 						{% for k, v in stats.items %}
 
 							<tr>
-							<td>{{ k }} </td>
+              
+              
+  							<td >
+                  <button style="background: transparent;
+                  border: none !important;color: #333333"onclick="window.location.href='{% url 'remove-player' pk k%}';">
+                    {{k}}
+                  </button>
+
+                </td>
+
 							{%for stat in v%}
+
 									{% if forloop.counter == 1 %}
 											<td >{{stat}}</td>
 									{%else%}
