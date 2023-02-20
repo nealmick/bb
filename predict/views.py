@@ -400,7 +400,7 @@ def editGame(request,pk,**kwargs):
         context['home_injuries'] = 0
     else:
         hi = hi.split(',')
-        context['home_injury'] = len(hi)-1
+        context['home_injury'] = len(hi)
         context['home_injuries'] = g.values('homeInjury')[0]['homeInjury']
 
 
@@ -411,7 +411,7 @@ def editGame(request,pk,**kwargs):
        
     else:
         vi = vi.split(',')
-        context['visitor_injury'] = len(vi)-1
+        context['visitor_injury'] = len(vi)
         context['visitor_injuries'] = g.values('visitorInjury')[0]['visitorInjury']
         
     context['game'] = g
