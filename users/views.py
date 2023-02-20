@@ -2,8 +2,27 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
+from .models import Message
+from django.contrib.auth.models import User
 # Create your views here.
+def publicProfile(request,u):
+    context = {}
+    print(u)
+    obj = User.objects.filter(username=u)
+    obj = obj.first()
+    print(obj)
+    context['obj'] = obj
+    return render(request,'users/publicProfile.html',context)
 
+
+
+def newMessage(request, m):
+    Message.objects.create(author=request.user,content=m)
+    return redirect('chat')
+def chat(request):
+    qs = Message.objects.order_by('id')[:100]
+    context = {'qs':qs}
+    return render(request,'users/chat.html',context)
 
 def register(request):
     if request.method == 'POST':
