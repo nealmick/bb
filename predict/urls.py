@@ -1,10 +1,9 @@
 from django.urls import include, path
 
 from . import views
-from .views import GameListView,GameCreateView
+from .views import GameListView
 urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
-    path('new/', GameCreateView.as_view(), name='new-predict'),
     path('edit/<int:pk>/', views.editGame, name='edit-predict'),
     path('edit/<int:pk>/<str:change>', views.saveEdit, name='save-edit'),
     path('edit/<int:pk>/remove/<str:player>', views.removePlayer, name='remove-player'),

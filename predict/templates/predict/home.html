@@ -1,4 +1,3 @@
-
 {% extends "predict/base.html"%}
 {% load crispy_forms_tags %}
 
@@ -329,12 +328,11 @@
             </a>
             {% endif %}
 
-               {% empty %}
+            {% empty %}
               <br>
-              <h5>No Predictions!</h5>
+              <h2>No Predictions!</h2>
               <br>
-              <button style="position: relative; " id="edit-bug" class="btn btn-grey-secondary" onclick="location.href = '{% url 'new-predict'%}';"  >Predict a Game!</button>
-
+              <h5>Use the calender to select a date, then choose a game!</h5>
 
           {% endfor %}
           <center style="margin-bottom: 0px;height:63px;overflow:hidden;">

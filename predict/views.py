@@ -76,7 +76,7 @@ def removePlayer(request,pk,player):
     obj = load_obj('2019PlayerNamesByID')
     player_id =''
     for id in obj:
-        if obj[id] == player:
+        if obj[id].replace("'", "-") == player:
             print(id)
             player_id = id
             break
@@ -127,11 +127,14 @@ def removePlayer(request,pk,player):
 
     homeInjury = ''
     for player in homeTeamInjury:
-        homeInjury += ','+player
+        homeInjury += ', '+player
+    if homeInjury != '':
+        homeInjury = homeInjury[1:]
     visitorInjury = ''
     for player in visitorTeamInjury:
-        visitorInjury += ','+player
-
+        visitorInjury += ', '+player
+    if visitorInjury != '':
+        visitorInjury = visitorInjury[1:]
     g.update(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
@@ -338,7 +341,7 @@ def editGame(request,pk,**kwargs):
             if int(x) == int(id):
                 found = True
                 print('found-------')
-                resp.append(obj[x])
+                resp.append(obj[x].replace("'", "-"))
 
         if not found:
             r = req(url+str(id))
@@ -730,11 +733,14 @@ def quickcreate(request,home,visitor,date):
     found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
     homeInjury = ''
     for player in homeTeamInjury:
-        homeInjury += ','+player
+        homeInjury += ', '+player
+    if homeInjury != '':
+        homeInjury = homeInjury[1:]
     visitorInjury = ''
     for player in visitorTeamInjury:
-        visitorInjury += ','+player
-
+        visitorInjury += ', '+player
+    if visitorInjury != '':
+        visitorInjury = visitorInjury[1:]
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
@@ -905,78 +911,6 @@ def getSpread(h,v):
     return [homeSpread,vistorSpread,dk_homeSpread,dk_vistorSpread]
 
 
-class GameCreateView(LoginRequiredMixin, CreateView):
-    model = Game
-    template_name = 'predict/new.html'
-    csvid = random.randint(1,10000000)
-    fields = ['home', 'visitor','gamedate']
-    
-    def form_valid(self, form, **kwargs):
-        csvid = random.randint(1,100000)
-        form.instance.author = self.request.user
-        season = '2022'
-        
-        form.instance.csvid = csvid#############fix here
-        print(str(csvid),"csvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-        path = 'csv/'+str(self.request.user)+str(csvid)+'.csv'
-        print(path)
-        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-        x = form.instance.gamedate
-        y = form.instance.home.upper()
-        z = form.instance.visitor.upper()
-        date=x
-        homeAbv=y
-        visitorAbv=z
-        form.instance.homecolor = TEAMCOLORS[y]
-        form.instance.visitorcolor = TEAMCOLORS[z]
-
-        print(homeAbv,visitorAbv)
-
-        spread = getSpread(homeAbv,visitorAbv)
-
-        stats = getTeamData(homeAbv,visitorAbv)
-        homeTeamStats = stats[0]
-        visitorTeamStats = stats[1]
-        home_streak = homeTeamStats.pop(-1)
-        visitor_streak = visitorTeamStats.pop(-1)
-        
-        found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date, homeAbv,visitorAbv,path,season,labels)
-        print('after',playerids)
-        if found:
-
-            form.instance.p0 = playerids[0]
-            form.instance.p1 = playerids[1]
-            form.instance.p2 = playerids[2]
-            form.instance.p3 = playerids[3]
-            form.instance.p4 = playerids[4]
-            form.instance.p5 = playerids[5]
-            form.instance.p6 = playerids[6]
-            form.instance.p7 = playerids[7]
-            form.instance.p8 = playerids[8]
-            form.instance.p9 = playerids[9]
-            form.instance.p10 = playerids[10]
-            form.instance.p11 = playerids[11]
-            form.instance.p12 = playerids[12]
-            form.instance.p13 = playerids[13]
-            form.instance.home_spread=spread[0]
-            form.instance.visitor_spread=spread[1]
-            form.instance.dk_home_spread=spread[2]
-            form.instance.dk_visitor_spread=spread[3]
-            form.instance.home_games_won=homeTeamStats[1]
-            form.instance.home_games_loss=homeTeamStats[2]
-            form.instance.visitor_games_won=visitorTeamStats[1]
-            form.instance.visitor_games_loss=visitorTeamStats[2]
-
-
-
-            LABEL_COLUMN = 'winner'
-            LABELS = [0, 1]
-            l = labels
-            #p = predict(l, LABELS,LABEL_COLUMN,path)
-            #form.instance.prediction = float(p[0])
-            form.instance.gameid = gameid
-
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         user = self.request.user
@@ -1137,50 +1071,6 @@ def getBestPlayer(team):
             topMin = min
     return best
 
-#gets season average stats by player ids.....
-def getPlayerAvg(data,season,**kwargs):
-    url = 'https://www.balldontlie.io/api/v1/season_averages?season='
-    url += season +'&player_ids[]='
-    teams = ['home', 'visitor']
-    playerStats = load_obj(season+'playerStats')
-    print('loaded # player stats: ', len(playerStats))
-    for team in teams:
-        badPlayer = False
-        badPlayerid = 0#gosh i hope there is only ever 1 of these on each team else smh nooo
-        for playerid in data[team+'_team_players']:
-            foundSaved = False
-            #check if player has been saved
-            for splayerid in playerStats:
-                if playerid == splayerid:
-                        data[team+'_team_players'].update({playerid : {}})#here it is again#soo anoying
-                        for statName in playerStats[playerid]:
-                            data[team+'_team_players'][playerid].update({statName :playerStats[playerid][statName]})
-                        print('found saved -----------####-------------id: ', playerid)
-                        foundSaved = True
-                        break
-            #get unsaved season averages
-            if not foundSaved:
-                uurl = url+str(playerid)
-                response = req(uurl)
-                data[team+'_team_players'].update({playerid : {}})
-                print(len(response['data']))
-                if len(response['data']) != 0:#
-                    for statName in response['data'][0]:
-                        data[team+'_team_players'][playerid].update({ statName: response['data'][0][statName]})
-                    playerStats.update({playerid : {}})
-                    for statName in data[team+'_team_players'][playerid]:
-                        playerStats[playerid].update({statName : data[team+'_team_players'][playerid][statName]})
-                    print('not saved -----------####-------------id: ', playerid)
-                else:
-                    badPlayer = True
-                    badPlayerid = playerid
-        if badPlayer:
-            print('badplayer#--------', badPlayerid)
-            data[team+'_team_players'].pop(badPlayerid, None)
-            badPlayer=False
-
-    save_obj(playerStats, season+'playerStats')
-    return data
 
 #------------------------------------------------------------------------#
 
@@ -1256,44 +1146,3 @@ def predict(path):
 def reqSpread(url):
     r = requests.get(url)
     return r.json()
-
-#------------------------------------------------------------------------#
-def sortByPlayTime(data):
-    derp = ['home', 'visitor']
-    for foo in derp:
-        for i in range(3):
-            maxMin = 0
-            id = ''
-            for player in data[foo+'_team_players']:
-                old = maxMin
-                if 'min' in data[foo+'_team_players'][player]:
-                    maxMin = max(maxMin, int(data[foo+'_team_players'][player]['min']))
-                    if maxMin > old:#this line messed me up i had >= and could figure out why it wasnt working finally got it.
-                        id = player
-            try:
-                data[foo+'_good_players'].update({id : data[foo+'_team_players'][id]})
-                data[foo+'_team_players'].pop(int(id), None)
-            except KeyError:
-                print('key error')
-    return data
-#------------------------------------------------------------------------#
-def minuteConversion(data):
-    #chop seconds off...
-    print(data)
-    derp = ['home', 'visitor']
-    for foo in derp:#iter home visitor
-        for player in data[foo+'_team_players']:#iter players
-            min = ''
-            if data[foo+'_team_players'][player] != '' and data[foo+'_team_players'][player]:#takes care of non values
-                print(data[foo+'_team_players'][player])
-                time = data[foo+'_team_players'][player]['min']
-                if str(type(time)) == "<class 'str'>":
-                    for char in time:#iter charecters in time
-                        if char != ':':
-                            min += str(char)
-                        else:
-                            break
-                    data[foo+'_team_players'][player].update({'min' : min})
-                        #print(data[foo+'_team_players'][player]['min'])
-    return data
-#------------------------------------------------------------------------#

@@ -240,13 +240,22 @@
 							<tr>
               
               
-  							<td >
-                  <button style="background: transparent;
+                  {% if pmscore == 0%}
+                  <td class="remove-player" style="border-radius:0px">
+                  <button  style="background: transparent;
                   border: none !important;color: #333333"onclick="window.location.href='{% url 'remove-player' pk k%}';">
                     {{k}}
                   </button>
-
                 </td>
+
+                  {% else %}
+                  <td >
+
+                  <center>{{k}}</center>
+                </td>
+                  
+                  {% endif %}
+
 
 							{%for stat in v%}
 
