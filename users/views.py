@@ -15,7 +15,6 @@ def publicProfile(request,u):
     return render(request,'users/publicProfile.html',context)
 
 
-
 def newMessage(request, m):
     Message.objects.create(author=request.user,content=m)
     return redirect('chat')
