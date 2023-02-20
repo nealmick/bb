@@ -8,6 +8,9 @@ from django.conf.urls.static import static
 from predict import views as predict_views
 urlpatterns = [
     path('', include('etc.urls')),
+    path('chat/', user_views.chat , name='chat'),
+    path('new-message/<str:m>', user_views.newMessage , name='new-message'),
+    path('public-profile/<str:u>', user_views.publicProfile , name='public-profile'),
     path('export/', predict_views.exportGames , name='export-games'),
     path('admin/', admin.site.urls),
     path('predict/', include('predict.urls')),
