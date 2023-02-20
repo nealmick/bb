@@ -42,7 +42,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 #model.load_weights('./checkpoints/my_checkpoint')
 #creating and training model then saving
 model.compile(optimizer='adamax', loss='mean_squared_error', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=100, validation_split=0.1, batch_size=128 ,callbacks=[tensorboard_callback],shuffle=False)
+model.fit(x_train, y_train, epochs=100, validation_split=0.1, batch_size=128 ,callbacks=[tensorboard_callback],shuffle=True)
 model.save_weights('./checkpoints/my_checkpoint')
 
 
