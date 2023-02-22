@@ -1,4 +1,9 @@
-
+input{
+  border-radius: 7px;
+  border-radius: 7px;
+  border-width:0px;
+  padding:5px;
+}
 .remove-player:hover{
   background: rgba(207, 4, 4, 0.6) !important;
 }
