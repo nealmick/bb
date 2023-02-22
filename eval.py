@@ -13,7 +13,7 @@ test_path = "csv/test.csv"
 
 model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(32, activation='ReLU'),
+    tf.keras.layers.Dense(32, activation='selu'),
     tf.keras.layers.Dense(16, activation='ReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
@@ -48,7 +48,6 @@ data.drop(['visitor_score'], axis=1, inplace=True)
 
 data = data.values
 data = data.astype(float)
-
 def print_prediction(model,data):
     p = model.predict(data)
     c = 0#count correct winners
@@ -125,13 +124,11 @@ def print_prediction(model,data):
             evMargin4Count+=1
             if mcorrect:
                 evMargin4+=1
-            print(' margin4')
 
         if abs(pmp-spread[i]) > 3:
             evMargin3Count+=1
             if mcorrect:
                 evMargin3+=1
-            print(' margin3')
             
         if abs(pmp-spread[i]) > 2:
 
@@ -139,7 +136,6 @@ def print_prediction(model,data):
             if mcorrect:
 
                 evMargin2+=1
-        print(' margin2')
 
         if abs(pmp-spread[i]) > 1:
             
@@ -147,7 +143,6 @@ def print_prediction(model,data):
             if mcorrect:
 
                 evMargin1+=1
-            print(' margin1')
 
 
         #prediction - spread > 0 and winner 1
@@ -162,15 +157,17 @@ def print_prediction(model,data):
         print('#-------------------------------------------#')
         if correct:
             c+=1
+    #betting 100$ pergame at 110/100 
     print('percent correct winners: ', c/n*100,'%')
     print('spread percent correct winners: ', s/n*100,'%')
     print('expected value all games: ', ev/n*100,'%')
     print('expected value over 1 point margins: ',evMargin1,'/',evMargin1Count,'=', evMargin1/evMargin1Count*100,'%')
-    print('spent:', round(evMargin1Count*100),'profits $',round((evMargin1 * 190.91)-(evMargin1Count*100)),' by',(evMargin1/evMargin1Count*100)-52.5,'%')
+    print('spent:', round(evMargin1Count*100),'profits ',round((evMargin1 * 190.91)-(evMargin1Count*100)),' total :',round((evMargin1 * 190.91)))
     print('expected value over 2 point margins: ',evMargin2,'/',evMargin2Count,'=', evMargin2/evMargin2Count*100,'%')
-    print('spent:', round(evMargin2Count*100),'profits $',round((evMargin2 * 190.91)-(evMargin2Count*100)),' by',(evMargin2/evMargin2Count*100)-52.5,'%')
+    print('spent:', round(evMargin2Count*100),'profits ',round((evMargin2 * 190.91)-(evMargin2Count*100)),' total :',round((evMargin2 * 190.91)))
     print('expected value over 3 point margins: ',evMargin3,'/',evMargin3Count,'=', evMargin3/evMargin3Count*100,'%')
-    print('spent:', round(evMargin3Count*100),'profits $',round((evMargin3 * 190.91)-(evMargin3Count*100)),' by',(evMargin3/evMargin3Count*100)-52.5,'%')
+    print('spent:', round(evMargin3Count*100),'profits ',round((evMargin3 * 190.91)-(evMargin3Count*100)),' total :',round((evMargin3 * 190.91)))
     print('expected value over 4 point margins: ',evMargin4,'/',evMargin4Count,'=', evMargin4/evMargin4Count*100,'%')
-    print('spent:', round(evMargin4Count*100),'profits $',round((evMargin4 * 190.91)-(evMargin4Count*100)),'by ',(evMargin4/evMargin4Count*100)-52.5,'%')
+    print('spent:', round(evMargin4Count*100),' profits :',round((evMargin4 * 190.91)-(evMargin4Count*100)),' total :',round((evMargin4 * 190.91)))
 print_prediction(model, data)
+
