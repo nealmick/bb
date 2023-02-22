@@ -274,6 +274,8 @@ def editGame(request,pk,**kwargs):
     g = Game.objects.filter(pk=pk)
     csvid = g.values('csvid')[0]['csvid']
     gID = g.values('gameid')[0]['gameid']
+    author = g.values('author')[0]['author']
+    u = User.objects.filter(id=author).first()
     print('gID:', gID)
 
     if gID is None:
@@ -287,7 +289,7 @@ def editGame(request,pk,**kwargs):
     context['labels']= get_labels()
     context['asdf']= 'oof'
 
-    path = 'csv/'+str(user.username)+str(csvid)+'.csv'
+    path = 'csv/'+str(u.username)+str(csvid)+'.csv'
     csv = open(path,'r+')
     header = ''
     data= ''

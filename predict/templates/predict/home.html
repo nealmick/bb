@@ -134,7 +134,7 @@
 
 
 
-        <div class="col-lg-6 " style="margin-bottom: 10px;padding-left:0px">
+        <div id="games-div"class="col-lg-6 " style="margin-bottom: 10px;padding-left:0px">
 
           <div id="gamescroll"class="content-section "style="height:100%; min-height: 753px;max-height: 790px;overflow-y:scroll;overflow-x:hidden">
           {% if request.user.is_authenticated %}
@@ -166,7 +166,7 @@
                     <div class="col-3"style="padding:0">
                       <center>
                         <p style="margin:0px">{{ game.visitor }} - {{ game.visitor_score }} </p>
-                        <img class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
+                        <img id="team-logo" class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
 
                     </center>
                     </div>
@@ -305,7 +305,7 @@
                       <div class="col-3" style="padding:0">
                         <center>
                           <p style="margin:0px">{{ game.home }} - {{ game.home_score }} </p>
-                      <img class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
+                      <img id="team-logo" class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
 
                         </center>
                     </div>

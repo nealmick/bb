@@ -479,5 +479,26 @@ li {
   margin: auto;
 
 }
+@media screen and (max-width: 500px) {
 
+  #games-div{
+    padding: 15px !important;
 
+  }
+  #team-logo{
+    height: 65px !important;
+    width: 65px !important;
+  }
+
+  #game-info{
+    display:none;
+  }
+
+}
+
+@media screen and (min-width: 500px) {
+  #responsive-game-info{
+    display:none;
+  }
+
+}

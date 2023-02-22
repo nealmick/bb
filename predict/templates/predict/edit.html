@@ -26,10 +26,12 @@
 
 
 
-                  <div class="row center col-md-10" style="">
+                  <div id="game-info" class="row center col-md-10" style="">
+
+
                     <div class="col-3"style="padding:0">
                       <center>
-                        <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+                        <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
 
                         <p style="margin:0px">Predicted Score: {{ pvscore }} </p>
                         <p style="margin:0px">Actual Score: {{ visitor_score }} </p>
@@ -177,7 +179,7 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
-                          <img class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+                          <img  id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
 
                           <p style="margin:0px">Predicted Score: {{ phscore }} </p>
                           <p style="margin:0px">Actual Score: {{ home_score }} </p>
@@ -218,8 +220,7 @@
 
 
 
-
-
+          
 
 				<p></p>
 				<div style="margin-top:25px;overflow: auto; color:white;">
