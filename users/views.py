@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from .models import Message
+from predict.models import Game
 from django.contrib.auth.models import User
 # Create your views here.
 def publicProfile(request,u):
@@ -12,7 +13,13 @@ def publicProfile(request,u):
     obj = obj.first()
     print(obj)
     context['obj'] = obj
+
+    games = Game.objects.filter(author=obj).order_by('-date_posted')
+
+    context['games'] = games
+
     return render(request,'users/publicProfile.html',context)
+
 
 
 def newMessage(request, m):
