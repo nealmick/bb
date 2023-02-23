@@ -1132,7 +1132,7 @@ def predict(path):
     model = tf.keras.Sequential([
 
     tf.keras.layers.Dense(32, activation='ReLU'),
-    tf.keras.layers.Dense(16, activation='ReLU'),
+    tf.keras.layers.Dense(32, activation='ReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
 
