@@ -149,11 +149,12 @@ def removePlayer(request,pk,player):
 
 
 
+
 def exportGames(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="export.csv"'
-    header = ['gameid','gamedate','home','visitor','home_score','visitor_score','home_score_prediction','visitor_score_prediction','home_spread','visitor_spread','home_games_won','home_games_loss','visitor_games_won','visitor_games_loss','pmscore']    
+    header = ['gameid','gamedate','home','visitor','home_score','visitor_score','home_score_prediction','visitor_score_prediction','home_spread','visitor_spread','home_games_won','home_games_loss','visitor_games_won','visitor_games_loss','pmscore','home_injury','visitor_injury','removed_players']    
     
     writer = csv.writer(response)
 
@@ -164,7 +165,7 @@ def exportGames(request):
     for game in qs:
         g = [game.gameid,game.gamedate,game.home,game.visitor,game.home_score,game.visitor_score,
         game.home_score_prediction,game.visitor_score_prediction,game.home_spread,game.visitor_spread,
-        game.home_games_won,game.home_games_loss,game.visitor_games_won,game.visitor_games_loss,game.pmscore]
+        game.home_games_won,game.home_games_loss,game.visitor_games_won,game.visitor_games_loss,game.pmscore,game.homeInjury,game.visitorInjury,game.removed_players]
         line = []
         for s in g:
             line.append(str(s))
