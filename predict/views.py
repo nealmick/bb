@@ -260,9 +260,13 @@ def saveEdit(request,pk,change,**kwargs):
     print(p)
 
     #p = float(p[0])
+
+    pmscore = p[0]-p[1]
+    margin = abs(pmscore)-abs(float(g.values('home_spread')[0]['home_spread']))
     g.update(home_score_prediction=round(p[0],2))
     g.update(visitor_score_prediction=round(p[1],2))
     g.update(pmscore=p[0]-p[1])
+    g.update(margin=abs(margin))
     
     return redirect('home-predict')
 
@@ -396,6 +400,13 @@ def editGame(request,pk,**kwargs):
 
     context['home_streak'] = g.values('home_streak')[0]['home_streak']
     context['visitor_streak'] = g.values('visitor_streak')[0]['visitor_streak']
+    context['margin'] = g.values('margin')[0]['margin']
+    context['csvid'] = g.values('csvid')[0]['csvid']
+    context['date_posted'] = g.values('date_posted')[0]['date_posted']
+    context['gameid'] = g.values('gameid')[0]['gameid']
+    context['finished'] = g.values('finished')[0]['finished']
+    context['removed_players'] = g.values('removed_players')[0]['removed_players']
+    context['author'] = u
 
     hi = g.values('homeInjury')[0]['homeInjury']
     if hi is None:
@@ -744,6 +755,8 @@ def quickcreate(request,home,visitor,date):
         visitorInjury += ', '+player
     if visitorInjury != '':
         visitorInjury = visitorInjury[1:]
+
+
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
