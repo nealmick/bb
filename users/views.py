@@ -14,7 +14,7 @@ def publicProfile(request,u):
     print(obj)
     context['obj'] = obj
 
-    games = Game.objects.filter(author=obj).order_by('-date_posted')
+    games = Game.objects.filter(author=obj).order_by('-date_posted')[:100]
 
     context['games'] = games
 
