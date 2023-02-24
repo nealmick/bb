@@ -8,17 +8,17 @@
 <div class='content-section col-md-8 center'style="
 margin-right: auto;
 margin-left: auto;
-margin-top:75px;
-
+margin-top:50px;
 padding:25px;
+min-height: 700px;max-height: 700px;overflow: scroll;
 ">
 
 
 <div>
     <div class="media">
-        <img style="width:275px;height:300px;"class="rounded-circle account-img" src="{{ obj.profile.image.url }}">
+        <img id='profile-pic' style="width:225px;height:250px;"class="rounded-circle account-img" src="{{ obj.profile.image.url }}">
         <div class="media-body">
-            <h2 style="margin-top:25px"class="account-heading">{{ obj.username }}</h2>
+            <h2 style="margin-top:10px"class="account-heading">{{ obj.username }}</h2>
             <div>
                 <p class="">Joined: {{ obj.date_joined }}</p>
                 <p class="">Margin1: {{ obj.profile.ev_margin1 }}/{{ obj.profile.ev_margin1_count }}</p>
@@ -33,7 +33,16 @@ padding:25px;
 </div>
 
 
+<style>
 
+@media screen and (max-width: 500px) {
+  #profile-pic{
+    display:none;
+  }
+
+}
+
+</style>
 
 
 
