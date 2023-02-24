@@ -457,7 +457,7 @@ def getScore(request,pk,**kwargs):
         visitor_score = Game.objects.filter(pk=pk).values('visitor_score')[0]['visitor_score']
 
         if not finished: # add not back
-            spread = float(spread)
+            spread = float(spread)*-1
             if pmscore >= 0 and h >v:#win p home
                 asdf = float(p.values('gain')[0]['gain'])
                 p.update(gain=asdf+abs(pmscore))
@@ -537,7 +537,7 @@ def getScore(request,pk,**kwargs):
                     p.update(ev_margin3=asdf+1)
                 asdf = int(p.values('ev_margin3_count')[0]['ev_margin3_count']) 
                 p.update(ev_margin3_count=asdf+1)
-            if margin > 2:
+            if abs(margin) > 2:
                 if mcorrect:
                     Game.objects.filter(pk=pk).update(ev_margin2='1')
                     asdf = int(p.values('ev_margin2')[0]['ev_margin2']) 
@@ -1133,7 +1133,6 @@ def predict(path):
 
     tf.keras.layers.Dense(32, activation='ReLU'),
     tf.keras.layers.Dense(32, activation='ReLU'),
-    
     tf.keras.layers.Dense(2, activation='linear'),
 
     ])
