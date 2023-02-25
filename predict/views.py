@@ -851,7 +851,21 @@ def getTeamData(home,visitor):
 
 
 def getSpread(h,v):
-    keys = ['f003fe2f0e443e7bfece9c357b90c20d',
+    keys = [
+    'ce04efe16615246ad5b50bd7052da6c8',
+    'ea952c5b56feb68f06f8cc54489f0744',
+    'ef6aff1bf2ae649c8282c7f6fa3baf00',
+    '3914219b0cfdd8a638c57cee0943fdb9',
+    'c67f026ad6aca15413997512ad9cb305',
+    'eefb2eb4d14eac1e7e33f6c401e6c71d',
+    '06b89546e5eb99f61bc860a192629872',
+    'ab3e2dd71f42af90c3e2d181b18666eb',
+    '705dc7793b126700f0ab85e2fb61e0d1',
+    'f4acc54e6ca61fde73d7732296305576'
+    ]
+
+
+    oldkeys = ['f003fe2f0e443e7bfece9c357b90c20d',
             'ea5ba76fd8807efa3b484121888f0f70',
             'ccd995270783b8fd83bef5a433877e9f',
             '790780270afebabec377041febe25c8a',
@@ -894,7 +908,7 @@ def getSpread(h,v):
     h = CHOICES[h]
     v = CHOICES[v]
     spreadr = reqSpread(spreadURL)
-
+    print(spreadURL,spreadr)
     vistorSpread = 0
     homeSpread = 0
     dk_vistorSpread = 0
