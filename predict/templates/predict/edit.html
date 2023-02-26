@@ -8,13 +8,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div style="overflow: auto;color:#333333 !important">
 
-	<body class="">
+  <body class="">
 
-  			<div class="col-12">
-			<div class="content-section" style="opacity: 0.95;margin-top:25px;">
-			<div style="overflow: auto;">
+        <div class="col-12">
+      <div class="content-section" style="opacity: 0.95;margin-top:25px;">
+      <div style="overflow: auto;">
 
-				
+        
 
                   <div id="game-info" class="row center col-md-10" style="">
 
@@ -45,16 +45,16 @@
                         <canvas  id="c" ></canvas>
                         </div>
                         </center>
-                    	<center>
+                      <center>
                         {% if pmscore == 0 %}
     
-						          <input style="margin-top:5px;margin-bottom:7px" onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
+                      <input style="margin-top:5px;margin-bottom:7px" onclick="myFunction()" type="button" class="btn btn-grey" value="Predict">
                       <br>
-						          {% else%}
+                      {% else%}
                         <p style="margin:0px;margin-left: 7px !important;">{{ pmscore|floatformat:2 }}</p>
                         <p style="margin:0px;margin-left: 7px !important;">{{ pmactual }}</p>
 
-					          	{%endif%}
+                      {%endif%}
                       <p style="margin:0px;margin-left: 7px !important;">Win / Loss / Streak / Injuries</p>
 
                       <a style="margin:0px;color:#010100 !important;margin-left: 7px !important;" target="_blank"href="https://sportsbook.fanduel.com/navigation/nba">FanDuel  / <a style="margin:0px;color:#010100 !important;" target="_blank"href="https://sportsbook.draftkings.com/leagues/basketball/nba">DraftKings </a>
@@ -64,7 +64,7 @@
                         {% if finished %}
                           {% if ev_won == '1'%}
                           <p style="margin-bottom: 0px;">
-                            {% if spread_preadiction == 1%}
+                            {% if spread_preadiction == '1'%}
                             Margin: {{ game.margin |floatformat:2}}
                             <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-right"></i>
                             {% else%}
@@ -75,7 +75,7 @@
                           
                           {% else %}
                           <p style="margin-bottom: 0px;">
-                            {% if spread_preadiction == 1%}
+                            {% if spread_preadiction == '1'%}
                             Margin {{ margin |floatformat:2}}
                             <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-right"></i> 
 
@@ -88,7 +88,7 @@
 
                           {% else %}
                         
-                        {% if spread_preadiction == 1%}
+                        {% if spread_preadiction == '1'%}
                           Margin {{ margin |floatformat:2}}
                           <i class="fas fa-arrow-right"></i> 
 
@@ -111,8 +111,8 @@
                       
                       
 
-					    
-                    	</center>
+              
+                      </center>
 
 
 
@@ -264,23 +264,23 @@
 
           
 
-				<p></p>
-				<div style="margin-top:35px;overflow: auto; color:white;">
-				<table align="center">
-						<tr>
-							<td>Input Players</td>
-							<td>#</td>
-							{% for label in labels%}
-								<td>{{label}}</td>
-							{% endfor %}
-						</tr>
+        <p></p>
+        <div style="margin-top:35px;overflow: auto; color:white;">
+        <table align="center">
+            <tr>
+              <td>Input Players</td>
+              <td>#</td>
+              {% for label in labels%}
+                <td>{{label}}</td>
+              {% endfor %}
+            </tr>
 
 
 
 
-						{% for k, v in stats.items %}
+            {% for k, v in stats.items %}
 
-							<tr>
+              <tr>
               
               
                   {% if pmscore == 0%}
@@ -300,109 +300,109 @@
                   {% endif %}
 
 
-							{%for stat in v%}
+              {%for stat in v%}
 
-									{% if forloop.counter == 1 %}
-											<td >{{stat}}</td>
-									{%else%}
-											{% if pmscore == 0%}
-												<td class="e oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
-											{% else %}
-												<td class="oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
-											{% endif %}
-									{%endif%}
-							{%endfor%}
-						</tr>
-						{% endfor %}
+                  {% if forloop.counter == 1 %}
+                      <td >{{stat}}</td>
+                  {%else%}
+                      {% if pmscore == 0%}
+                        <td class="e oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
+                      {% else %}
+                        <td class="oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
+                      {% endif %}
+                  {%endif%}
+              {%endfor%}
+            </tr>
+            {% endfor %}
 
 
-				</table>
-			</div>
+        </table>
+      </div>
       <br>
       <br>
       <p class="text-muted"style="white-space: pre-line;">User: {{author}}    &nbsp&nbsp&nbsp csvid: {{csvid}}    &nbsp&nbsp&nbsp  GameID: {{gameid}}   &nbsp&nbsp&nbsp  created: {{date_posted}}</p>
       <p class="text-muted"style="white-space: pre-line;">Removed Players: {{removed_players}}</p>
 </div>
-				
-				<script defer>
-				var changes = "change=";
-				var asdf =""
-				editing = false
+        
+        <script defer>
+        var changes = "change=";
+        var asdf =""
+        editing = false
 
-				document.body.addEventListener('click', function (event) {
-					console.log('click')
+        document.body.addEventListener('click', function (event) {
+          console.log('click')
 
-				var press = jQuery.Event("keypress");
-				press.ctrlKey = false;
-				press.which = 13;
-				$(".e").trigger(press);
-				console.log(changes)
+        var press = jQuery.Event("keypress");
+        press.ctrlKey = false;
+        press.which = 13;
+        $(".e").trigger(press);
+        console.log(changes)
 
-				})
-
-
-
-				$(function(){
-						$(".e").click(function(event){
-								if(!editing){
-									editing=true;
-									if($(this).children("input").length > 0)
-											return false;
-									f = $(this).attr("id");
-									var tdObj = $(this);
-									asdf = tdObj
-									lastObj = tdObj
-									var preText = tdObj.html();
-									var inputObj = $("<input type='number' id='asdf'/>");
-									tdObj.html("");
-									inputObj.width(tdObj.width())
-											.height(tdObj.height())
-											.css({border:"0px",fontSize:"17px"})
-											.val(preText)
-											.appendTo(tdObj)
-											.trigger("focus")
-											.trigger("select");
-
-									inputObj.keyup(function(event){
-											if(13 == event.which) { // press ENTER-key
-													var text = $(this).val();
-													tdObj.html(text);
-													changes += f+":"+$(this).val()+"-";
-													editing=false;
-											}
-
-											else if(27 == event.which) {  // press ESC-key
-													tdObj.html(preText);
-													editing=false;
-
-											}
-
-										});
+        })
 
 
 
-									inputObj.click(function(){
-											return false;
-									});
-						}
+        $(function(){
+            $(".e").click(function(event){
+                if(!editing){
+                  editing=true;
+                  if($(this).children("input").length > 0)
+                      return false;
+                  f = $(this).attr("id");
+                  var tdObj = $(this);
+                  asdf = tdObj
+                  lastObj = tdObj
+                  var preText = tdObj.html();
+                  var inputObj = $("<input type='number' id='asdf'/>");
+                  tdObj.html("");
+                  inputObj.width(tdObj.width())
+                      .height(tdObj.height())
+                      .css({border:"0px",fontSize:"17px"})
+                      .val(preText)
+                      .appendTo(tdObj)
+                      .trigger("focus")
+                      .trigger("select");
 
-						});
-				});
+                  inputObj.keyup(function(event){
+                      if(13 == event.which) { // press ENTER-key
+                          var text = $(this).val();
+                          tdObj.html(text);
+                          changes += f+":"+$(this).val()+"-";
+                          editing=false;
+                      }
 
-				function myFunction() {
-						window.location.href = changes;
+                      else if(27 == event.which) {  // press ESC-key
+                          tdObj.html(preText);
+                          editing=false;
 
-				}
-				</script>
+                      }
+
+                    });
 
 
 
+                  inputObj.click(function(){
+                      return false;
+                  });
+            }
 
-			</div>
+            });
+        });
+
+        function myFunction() {
+            window.location.href = changes;
+
+        }
+        </script>
 
 
 
 
+      </div>
 
-	</body>
+
+
+
+
+  </body>
 {% endblock %}
