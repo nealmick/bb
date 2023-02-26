@@ -16,16 +16,6 @@
 
 				
 
-
-
-
-
-
-
-
-
-
-
                   <div id="game-info" class="row center col-md-10" style="">
 
 
@@ -46,8 +36,11 @@
                         <p style="margin:0px">No Spread found!!</p>
   
                         {% else%}
-                        <p style="margin:0px">{{ gamedate }}</p>
+                          
+                          <p style="margin:0px">{{ gamedate }}</p>
+                        
                         {% endif %}
+
                         <div style="height: 125px !important;">
                         <canvas  id="c" ></canvas>
                         </div>
@@ -65,7 +58,48 @@
                       <p style="margin:0px;margin-left: 7px !important;">Win / Loss / Streak / Injuries</p>
 
                       <a style="margin:0px;color:#010100 !important;margin-left: 7px !important;" target="_blank"href="https://sportsbook.fanduel.com/navigation/nba">FanDuel  / <a style="margin:0px;color:#010100 !important;" target="_blank"href="https://sportsbook.draftkings.com/leagues/basketball/nba">DraftKings </a>
-                      <p style="margin:0px;"data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread.">Margin {{ margin |floatformat:2}}</p>
+                      <p style="margin:0px;"data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread.">
+                         {% if pmscore != 0 %}
+                        
+                        {% if finished %}
+                          {% if ev_won == '1'%}
+                          <p style="margin-bottom: 0px;">
+                            {% if spread_preadiction == 1%}
+                            Margin: {{ game.margin |floatformat:2}}
+                            <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-right"></i>
+                            {% else%}
+                            <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-left"></i>
+                            Margin: {{ margin |floatformat:2}}
+                            {%endif%}
+                          </p>
+                          
+                          {% else %}
+                          <p style="margin-bottom: 0px;">
+                            {% if spread_preadiction == 1%}
+                            Margin {{ margin |floatformat:2}}
+                            <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-right"></i> 
+
+                            {% else %}
+                            <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-left"></i> 
+
+                            Margin: {{ margin |floatformat:2}}
+                            {% endif %}
+                            {% endif %}
+
+                          {% else %}
+                        
+                        {% if spread_preadiction == 1%}
+                          Margin {{ margin |floatformat:2}}
+                          <i class="fas fa-arrow-right"></i> 
+
+                          {% else %}
+                          <i  class="fas fa-arrow-left"></i> 
+                          Margin: {{ margin |floatformat:2}}
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
+
+                      </p>
 
                     </a>
                       <br>

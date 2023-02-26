@@ -83,6 +83,7 @@ class Game(models.Model):
 
     removed_players = models.CharField(null=True, blank=True, max_length=1000)
 
+    spread_preadiction = models.CharField(null=True, blank=True, max_length=10)
     
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)

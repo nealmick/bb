@@ -267,7 +267,20 @@ def saveEdit(request,pk,change,**kwargs):
     g.update(visitor_score_prediction=round(p[1],2))
     g.update(pmscore=p[0]-p[1])
     g.update(margin=abs(margin))
-    
+    spread = float(g.values('home_spread')[0]['home_spread'])*-1
+    pmp = pmscore
+    print(spread,pmp)
+    pred = None
+    if spread>pmp and pmp <0:
+        pred = 0
+    elif spread>pmp and pmp >0:
+        pred = 0
+    elif spread<pmp and pmp <0:
+        pred = 1
+    elif spread<pmp and pmp >0:
+        pred = 1
+    g.update(spread_preadiction=pred)
+
     return redirect('home-predict')
 
 
@@ -406,6 +419,7 @@ def editGame(request,pk,**kwargs):
     context['gameid'] = g.values('gameid')[0]['gameid']
     context['finished'] = g.values('finished')[0]['finished']
     context['removed_players'] = g.values('removed_players')[0]['removed_players']
+    context['ev_won'] = g.values('ev_won')[0]['ev_won']
     context['author'] = u
 
     hi = g.values('homeInjury')[0]['homeInjury']
@@ -490,7 +504,6 @@ def getScore(request,pk,**kwargs):
                 Game.objects.filter(pk=pk).update(winner=0)
             print(Game.objects.filter(pk=pk).values('winner')[0]['winner'])
             p.update(predictions=p.values('predictions')[0]['predictions']+1)
-
 
 
             pmp = pmscore
@@ -755,6 +768,7 @@ def quickcreate(request,home,visitor,date):
         visitorInjury += ', '+player
     if visitorInjury != '':
         visitorInjury = visitorInjury[1:]
+
 
 
     obj = Game.objects.create(author=request.user,home=home,visitor=visitor,gamedate=date,homecolor=TEAMCOLORS[home],visitorcolor=TEAMCOLORS[visitor],csvid=csvid,

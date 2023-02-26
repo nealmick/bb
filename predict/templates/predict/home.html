@@ -165,7 +165,7 @@
                   <div class="row">
                     <div class="col-3"style="padding:0">
                       <center>
-                        <p style="margin:0px">{{ game.visitor }} - {{ game.visitor_score }} </p>
+                        <p style="margin:0px">{{ game.visitor }} {{ game.visitor_score }} {{ game.visitor_spread }} </p>
                         <img id="team-logo" class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
 
                     </center>
@@ -178,21 +178,15 @@
                         {% if not game.finished%}
                           <form id="get_score" action="{% url 'get-score' game.pk %}" method="get">
                             <div>
-                              <p style="margin-bottom: 0px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey-secondary" value="Get Score" name="mybtn"> </p>
+                              <p style="margin-bottom: 5px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey-secondary" value="Get Score" name="mybtn"> </p>
 
                               
                             </div>
                           </form>
                         {% else%}
 
-                        {% if game.pmscore >= 0 and game.winner == 1 or game.pmscore < 0 and game.winner == 0 %}
-                        <p style="margin:0px; color:rgb(65, 199, 8)">{{ game.pmscore |floatformat:2 }} <i class="fas fa-check"></i></p>
-                          {%else%}
-                        <p style="margin:0px; color:rgb(255, 0, 0)">{{ game.pmscore  |floatformat:2 }} <i class="fas fa-times"></i></p>
-
-
-                          {% endif %}
-                          <p style="margin:0px">{{ game.gamedate }}</p>
+                                            
+                        <p style="">{{ game.gamedate }}</p>
                         {% endif %}
                         <div style="height: 75px !important;">
                         <canvas  id="{{ game.pk }}" ></canvas>
@@ -208,7 +202,7 @@
                                   '',
                                 ],
                                 datasets: [{
-                                  label: 'prediction',
+                                  label: 'Plus Minus Prediction',
                                   data: ["{{ game.pmscore }}"],
 
                                   backgroundColor: [
@@ -304,7 +298,7 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
-                          <p style="margin:0px">{{ game.home }} - {{ game.home_score }} </p>
+                          <p style="margin:0px">{{ game.home }} {{ game.home_score }} {{game.home_spread}}</p>
                       <img id="team-logo" class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
 
                         </center>
@@ -406,7 +400,17 @@
 {{ extraCorrect|json_script:"extraCorrect" }}
 {{ pw|json_script:"pw" }}
 {{ ev_margin1|json_script:"ev_margin1" }}
+{{ ev_margin1_count|json_script:"ev_margin1_count" }}
 {{ ev_margin1_pct|json_script:"ev_margin1_pct" }}
+
+{{ ev_margin2|json_script:"ev_margin2" }}
+{{ ev_margin2_count|json_script:"ev_margin2_count" }}
+{{ ev_margin2_pct|json_script:"ev_margin2_pct" }}
+
+{{ ev_margin3|json_script:"ev_margin3" }}
+{{ ev_margin3_count|json_script:"ev_margin3_count" }}
+{{ ev_margin3_pct|json_script:"ev_margin3_pct" }}
+
 
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
