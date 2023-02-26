@@ -421,6 +421,7 @@ def editGame(request,pk,**kwargs):
     context['removed_players'] = g.values('removed_players')[0]['removed_players']
     context['ev_won'] = g.values('ev_won')[0]['ev_won']
     context['author'] = u
+    context['spread_preadiction'] = g.values('spread_preadiction')[0]['spread_preadiction']
 
     hi = g.values('homeInjury')[0]['homeInjury']
     if hi is None:
