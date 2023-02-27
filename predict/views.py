@@ -14,8 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import HttpResponsePermanentRedirect
 
 from .models import Game
-from users.models import Profile
-
+from users.models import Profile, Message
 
 
 from tensorflow.keras import *
@@ -68,7 +67,67 @@ TEAMCOLORS = {
 }
 
 
+def statsView(request):
+    context = {}
+    user = request.user
+    context['correct'] = Profile.objects.filter(user=user).values('correct')[0]['correct']
+    context['numpred'] =  Profile.objects.filter(user=user).values('predictions')[0]['predictions']
+    if Profile.objects.filter(user=user).values('predictions')[0]['predictions'] >= 1:
+        context['pc'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)
+        context['pw'] = (round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)-100)*-1
+        try:
+            context['extraCorrect'] = round(Profile.objects.filter(user=user).values('correct')[0]['correct']/Profile.objects.filter(user=user).values('predictions')[0]['predictions']*100,1)-round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
+        except ZeroDivisionError:
+            context['extraCorrect'] = 0
+        context['ev_won'] = Profile.objects.filter(user=user).values('ev_won')[0]['ev_won']
+        context['ev_won_count'] = Profile.objects.filter(user=user).values('ev_won_count')[0]['ev_won_count']
+        try:
+            context['ev_won_pct'] = round(Profile.objects.filter(user=user).values('ev_won')[0]['ev_won'] /Profile.objects.filter(user=user).values('ev_won_count')[0]['ev_won_count'] *100)
+        except ZeroDivisionError:
+            context['ev_won_pct'] = 0
+        context['ev_margin1'] = Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1']
+        context['ev_margin1_count'] = Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count']
+        try:
+            context['ev_margin1_pct'] = round(Profile.objects.filter(user=user).values('ev_margin1')[0]['ev_margin1'] /Profile.objects.filter(user=user).values('ev_margin1_count')[0]['ev_margin1_count'] *100)
+        except ZeroDivisionError:
+            context['ev_margin1_pct'] = 0
 
+        context['ev_margin2'] = Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2']
+        context['ev_margin2_count'] = Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count']
+        try:
+            context['ev_margin2_pct'] = round(Profile.objects.filter(user=user).values('ev_margin2')[0]['ev_margin2'] /Profile.objects.filter(user=user).values('ev_margin2_count')[0]['ev_margin2_count'] *100)
+        except ZeroDivisionError:
+            context['ev_margin2_pct'] = 0
+        context['ev_margin3'] = Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3']
+        context['ev_margin3_count'] = Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count']
+        try:
+            context['ev_margin3_pct'] = round(Profile.objects.filter(user=user).values('ev_margin3')[0]['ev_margin3'] /Profile.objects.filter(user=user).values('ev_margin3_count')[0]['ev_margin3_count'] *100)
+        except ZeroDivisionError:
+            context['ev_margin3_pct'] = 0
+
+    else:
+        context['ev_margin1'] = 0
+        context['ev_margin1_count'] = 0
+        context['ev_margin1_pct'] = 0
+        context['ev_margin2'] = 0
+        context['ev_margin2_count'] =0
+        context['ev_margin2_pct'] = 0
+        context['ev_margin3'] = 0
+        context['ev_margin3_count'] = 0
+        context['ev_margin3_pct'] = 0
+
+
+        context['pc'] = '0'
+    context['gain'] =  Profile.objects.filter(user=user).values('gain')[0]['gain']
+    context['loss'] =  Profile.objects.filter(user=user).values('loss')[0]['loss']
+    context['lg'] = Profile.objects.filter(user=user).values('gain')[0]['gain'] - Profile.objects.filter(user=user).values('loss')[0]['loss']
+    
+    qs = Message.objects.order_by('id')[:100]
+    profiles = Profile.objects.order_by('id')
+    context['profiles'] = profiles
+    context['qs']=qs
+
+    return render(request,'predict/stats.html',context)
 
 def removePlayer(request,pk,player):
     print(pk)

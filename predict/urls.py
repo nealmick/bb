@@ -13,6 +13,7 @@ urlpatterns = [
     path('', GameListView.as_view() , name='home-predict'),
     path('date/<str:dateSelected>', GameListView.as_view() , name='home-predict'),
     path('#<int:pk>', views.getScore , name='get-score'),
+    path('stats/', views.statsView , name='stats-view'),
     #path('predicttoday/', views.predictToday , name='predict-today'),
 
 
