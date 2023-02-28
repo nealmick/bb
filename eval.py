@@ -13,7 +13,7 @@ test_path = "csv/test.csv"
 
 model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(32, activation='ReLU'),
+    tf.keras.layers.Dense(64, activation='ReLU'),
     tf.keras.layers.Dense(32, activation='ReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
@@ -23,7 +23,6 @@ model = tf.keras.Sequential([
 ])
 
 log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 #creating and training model then saving
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])

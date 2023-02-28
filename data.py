@@ -1,13 +1,12 @@
 import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
-#seasons = ['2022','2021','2020','2019']#,'2015']#,'2014']#,'2013','2012','2011']
 seasons = ['2020','2019','2018','2017','2016','2015','2014','2015','2014']#,'2012']
+
 #seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
-#seasons = ['2019']
+#seasonsCSV.reverse()
 
 seasons.reverse()
-#seasonsCSV.reverse()
 
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
 playersPerTeam = 7
@@ -31,12 +30,44 @@ def main(labels,seasons,**kwargs):
         foo = 0
         c = 0
         count = 0
-        for game in games:
+
+        sorted = sortGames(games)
+        games = load_obj(season+'Games')
+        streaks = {}
+        for num in range(1,31):
+            streaks[int(num)] = 0
+
+        for game in sorted:
+            #print(game, game in games)
+            #print(games[game]['date'])
+            #print(games[game]['spread'])
             count+=1
             g=games[game]
-          
             print(game,g['spread'], g['winner'],g['date'],g['home_id'],g['home_score'],g['visitor_id'],g['visitor_score'])
             print('spread:',g['spread'],' vscore-hscore:',g['visitor_score']-g['home_score'])
+            beforeStreaks = streaks.copy()
+            if g['home_score'] > g['visitor_score']:
+                if streaks[(g['home_id'])] < 0:
+                    streaks[g['home_id']] = 0
+                else:
+                    streaks[g['home_id']] += 1
+                if streaks[g['visitor_id']] > 0:
+                    streaks[g['visitor_id']] = 0
+                else:
+                    streaks[g['visitor_id']] -= 1
+            if g['home_score'] < g['visitor_score']:
+                if streaks[g['home_id']] < 0:
+                    streaks[g['home_id']] = 0
+                else:
+                    streaks[g['home_id']] -= 1
+                if streaks[g['visitor_id']] > 0:
+                    streaks[g['visitor_id']] = 0
+                else:
+                    streaks[g['visitor_id']] += 1
+
+
+
+
             if g['spread'] == '':
                 print('noSpread')
                 count-=1
@@ -87,15 +118,15 @@ def main(labels,seasons,**kwargs):
                 bestV.append(visitorTeam[b])
                 visitorTeam.pop(b)
             foo+=1
-            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo)
+            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,beforeStreaks)
 
 
 
-def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo):
-    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)
+def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks):
+    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)+','+str(streaks[int(homeId)])
     for stat in homeTeamStats:
         line+=','+str(stat)
-    line += ','+str(visitorId)
+    line += ','+str(visitorId)+','+str(streaks[int(visitorId)])
     for stat in visitorTeamStats:
         line+=','+str(stat)
     for player in range(len(bestH)):
@@ -112,13 +143,14 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''
+        #return ''#uncomment to not train on same season as test
 
     csv = open(path,'a')
     csv.write(line+'\n')
     #print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'home_score,visitor_score,gameid,spread,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
+    header = 'home_score,visitor_score,gameid,spread,home_id,home_streak,hgp,hw,hl,visitor_id,visitor_streak,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
@@ -150,7 +182,26 @@ def getBestPlayer(team):
 
 
 
+def sortGames(games):
+    gCopy = games
+    sorted = []
 
+    while len(gCopy) > 0 :
+        current = ''
+        currentID = ''
+        
+        for game in gCopy:
+            #print(game)
+            #print(games[game]['date'])
+            if games[game]['date'] > current:
+                current = games[game]['date']
+                currentID = game
+        
+        #print(games[currentID]['date'])   
+        sorted.append(currentID)     
+        gCopy.pop(currentID)
+    sorted.reverse()
+    return sorted
 
 def save_obj(obj, name):
     with open('updatedObj/'+ name + '.pkl', 'wb') as f:
