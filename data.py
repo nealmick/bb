@@ -1,7 +1,7 @@
 import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
-seasons = ['2020','2019','2018','2017','2016','2015','2014','2015','2014']#,'2012']
+seasons = ['2020','2019','2018','2017','2016','2015','2014']#,'2012']
 
 #seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
 #seasonsCSV.reverse()
@@ -45,6 +45,9 @@ def main(labels,seasons,**kwargs):
             g=games[game]
             print(game,g['spread'], g['winner'],g['date'],g['home_id'],g['home_score'],g['visitor_id'],g['visitor_score'])
             print('spread:',g['spread'],' vscore-hscore:',g['visitor_score']-g['home_score'])
+            print()
+
+
             beforeStreaks = streaks.copy()
             if g['home_score'] > g['visitor_score']:
                 if streaks[(g['home_id'])] < 0:
@@ -95,11 +98,30 @@ def main(labels,seasons,**kwargs):
             visitorPlayerIds = playerIdByTeamID[str(g['visitor_id'])]
             homeTeam = []
             visitorTeam = []
-            for id in homePlayerIds:
-                homeTeam.append(seasonAverages[id])
-            for id in visitorPlayerIds:
-                visitorTeam.append(seasonAverages[id])
-            
+
+            for player in g['data']:
+                if player['player'] is None:
+                    continue
+    
+                if player['pts']!= 0:
+                    try:
+                        
+                            if int(player['team']['id']) == int(g['home_id']):
+                                homeTeam.append(seasonAverages[int(player['player']['id'])])
+                            elif int(player['team']['id']) == int(g['visitor_id']):
+                                visitorTeam.append(seasonAverages[int(player['player']['id'])])
+                            else:
+                                print('dddddddddddidnt match team')
+                    except KeyError:
+                        data = getSeaonAverage(int(player['player']['id']),season,labels)
+                        seasonAverages.update({int(player['player']['id']):data})
+                        save_obj(seasonAverages,season+'SeasonAverages')
+                        print('error')
+                
+
+            print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
+            if(len(visitorTeam)<8 or len(homeTeam)<8):
+                continue
             bestH = []
             for i in range(0,playersPerTeam):
                 b = getBestPlayer(homeTeam)
@@ -121,7 +143,6 @@ def main(labels,seasons,**kwargs):
             writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,beforeStreaks)
 
 
-
 def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks):
     line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)+','+str(streaks[int(homeId)])
     for stat in homeTeamStats:
@@ -139,7 +160,7 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
 
 
     if season == '2020':
-        if foo > 500:#sets split of test/train on final season.....
+        if foo > 700:#sets split of test/train on final season.....
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''
@@ -227,7 +248,19 @@ def req(url):
     return r.json()
  
 
-
+def getSeaonAverage(playerId,season,labels):
+    url = 'https://www.balldontlie.io/api/v1/season_averages?season='+season
+    url+='&player_ids[]='+str(playerId)
+    r = req(url)
+    if len(r['data'])==0:
+        print('no season average-----------------')
+        return []
+    r = r['data'][0]
+    print(r)
+    seasonAverage = []
+    for label in labels:
+        seasonAverage.append(r[label])
+    return seasonAverage
 
 
 main(labels,seasons)
