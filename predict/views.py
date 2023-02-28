@@ -304,9 +304,11 @@ def saveEdit(request,pk,change,**kwargs):
         hgp = int(g.values('home_games_won')[0]['home_games_won'])+int(g.values('home_games_loss')[0]['home_games_loss'])
         spread = str(g.values('home_spread')[0]['home_spread'])
         vgp = int(g.values('visitor_games_won')[0]['visitor_games_won'])+int(g.values('visitor_games_loss')[0]['visitor_games_loss'])
-        ss = str(g.values('gameid')[0]['gameid'])+','+spread+','+homeid+','+str(hgp)
+        home_streak = int(g.values('home_streak')[0]['home_streak'])
+        visitor_streak = int(g.values('visitor_streak')[0]['visitor_streak'])
+        ss = str(g.values('gameid')[0]['gameid'])+','+spread+','+homeid+','+str(home_streak)+','+str(hgp)
         ss+=','+str(int(g.values('home_games_won')[0]['home_games_won']))+','+str(int(g.values('home_games_loss')[0]['home_games_loss']))
-        ss+=','+visitorid+','+str(vgp)
+        ss+=','+visitorid+','+str(visitor_streak)+','+str(vgp)
         ss+=','+str(int(g.values('visitor_games_won')[0]['visitor_games_won']))+','+str(int(g.values('visitor_games_loss')[0]['visitor_games_loss']))
         for st in data:
             ss+=','+st
@@ -1149,7 +1151,7 @@ def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,b
     print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'gameid,spread,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
+    header = 'gameid,spread,home_id,home_streak,hgp,hw,hl,visitor_id,visitor_streak,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
@@ -1232,7 +1234,7 @@ def predict(path):
 
     model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(32, activation='ReLU'),
+    tf.keras.layers.Dense(64, activation='ReLU'),
     tf.keras.layers.Dense(32, activation='ReLU'),
     tf.keras.layers.Dense(2, activation='linear'),
 
