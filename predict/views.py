@@ -167,6 +167,8 @@ def removePlayer(request,pk,player):
 
 
     spread = getSpread(home,visitor)
+    home_spread = spread[0]
+    visitor_spread = spread[1]
 
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
@@ -179,9 +181,9 @@ def removePlayer(request,pk,player):
     home_streak = homeTeamStats.pop(-1)
     visitor_streak = visitorTeamStats.pop(-1)
 
-    print('spread: ', spread)
+    #print('spread: ', spread)
     
-    found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
+    found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
 
 
     homeInjury = ''
@@ -198,7 +200,7 @@ def removePlayer(request,pk,player):
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
         p12 = playerids[12], p13 = playerids[13],
-        gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
+        gameid=gameid,home_spread=home_spread,visitor_spread=visitor_spread,dk_home_spread=home_spread,dk_visitor_spread=visitor_spread,
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
         visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
         homeInjury=homeInjury, visitorInjury=visitorInjury,removed_players=removed_players_dump)
@@ -803,9 +805,12 @@ def quickcreate(request,home,visitor,date):
 
 
 
+    spread = getSpread(home,visitor,date)
+    print(spread)
+    home_spread = spread[0]
+    visitor_spread = spread[1]
 
-    spread = getSpread(home,visitor)
-
+    print('visitor spread==========',visitor_spread)
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
     homeTeamInjury = homeTeamStats.pop(-1)
@@ -817,9 +822,8 @@ def quickcreate(request,home,visitor,date):
     home_streak = homeTeamStats.pop(-1)
     visitor_streak = visitorTeamStats.pop(-1)
 
-    print('spread: ', spread)
     removed_players = []
-    found, gameid, playerids = futureGame(spread[0],homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
+    found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
     homeInjury = ''
     for player in homeTeamInjury:
         homeInjury += ', '+player
@@ -837,7 +841,7 @@ def quickcreate(request,home,visitor,date):
         p0 = playerids[0], p1 = playerids[1], p2 = playerids[2], p3 = playerids[3], p4 = playerids[4], p5 = playerids[5],
         p6 = playerids[6], p7 = playerids[7], p8 = playerids[8], p9 = playerids[9], p10 = playerids[10], p11 = playerids[11],
         p12 = playerids[12], p13 = playerids[13],
-        gameid=gameid,home_spread=spread[0],visitor_spread=spread[1],dk_home_spread=spread[2],dk_visitor_spread=spread[3],
+        gameid=gameid,home_spread=home_spread,visitor_spread=visitor_spread,dk_home_spread=home_spread,dk_visitor_spread=visitor_spread,
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
         visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
         homeInjury=homeInjury, visitorInjury=visitorInjury)
@@ -886,11 +890,7 @@ def getTeamData(home,visitor):
     querystring = {"schedules":"true","rosters":"true"}
 
 
-    keys = ['d5015b2f83mshf83f5a65af02d87p15bce4jsn65761633c9f4',
-            'c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342',
-            '34ce533e29msh77a2e454f160d9ap1ceebbjsnc0a35cdc76f1'
-            ]
-    key = random.choice(keys)
+    key = 'c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342'
     
     headers = {
         "X-RapidAPI-Key": key,
@@ -925,107 +925,67 @@ def getTeamData(home,visitor):
 
     return [teamStats[h],teamStats[v]]
 
+def getSpread(home,visitor,date):
+    print('date--------',date)
+    date = date.replace('-', '')
+    convert = {
+        'ATL' :'ATL',
+        'BKN':  'BKN',
+        'BOS':  'BOS',
+        'CHA':  'CHA',
+        'CHI':  'CHI',
+        'CLE':  'CLE',
+        'DAL':  'DAL',
+        'DEN':  'DEN',
+        'DET':  'DET',
+        'GSW':  'GS',
+        'HOU':  'HOU',
+        'IND':  'IND',
+        'LAC':  'LAC',
+        'LAL':  'LAL',
+        'MEM':  'MEM',
+        'MIA':  'MIA',
+        'MIL':  'MIL',
+        'MIN':  'MIN',
+        'NOP':  'NO',
+        'NYK':  'NY',
+        'OKC':  'OKC',
+        'ORL':  'ORL',
+        'PHI':  'PHI',
+        'PHX':  'PHO',
+        'POR':  'POR',
+        'SAC':  'SAC',
+        'SAS':  'SA',
+        'TOR':  'TOR',
+        'UTA':  'UTA',
+        'WAS':  'WAS',
+        }
+    #h=convert[home]
+    #v=convert[visitor]
 
-def getSpread(h,v):
-    keys = [
-    'ce04efe16615246ad5b50bd7052da6c8',
-    'ea952c5b56feb68f06f8cc54489f0744',
-    'ef6aff1bf2ae649c8282c7f6fa3baf00',
-    '3914219b0cfdd8a638c57cee0943fdb9',
-    'c67f026ad6aca15413997512ad9cb305',
-    'eefb2eb4d14eac1e7e33f6c401e6c71d',
-    '06b89546e5eb99f61bc860a192629872',
-    'ab3e2dd71f42af90c3e2d181b18666eb',
-    '705dc7793b126700f0ab85e2fb61e0d1',
-    'f4acc54e6ca61fde73d7732296305576'
-    ]
+    url = "https://tank01-fantasy-stats.p.rapidapi.com/getNBABettingOdds"
 
+    querystring = {"gameDate": date}
 
-    oldkeys = ['f003fe2f0e443e7bfece9c357b90c20d',
-            'ea5ba76fd8807efa3b484121888f0f70',
-            'ccd995270783b8fd83bef5a433877e9f',
-            '790780270afebabec377041febe25c8a',
-            '463ef39f21a0ecba3cf87bcbd280fb2f'
-    ]
-    key = random.choice(keys)
-    spreadURL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds?markets=h2h,spreads,totals&regions=us&apiKey='+key
-    CHOICES = {
-    'ATL' :'Atlanta Hawks',
-    'BKN':  'Brooklyn Nets',
-    'BOS':  'Boston Celtics',
-    'CHA':  'Charlotte Hornets',
-    'CHI':  'Chicago Bulls',
-    'CLE':  'Cleveland Cavaliers',
-    'DAL':  'Dallas Mavericks',
-    'DEN':  'Denver Nuggets',
-    'DET':  'Detroit Pistons',
-    'GSW':  'Golden State Warriors',
-    'HOU':  'Houston Rockets',
-    'IND':  'Indiana Pacers',
-    'LAC':  'Los Angeles Clippers',
-    'LAL':  'Los Angeles Lakers',
-    'MEM':  'Memphis Grizzlies',
-    'MIA':  'Miami Heat',
-    'MIL':  'Milwaukee Bucks',
-    'MIN':  'Minnesota Timberwolves',
-    'NOP':  'New Orleans Pelicans',
-    'NYK':  'New York Knicks',
-    'OKC':  'Oklahoma City Thunder',
-    'ORL':  'Orlando Magic',
-    'PHI':  'Philadelphia 76ers',
-    'PHX':  'Phoenix Suns',
-    'POR':  'Portland Trail Blazers',
-    'SAC':  'Sacramento Kings',
-    'SAS':  'San Antonio Spurs',
-    'TOR':  'Toronto Raptors',
-    'UTA':  'Utah Jazz',
-    'WAS':  'Washington Wizards',
+    headers = {
+        "X-RapidAPI-Key": "c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342",
+        "X-RapidAPI-Host": "tank01-fantasy-stats.p.rapidapi.com"
     }
-    h = CHOICES[h]
-    v = CHOICES[v]
-    spreadr = reqSpread(spreadURL)
-    print(spreadURL,spreadr)
-    vistorSpread = 0
-    homeSpread = 0
-    dk_vistorSpread = 0
-    dk_homeSpread = 0
-    for provider in spreadr:
-        for game in provider['bookmakers']:
-            if game['title'] == 'FanDuel':
-                if game['markets'][1]['outcomes'][0]['name'] == v and game['markets'][1]['outcomes'][1]['name'] == h:
-                    vistorSpread = game['markets'][1]['outcomes'][0]['point']
-                    homeSpread = game['markets'][1]['outcomes'][1]['point']
-                    break
-                if game['markets'][1]['outcomes'][0]['name'] == h and game['markets'][1]['outcomes'][1]['name'] == v:
-                    homeSpread = game['markets'][1]['outcomes'][0]['point']
-                    vistorSpread = game['markets'][1]['outcomes'][1]['point']
-                    break
 
-    for provider in spreadr:
-        for game in provider['bookmakers']:
-            if game['title'] == 'DraftKings':
-                if game['markets'][1]['outcomes'][0]['name'] == v and game['markets'][1]['outcomes'][1]['name'] == h:
-                    dk_vistorSpread = game['markets'][1]['outcomes'][0]['point']
-                    dk_homeSpread = game['markets'][1]['outcomes'][1]['point']
-                    break
-                if game['markets'][1]['outcomes'][0]['name'] == h and game['markets'][1]['outcomes'][1]['name'] == v:
-                    dk_homeSpread = game['markets'][1]['outcomes'][0]['point']
-                    dk_vistorSpread = game['markets'][1]['outcomes'][1]['point']
-                    break
-
-    print(h,homeSpread,' - ',v,vistorSpread)
-    return [homeSpread,vistorSpread,dk_homeSpread,dk_vistorSpread]
+    response = requests.request("GET", url, headers=headers, params=querystring).json()
+    r = response['body']
+    print(r)
+    if len(r) < 1:
+        return ['0','0']
+    for line in r:
+        teams = line.split('_')[1].split('@')
+        print(teams)
+        if teams[0] == convert[home] or teams[1] == convert[home]:
+            if teams[0] == convert[visitor] or teams[1] == convert[visitor]:
+                print(r[line]['fanduel']['homeTeamSpread'])
+                return [r[line]['fanduel']['homeTeamSpread'],r[line]['fanduel']['awayTeamSpread']]
 
 
-
-    def get_context_data(self, **kwargs):
-        user = self.request.user
-        context = super(GameCreateView, self).get_context_data(**kwargs)
-        x = todaysGames(self)
-        context['today'] = x
-        #context['csvid'] = self.csvid
-        #print(self.csvid,'---------------------------')
-        return context
 
 def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels,removed_players):
     print('removed player:',removed_players)
