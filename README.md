@@ -102,7 +102,7 @@ API used for future team data, injuries and odds. rate limit 2000 / day :
 
 https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
-API used for scores, games, and season averages, both future games and historical. rate limit 1 / second :
+API used for scores, games, and season averages, both future and historical. rate limit 1 / second :
 
 https://www.balldontlie.io/
 
