@@ -161,7 +161,7 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
 
 
     if season == '2020':
-        if foo > 700:#sets split of test/train on final season.....
+        if foo > 900:#sets split of test/train on final season.....
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''
