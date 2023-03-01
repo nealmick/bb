@@ -31,7 +31,7 @@ const possibleLoss = numpred/2-loss
 
 const margin1data = {
     labels: [
-      'correct','wrong'
+      'Win','Loss'
     ],
     datasets: [{
       label: 'Marin 1',
@@ -86,7 +86,7 @@ const margin1config = {
 
   const margin2data = {
     labels: [
-        'correct','wrong'
+        'Win','Loss'
     ],
     datasets: [{
       label: 'Marin 2',
@@ -146,7 +146,7 @@ const margin2config = {
 
   const margin3data = {
     labels: [
-        'correct','wrong'
+        'Win','Loss'
     ],
     datasets: [{
       label: 'Marin 3',
@@ -202,7 +202,7 @@ const margin3config = {
 
   const win_loss_data = {
     labels: [
-      'correct','wrong'
+      'Win','Loss'
     ],
     datasets: [{
       label: 'Marin 3',
@@ -319,7 +319,7 @@ const gain_loss_config = {
 
   const margin0data = {
     labels: [
-      'Correct','Wrong'
+      'Win','Loss',
     ],
     datasets: [{
       label: 'Margin 0',
@@ -369,3 +369,82 @@ const margin0config = {
 
 
   const margin0 = new Chart(document.getElementById('margin0'),margin0config);
+
+
+
+
+  const barData = {
+    labels: [
+      'win',
+      'loss',
+      'Margin 1 win',
+      'Margin 1 loss',
+      'Margin 2 win',
+      'Margin 2 loss',
+      'Margin 3 win',
+      'Margin 3 loss',
+      'Margin 0 win',
+      'Margin 0 loss',
+      
+    ],
+    datasets: [{
+      label: 'Data',
+      data: [correct,numpred,ev_margin1,ev_margin1_count,ev_margin2,ev_margin2_count,ev_margin3,ev_margin3_count,ev_margin0,ev_margin0_count],
+      backgroundColor: [
+        'rgba(255, 181, 90, 0.4)',
+
+        'rgba(148, 150, 153, 0.3)',
+        'rgba(126, 176, 213, 0.4)',
+        'rgba(148, 150, 153, 0.3)',
+        'rgba(178, 224, 97, 0.4)',
+        'rgba(148, 150, 153, 0.3)',
+        'rgba(189, 126, 190, 0.4)',
+        'rgba(148, 150, 153, 0.3)',
+        'rgba(139, 211, 199, 0.4)',
+        'rgba(148, 150, 153, 0.3)',
+
+
+      ],
+      hoverOffset: 5,
+      borderColor: [     
+      'rgb(255, 181, 90)',
+      'rgb(148, 150, 153)', 
+      'rgb(126, 176, 213)',
+      'rgb(148, 150, 153)',
+      'rgb(178, 224, 97)',
+      'rgb(148, 150, 153)',
+      'rgb(189, 126, 190)',
+      'rgb(148, 150, 153)',
+      'rgb(139, 211, 199)',
+      'rgb(148, 150, 153)'
+      ],
+      borderWidth: 2
+    }]
+  };
+
+
+const barConfig = {
+    type: 'bar',
+    data: barData,
+    options: {
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+              display: false
+            }
+          },
+          layout: {
+            padding: {
+                // Any unspecified dimensions are assumed to be 0                     
+                top: 5,
+                bottom: 5,
+                left: 5,
+                right: 5,
+            }
+        }
+        }
+
+  };
+
+
+  const myChart = new Chart(document.getElementById('barChart'),barConfig);
