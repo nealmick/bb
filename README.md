@@ -98,18 +98,16 @@ python3 eval.py
 
 
 
-API used for future games won(W), and loss(L). rate limit 100 / day (3 keys):
+API used for future team data, injuries and odds. rate limit 2000 / day :
 
 https://rapidapi.com/tank01/api/tank01-fantasy-stats/
 
-Dataset used for past games won(W), and loss(L).
-
-https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
-
-API used for scores, games, and playerstats. rate limit 1 / second
+API used for scores, games, and season averages, both future games and historical. rate limit 1 / second :
 
 https://www.balldontlie.io/
 
+Dataset used for historical team win/loss ratio, and odds:
 
+https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
 
 
