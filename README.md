@@ -110,11 +110,6 @@ API used for scores, games, and playerstats. rate limit 1 / second
 
 https://www.balldontlie.io/
 
-API used for spread future. rate limit 500 / month (5 keys)
-
-https://the-odds-api.com/
-
-
 
 
 
