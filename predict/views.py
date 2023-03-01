@@ -148,6 +148,7 @@ def removePlayer(request,pk,player):
     date = g.values('gamedate')[0]['gamedate']
 
     removed_players=g.values('removed_players')[0]['removed_players']
+    date=g.values('gamedate')[0]['gamedate']
 
     if removed_players is not None:
         removed_players = json.loads(removed_players)
@@ -166,7 +167,7 @@ def removePlayer(request,pk,player):
 
 
 
-    spread = getSpread(home,visitor)
+    spread = getSpread(home,visitor,date)
     home_spread = spread[0]
     visitor_spread = spread[1]
 
