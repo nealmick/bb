@@ -24,7 +24,7 @@ def publicProfile(request,u):
 
 def newMessage(request, m):
     Message.objects.create(author=request.user,content=m)
-    return redirect('community')
+    return redirect('stats-view')
 def community(request):
     qs = Message.objects.order_by('id')[:100]
     context = {'qs':qs}
