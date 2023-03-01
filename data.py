@@ -103,7 +103,7 @@ def main(labels,seasons,**kwargs):
                 if player['player'] is None:
                     continue
     
-                if player['pts']!= 0:
+                if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
                     try:
                         
                             if int(player['team']['id']) == int(g['home_id']):
@@ -120,7 +120,8 @@ def main(labels,seasons,**kwargs):
                 
 
             print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
-            if(len(visitorTeam)<8 or len(homeTeam)<8):
+            if(len(visitorTeam)<7 or len(homeTeam)<7):
+                print(len(visitorTeam),len(homeTeam),' found game with too few players--------------------------------------------------')
                 continue
             bestH = []
             for i in range(0,playersPerTeam):
