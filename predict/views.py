@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 from datetime import datetime
 from pytz import timezone
+import makeData
+import web
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -12,7 +14,6 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import HttpResponsePermanentRedirect
-
 from .models import Game
 from users.models import Profile, Message
 
@@ -65,6 +66,28 @@ TEAMCOLORS = {
     'UTA':'#FAA403',
     'WAS':'#CF142C',
 }
+
+def trainView(request):
+    context = {}
+    context['showresults'] = False
+    return render(request,'predict/train.html',context)
+def makeDataSet(request,seasons,numgames):
+    print(seasons,numgames)
+    seasons = seasons.split('-')
+    print(seasons)
+    makeData.CreateDataset(seasons,numgames)
+    return redirect('train-view')
+
+def trainModel(request,epochs,batchSize):
+    context = {}
+    print(epochs,batchSize)
+    size = batchSize
+    results = web.webappTrain(epochs,size)
+    print(results)
+
+    context['showresults'] = True
+    context['results'] = results
+    return render(request,'predict/train.html',context)
 
 
 def statsView(request):

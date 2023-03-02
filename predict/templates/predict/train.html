@@ -1,0 +1,99 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;margin-top:25px">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+
+
+<div class="col-6">
+    <div style="margin-top:10px;height:400px"class="content-section">
+        <h2>Create Dataset</h2>
+        <div style="width:100%;">
+            <label for="seasons-input">Seasons:</label>
+            <input maxlength="140" id="seasons-input" value="2020-2019-2018-2017-2016-2015-2014" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+    
+            </input>
+            <label for="testGame-input">Number of test games:</label>
+            <input maxlength="140" id="testGame-input" value="500" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+    
+            </input>
+            <br></br>
+
+        </div>
+        <button onClick="makeDataset()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Create Dataset <i class="fas fa-database"></i></button>
+
+        </div>
+    </div>
+
+
+
+<div class="col-6">
+    <div style="margin-top:10px;height:400px"class="content-section" >
+        <h2>Train Model</h2>
+
+        <div style="width:100%;">
+            <label for="epochs-input">Epochs:</label>
+            <input maxlength="140" id="epochs-input" value="25" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            </input>
+            <label for="batch-size">Batch Size:</label>
+            <input maxlength="140" id="batch-size" value="64" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            </input>
+            <br></br>
+
+        </div>
+        <button onClick="trainModel()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Train Model <i class="fas fa-graduation-cap"></i></button>
+        <br>
+        <br>
+        <p>Note: training/creating datasets may take a bit depending on your computer.  manage.py outputs what the server is currently doing</p>
+
+        </div>
+    </div>
+</div>
+{% if showresults %}
+<div class="col-12">
+    <div style="margin-top:10px;"class="content-section">
+        <h2>Model Results</h2>
+        {%for line in results%}
+            <p>{{line}}</p>
+        {%endfor%}
+    </div>
+</div>
+{% endif %}
+<script>
+    function makeDataset(){
+        seasons = document.getElementById("seasons-input").value
+        numgames = document.getElementById("testGame-input").value
+        window.location.href = "{% url 'make-dataset' %}/"+ seasons+'/'+numgames
+
+    }
+    function trainModel(){
+        epochs = document.getElementById("epochs-input").value
+        batchSize = document.getElementById("batch-size").value
+        window.location.href = "{% url 'train-model' %}"+ epochs+'/'+batchSize
+
+    }
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script  src="{% static 'predict/stats.js'%}" defer></script>
+
+
+</div>
+{% endblock content %}
+
+
+

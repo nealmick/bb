@@ -14,6 +14,11 @@ urlpatterns = [
     path('date/<str:dateSelected>', GameListView.as_view() , name='home-predict'),
     path('#<int:pk>', views.getScore , name='get-score'),
     path('stats/', views.statsView , name='stats-view'),
+    path('train/', views.trainView , name='train-view'),
+    path('makedataset', views.makeDataSet , name='make-dataset'),
+    path('makedataset/<str:seasons>/<int:numgames>', views.makeDataSet , name='make-dataset'),
+    path('trainmodel/', views.makeDataSet , name='train-model'),
+    path('trainmodel/<int:epochs>/<int:batchSize>', views.trainModel , name='train-model'),
     #path('predicttoday/', views.predictToday , name='predict-today'),
 
 
