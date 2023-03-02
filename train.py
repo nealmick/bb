@@ -27,7 +27,7 @@ x_train, x_test, y_train, y_test = train_test_split(data, np.column_stack((homeS
 
 model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(64, activation='ReLU'),
+    tf.keras.layers.Dense(32, activation='ReLU'),
     tf.keras.layers.Dense(32, activation='ReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
@@ -41,7 +41,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 #checkpoint = ModelCheckpoint(filepath='./checkpoints/my_checkpoint',save_best_only=True)
 #creating and training model then saving
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=25, validation_split=0.1, batch_size=128 ,callbacks=[tensorboard_callback],shuffle=True)
+model.fit(x_train, y_train, epochs=25, validation_split=0.1, batch_size=64 ,callbacks=[tensorboard_callback],shuffle=True)
 model.save_weights('./checkpoints/my_checkpoint')
 
 
