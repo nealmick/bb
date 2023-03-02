@@ -27,7 +27,7 @@ x_train, x_test, y_train, y_test = train_test_split(data, np.column_stack((homeS
 
 model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(32, activation='ReLU'),
+    tf.keras.layers.Dense(64, activation='ReLU'),
     tf.keras.layers.Dense(32, activation='ReLU'),
     
     tf.keras.layers.Dense(2, activation='linear'),
