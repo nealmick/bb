@@ -281,6 +281,7 @@ def saveEdit(request,pk,change,**kwargs):
     header.pop(0)
     data.pop(0)
     header.pop(0)
+
     visitorid = data.pop(0)
     header.pop(0)
     data.pop(0)
@@ -406,6 +407,12 @@ def editGame(request,pk,**kwargs):
     header.pop(0)
     data.pop(0)
     header.pop(0)
+    
+    if g.values('visitor_score_prediction')[0]['visitor_score_prediction'] is not None:
+        data.pop(0)
+        header.pop(0)
+        data.pop(0)
+        header.pop(0)
     players = {}
     oofnog = []
     for i in range(0,14):
