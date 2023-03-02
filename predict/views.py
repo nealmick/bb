@@ -904,8 +904,29 @@ def getTeamData(home,visitor):
         "X-RapidAPI-Key": key,
         "X-RapidAPI-Host": "tank01-fantasy-stats.p.rapidapi.com"
     }
+    seconds = 0
+    teamStats = load_obj('teamStats')
+    response = []
+    try:
+        lastupdate = teamStats['lastupdate']
+        now = datetime.now()
+        time_diff = now-lastupdate
+        seconds = time_diff.total_seconds()
+        print('Seconds since last update',seconds)
+    except KeyError:
+        print('no saved team stats found')
+        teamStats = {}
+    if seconds == 0 or seconds>1800:
+        print('getting updated results')
 
-    response = requests.request("GET", url, headers=headers, params=querystring).json()
+        response = requests.request("GET", url, headers=headers, params=querystring).json()
+        lastupdate = datetime.now()
+        teamStats['response']=response
+        teamStats['lastupdate']=lastupdate
+        save_obj(teamStats,'teamStats')
+    else:
+        print('loaded cached results')
+        response = teamStats['response']
     r = response['body']
     teamStats = {}
     for team in range(len(r)):
@@ -980,8 +1001,32 @@ def getSpread(home,visitor,date):
         "X-RapidAPI-Host": "tank01-fantasy-stats.p.rapidapi.com"
     }
 
-    response = requests.request("GET", url, headers=headers, params=querystring).json()
+
+    seconds = 0
+    spreadCache = {}
+    spreadCache = load_obj('spreadCache')
+    response = []
+    try:
+        lastupdate = spreadCache['lastupdate']
+        now = datetime.now()
+        time_diff = now-lastupdate
+        seconds = time_diff.total_seconds()
+        print('Seconds since last spread update',seconds)
+    except KeyError:
+        print('no saved spread found')
+        spreadCache = {}
+    if seconds == 0 or seconds>60:
+        print('getting updated spread odds')
+        response = requests.request("GET", url, headers=headers, params=querystring).json()
+        lastupdate = datetime.now()
+        spreadCache['response']=response
+        spreadCache['lastupdate']=lastupdate
+        save_obj(spreadCache,'spreadCache')
+    else:
+        print('loaded cached spread')
+        response = spreadCache['response']
     r = response['body']
+
     print(r)
     if len(r) < 1:
         return ['0','0']
