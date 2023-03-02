@@ -31,7 +31,7 @@ def webappTrain(epochs,size):
 
     model = tf.keras.Sequential([
 
-        tf.keras.layers.Dense(32, activation='ReLU'),
+        tf.keras.layers.Dense(64, activation='ReLU'),
         tf.keras.layers.Dense(32, activation='ReLU'),
         
         tf.keras.layers.Dense(2, activation='linear'),
