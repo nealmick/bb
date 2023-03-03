@@ -99,29 +99,37 @@ def CreateDataset(seasons,numgames,**kwargs):
             visitorPlayerIds = playerIdByTeamID[str(g['visitor_id'])]
             homeTeam = []
             visitorTeam = []
-
-            for player in g['data']:
-                if player['player'] is None:
-                    continue
-    
-                if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
-                    try:
-                        
-                            if int(player['team']['id']) == int(g['home_id']):
-                                homeTeam.append(seasonAverages[int(player['player']['id'])])
-                            elif int(player['team']['id']) == int(g['visitor_id']):
-                                visitorTeam.append(seasonAverages[int(player['player']['id'])])
-                            else:
-                                print('dddddddddddidnt match team')
-                    except KeyError:
-                        data = getSeaonAverage(int(player['player']['id']),season,labels)
-                        seasonAverages.update({int(player['player']['id']):data})
-                        save_obj(seasonAverages,season+'SeasonAverages')
-                        print('error')
+            '''
+                        for player in g['data']:
+                            if player['player'] is None:
+                                continue
                 
+                            if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
+                                try:
+                                    
+                                        if int(player['team']['id']) == int(g['home_id']):
+                                            homeTeam.append(seasonAverages[int(player['player']['id'])])
+                                        elif int(player['team']['id']) == int(g['visitor_id']):
+                                            visitorTeam.append(seasonAverages[int(player['player']['id'])])
+                                        else:
+                                            print('dddddddddddidnt match team')
+                                except KeyError:
+                                    data = getSeaonAverage(int(player['player']['id']),season,labels)
+                                    seasonAverages.update({int(player['player']['id']):data})
+                                    save_obj(seasonAverages,season+'SeasonAverages')
+                                    print('error')
+            '''
+
+                
+            
+            for id in homePlayerIds:
+                homeTeam.append(seasonAverages[id])
+            for id in visitorPlayerIds:
+                visitorTeam.append(seasonAverages[id])
 
             print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
-            if(len(visitorTeam)<7 or len(homeTeam)<7):
+            
+            if(len(visitorTeam)<playersPerTeam or len(homeTeam)<playersPerTeam):
                 print(len(visitorTeam),len(homeTeam),' found game with too few players--------------------------------------------------')
                 continue
             bestH = []
@@ -146,10 +154,10 @@ def CreateDataset(seasons,numgames,**kwargs):
 
 
 def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks,numgames,sorted):
-    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)+','+str(streaks[int(homeId)])
+    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)#+','+str(streaks[int(homeId)])
     for stat in homeTeamStats:
         line+=','+str(stat)
-    line += ','+str(visitorId)+','+str(streaks[int(visitorId)])
+    line += ','+str(visitorId)#+','+str(streaks[int(visitorId)])
     for stat in visitorTeamStats:
         line+=','+str(stat)
     for player in range(len(bestH)):
@@ -173,7 +181,7 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
     #print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'home_score,visitor_score,gameid,spread,home_id,home_streak,hgp,hw,hl,visitor_id,visitor_streak,vgp,vw,vl'
+    header = 'home_score,visitor_score,gameid,spread,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
