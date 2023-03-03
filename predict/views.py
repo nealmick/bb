@@ -1290,8 +1290,8 @@ def predict(path):
     data = pd.read_csv(path)
 
     data.drop(['gameid'], axis=1, inplace=True)
-    data.drop(['home_streak'], axis=1, inplace=True)
-    data.drop(['visitor_streak'], axis=1, inplace=True)
+    #data.drop(['home_streak'], axis=1, inplace=True)
+    #data.drop(['visitor_streak'], axis=1, inplace=True)
 
     data = data.values
     data = data.astype(float)
