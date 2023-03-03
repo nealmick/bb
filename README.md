@@ -58,22 +58,9 @@ http://localhost:8000/admin
 http://localhost:8000/
 
 
-## Make a Dataset:
-python3 data.py
 
 
-## Train on the dataset:
-## note: this will overwrite your trained weights in the checkpoints folder.
-## so make a copy or change path if you dont want the web app model weights effected.
-## variables to mess with would be epochs and batch size....
-## If you change things like number of layers it wont integrate with web app.
-## Also your training dataset can be found here: csv/train.csv 
-
-python3 train.py
-
-
-
-## now review your model training logs with TensorBoard:
+## review your model training logs with TensorBoard:
 ## start tensorboard server:
 tensorboard --logdir logs/fit
 ## TensorBoard URL
