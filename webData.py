@@ -100,6 +100,7 @@ def CreateDataset(seasons,numgames,**kwargs):
             homeTeam = []
             visitorTeam = []
             '''
+
                         for player in g['data']:
                             if player['player'] is None:
                                 continue
@@ -154,10 +155,10 @@ def CreateDataset(seasons,numgames,**kwargs):
 
 
 def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks,numgames,sorted):
-    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)#+','+str(streaks[int(homeId)])
+    line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)+','+str(streaks[int(homeId)])
     for stat in homeTeamStats:
         line+=','+str(stat)
-    line += ','+str(visitorId)#+','+str(streaks[int(visitorId)])
+    line += ','+str(visitorId)+','+str(streaks[int(visitorId)])
     for stat in visitorTeamStats:
         line+=','+str(stat)
     for player in range(len(bestH)):
@@ -181,7 +182,7 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
     #print(line)
 
 def writeCSVHeader(labels, path,**kwargs):
-    header = 'home_score,visitor_score,gameid,spread,home_id,hgp,hw,hl,visitor_id,vgp,vw,vl'
+    header = 'home_score,visitor_score,gameid,spread,home_id,home_streak,hgp,hw,hl,visitor_id,visitor_streak,vgp,vw,vl'
     derp = ['home_', 'visitor_']
     for foo in derp:
         for i in range(0,playersPerTeam):
