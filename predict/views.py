@@ -79,7 +79,9 @@ def trainView(request):
         context['layer2Count']=modelSettings['layer2Count']
         context['layer2Activation']=modelSettings['layer2Activation']
         context['optimizer']=modelSettings['optimizer']
-    except FileNotFoundError:
+        context['epochs']=modelSettings['epochs']
+        context['batchSize']=modelSettings['batchSize']
+    except KeyError:
         context['showresults'] = False
     return render(request,'predict/train.html',context)
 def makeDataSet(request,seasons,numgames):
@@ -97,6 +99,8 @@ def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count
     modelSettings['layer2Count']=layer2Count
     modelSettings['layer2Activation']=layer2Activation
     modelSettings['optimizer']=optimizer
+    modelSettings['epochs']=epochs
+    modelSettings['batchSize']=batchSize
 
 
     results = webTrain.webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer)
@@ -110,6 +114,8 @@ def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count
     context['layer2Count']=layer2Count
     context['layer2Activation']=layer2Activation
     context['optimizer']=optimizer
+    context['epochs']=epochs
+    context['batchSize']=batchSize
     return render(request,'predict/train.html',context)
 
 
@@ -1284,7 +1290,8 @@ def predict(path):
     data = pd.read_csv(path)
 
     data.drop(['gameid'], axis=1, inplace=True)
-
+    data.drop(['home_streak'], axis=1, inplace=True)
+    data.drop(['visitor_streak'], axis=1, inplace=True)
 
     data = data.values
     data = data.astype(float)
