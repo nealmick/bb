@@ -18,7 +18,7 @@
 
 
 <div class="col-6">
-    <div style="margin-top:10px;height:400px"class="content-section">
+    <div style="margin-top:10px;height:650px"class="content-section">
         <h2>Create Dataset</h2>
         <div style="width:100%;">
             <label for="seasons-input">Seasons:</label>
@@ -33,6 +33,13 @@
 
         </div>
         <button onClick="makeDataset()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Create Dataset <i class="fas fa-database"></i></button>
+        <br>
+        <br>
+        <p>Note: training/creating datasets may take a bit depending on your computer.  manage.py outputs what the server is currently doing</p>
+        <br>
+        <br>
+        <p>Activations: selu, ReLU, LeakyReLU, tanh, full list <a href="https://www.tensorflow.org/api_docs/python/tf/keras/activations">here</a>.</p>
+        <p>Optimizers: adam, adamax, RMSprop, full list <a href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">here</a>.</p>
 
         </div>
     </div>
@@ -40,23 +47,32 @@
 
 
 <div class="col-6">
-    <div style="margin-top:10px;height:400px"class="content-section" >
+    <div style="margin-top:10px;height:650px"class="content-section" >
         <h2>Train Model</h2>
 
         <div style="width:100%;">
             <label for="epochs-input">Epochs:</label>
-            <input maxlength="140" id="epochs-input" value="25" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <input maxlength="140" id="epochs-input" value="15" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             </input>
             <label for="batch-size">Batch Size:</label>
             <input maxlength="140" id="batch-size" value="128" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            </input>
+            <label for="layer1-count">Layer 1 neurons:</label>
+            <input maxlength="140" id="layer1-count" value="64" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label for="layer1-activation">Layer 1 activation:</label>
+            <input maxlength="140" id="layer1-activation" value="ReLU" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label for="layer2-count">Layer 2 neurons:</label>
+            <input maxlength="140" id="layer2-count" value="32" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label for="layer2-activation">Layer 2 activation:</label>
+            <input maxlength="140" id="layer2-activation" value="ReLU" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            </input>
+            <label for="optimizer">Optimizer:</label>
+            <input maxlength="140" id="optimizer" value="adam" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             </input>
             <br></br>
 
         </div>
         <button onClick="trainModel()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Train Model <i class="fas fa-graduation-cap"></i></button>
-        <br>
-        <br>
-        <p>Note: training/creating datasets may take a bit depending on your computer.  manage.py outputs what the server is currently doing</p>
 
         </div>
     </div>
@@ -64,7 +80,14 @@
 {% if showresults %}
 <div class="col-12">
     <div style="margin-top:10px;"class="content-section">
-        <h2>Model Results</h2>
+        <h2>Model Settings:</h2>
+        <p>Layer1Count: {{layer1Count}}</p>
+        <p>Layer1Activation: {{layer1Activation}}</p>
+        <p>Layyer2Count: {{layer2Count}}</p>
+        <p>Layer2Activation: {{layer2Activation}}</p>
+        <p>Optimizer: {{optimizer}}</p>
+        <hr>
+        <h2>Results:</h2>
         {%for line in results%}
             <p>{{line}}</p>
         {%endfor%}
@@ -81,7 +104,12 @@
     function trainModel(){
         epochs = document.getElementById("epochs-input").value
         batchSize = document.getElementById("batch-size").value
-        window.location.href = "{% url 'train-model' %}"+ epochs+'/'+batchSize
+        layer1Count = document.getElementById("layer1-count").value
+        layer1Activation = document.getElementById("layer1-activation").value
+        layer2Count = document.getElementById("layer2-count").value
+        layer2Activation = document.getElementById("layer2-activation").value
+        optimizer = document.getElementById("optimizer").value
+        window.location.href = "{% url 'train-model' %}"+ epochs+'/'+batchSize +'/'+layer1Count+'/'+layer1Activation+'/'+layer2Count+'/'+layer2Activation+'/'+optimizer
 
     }
 </script>

@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 from datetime import datetime
 from pytz import timezone
-import makeData
-import web
+import webData
+import webTrain
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -69,24 +69,47 @@ TEAMCOLORS = {
 
 def trainView(request):
     context = {}
-    context['showresults'] = False
+    try:
+        modelSettings = load_obj('modelSettings')
+
+        context['showresults'] = True
+        context['results'] = modelSettings['results']
+        context['layer1Count']=modelSettings['layer1Count']
+        context['layer1Activation']=modelSettings['layer1Activation']
+        context['layer2Count']=modelSettings['layer2Count']
+        context['layer2Activation']=modelSettings['layer2Activation']
+        context['optimizer']=modelSettings['optimizer']
+    except FileNotFoundError:
+        context['showresults'] = False
     return render(request,'predict/train.html',context)
 def makeDataSet(request,seasons,numgames):
     print(seasons,numgames)
     seasons = seasons.split('-')
     print(seasons)
-    makeData.CreateDataset(seasons,numgames)
+    webData.CreateDataset(seasons,numgames)
     return redirect('train-view')
-
-def trainModel(request,epochs,batchSize):
+def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer):
     context = {}
-    print(epochs,batchSize)
     size = batchSize
-    results = web.webappTrain(epochs,size)
-    print(results)
+    modelSettings = {}
+    modelSettings['layer1Count']=layer1Count
+    modelSettings['layer1Activation']=layer1Activation
+    modelSettings['layer2Count']=layer2Count
+    modelSettings['layer2Activation']=layer2Activation
+    modelSettings['optimizer']=optimizer
+
+
+    results = webTrain.webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer)
+    modelSettings['results']=results
+    save_obj(modelSettings,'modelSettings')
 
     context['showresults'] = True
     context['results'] = results
+    context['layer1Count']=layer1Count
+    context['layer1Activation']=layer1Activation
+    context['layer2Count']=layer2Count
+    context['layer2Activation']=layer2Activation
+    context['optimizer']=optimizer
     return render(request,'predict/train.html',context)
 
 
@@ -1031,6 +1054,7 @@ def getSpread(home,visitor,date):
     response = []
     try:
         lastupdate = spreadCache['lastupdate']
+        cacheDate = spreadCache['date']
         now = datetime.now()
         time_diff = now-lastupdate
         seconds = time_diff.total_seconds()
@@ -1038,12 +1062,13 @@ def getSpread(home,visitor,date):
     except KeyError:
         print('no saved spread found')
         spreadCache = {}
-    if seconds == 0 or seconds>60:
+    if seconds == 0 or seconds>60 or date != cacheDate:
         print('getting updated spread odds')
         response = requests.request("GET", url, headers=headers, params=querystring).json()
         lastupdate = datetime.now()
         spreadCache['response']=response
         spreadCache['lastupdate']=lastupdate
+        spreadCache['date'] = date
         save_obj(spreadCache,'spreadCache')
     else:
         print('loaded cached spread')
@@ -1267,17 +1292,20 @@ def predict(path):
 
     #x_train = tf.keras.utils.normalize(x_train, axis=1)
     #x_test = tf.keras.utils.normalize(x_test, axis=1)
+    modelSettings = load_obj('modelSettings')
+
+    
 
     model = tf.keras.Sequential([
 
-    tf.keras.layers.Dense(64, activation='ReLU'),
-    tf.keras.layers.Dense(32, activation='ReLU'),
+    tf.keras.layers.Dense(modelSettings['layer1Count'], activation=modelSettings['layer1Activation']),
+    tf.keras.layers.Dense(modelSettings['layer2Count'], activation=modelSettings['layer2Activation']),
     tf.keras.layers.Dense(2, activation='linear'),
 
     ])
     model.load_weights('./checkpoints/my_checkpoint')
 
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer=modelSettings['optimizer'], loss='mean_squared_error', metrics=['accuracy'])
 
     p = model.predict(data)
     return(p[0])

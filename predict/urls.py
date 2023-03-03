@@ -18,8 +18,7 @@ urlpatterns = [
     path('makedataset', views.makeDataSet , name='make-dataset'),
     path('makedataset/<str:seasons>/<int:numgames>', views.makeDataSet , name='make-dataset'),
     path('trainmodel/', views.makeDataSet , name='train-model'),
-    path('trainmodel/<int:epochs>/<int:batchSize>', views.trainModel , name='train-model'),
+    path('trainmodel/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>', views.trainModel , name='train-model'),
     #path('predicttoday/', views.predictToday , name='predict-today'),
-
 
 ]
