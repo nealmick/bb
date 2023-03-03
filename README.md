@@ -57,20 +57,12 @@ http://localhost:8000/admin
 ## webapp url
 http://localhost:8000/
 
-
-
-
 ## review your model training logs with TensorBoard:
 ## start tensorboard server:
 tensorboard --logdir logs/fit
 ## TensorBoard URL
 http://localhost:6007/
 
-
-## Evaluate Model:
-## Note: run this before training to see results for current model.
-
-python3 eval.py
 
 
 ```
