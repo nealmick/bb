@@ -61,7 +61,7 @@ http://localhost:8000/
 ## start tensorboard server:
 tensorboard --logdir logs/fit
 ## TensorBoard URL
-http://localhost:6007/
+http://localhost:6006/
 
 
 
