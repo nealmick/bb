@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 
-import requests, json, time, operator, pickle, random
+import requests, json, time, operator, pickle, random,os,shutil
 import functools
 import numpy as np
 import pandas as pd
@@ -66,12 +66,17 @@ TEAMCOLORS = {
     'UTA':'#FAA403',
     'WAS':'#CF142C',
 }
+def resetModel(request):
+    if os.path.exists("userModels/"+str(request.user.username)):
+        shutil.rmtree("userModels/"+str(request.user.username))
+        os.remove("updatedObj/"+str(request.user.username) +"ModelSettings.pkl")
 
+    return redirect('train-view')
 def trainView(request):
     context = {}
+    username = request.user
     try:
-        modelSettings = load_obj('modelSettings')
-
+        modelSettings = load_obj(str(username.username)+'ModelSettings')
         context['showresults'] = True
         context['results'] = modelSettings['results']
         context['layer1Count']=modelSettings['layer1Count']
@@ -81,8 +86,17 @@ def trainView(request):
         context['optimizer']=modelSettings['optimizer']
         context['epochs']=modelSettings['epochs']
         context['batchSize']=modelSettings['batchSize']
-    except KeyError:
-        context['showresults'] = False
+    except FileNotFoundError:
+        modelSettings = load_obj('DefaultModelSettings')
+        context['showresults'] = True
+        context['results'] = modelSettings['results']
+        context['layer1Count']=modelSettings['layer1Count']
+        context['layer1Activation']=modelSettings['layer1Activation']
+        context['layer2Count']=modelSettings['layer2Count']
+        context['layer2Activation']=modelSettings['layer2Activation']
+        context['optimizer']=modelSettings['optimizer']
+        context['epochs']=modelSettings['epochs']
+        context['batchSize']=modelSettings['batchSize']
     return render(request,'predict/train.html',context)
 def makeDataSet(request,seasons,numgames):
     print(seasons,numgames)
@@ -90,7 +104,10 @@ def makeDataSet(request,seasons,numgames):
     print(seasons)
     webData.CreateDataset(seasons,numgames)
     return redirect('train-view')
+
 def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer):
+    username = request.user
+    print(username)
     context = {}
     size = batchSize
     modelSettings = {}
@@ -103,9 +120,9 @@ def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count
     modelSettings['batchSize']=batchSize
 
 
-    results = webTrain.webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer)
+    results = webTrain.webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username)
     modelSettings['results']=results
-    save_obj(modelSettings,'modelSettings')
+    save_obj(modelSettings,str(username.username)+'ModelSettings')
 
     context['showresults'] = True
     context['results'] = results
@@ -293,7 +310,7 @@ def exportGames(request):
 
 
 def saveEdit(request,pk,change,**kwargs):
-
+    username = request.user
     changes = change[7:].split('-')
     changes.pop(-1)
     print(changes)
@@ -373,7 +390,7 @@ def saveEdit(request,pk,change,**kwargs):
         f = open(path,'a')
         f.write(ss+'\n')
     w(data, path,g)  
-    p = predict(path)
+    p = predict(path,username)
     print(p)
 
     #p = float(p[0])
@@ -1285,7 +1302,7 @@ def load_obj(name):
         return pickle.load(f)
 #------------------------------------------------------------------------#TensorFlow Time lets get it####################
 
-def predict(path):
+def predict(path,username):
 
     data = pd.read_csv(path)
 
@@ -1299,9 +1316,12 @@ def predict(path):
 
     #x_train = tf.keras.utils.normalize(x_train, axis=1)
     #x_test = tf.keras.utils.normalize(x_test, axis=1)
-    modelSettings = load_obj('modelSettings')
 
-    
+    try:
+        modelSettings = load_obj(str(username.username)+'ModelSettings')
+    except FileNotFoundError:
+        modelSettings = load_obj('DefaultModelSettings')
+
 
     model = tf.keras.Sequential([
 
@@ -1310,9 +1330,13 @@ def predict(path):
     tf.keras.layers.Dense(2, activation='linear'),
 
     ])
-    model.load_weights('./checkpoints/my_checkpoint')
-
+        
     model.compile(optimizer=modelSettings['optimizer'], loss='mean_squared_error', metrics=['accuracy'])
+    try:
+        modelSettings = load_obj(str(username.username)+'ModelSettings')
+        model.load_weights('./userModels/'+username.username+'/checkpoints/my_checkpoint')
+    except FileNotFoundError:
+        model.load_weights('./checkpoints/my_checkpoint')
 
     p = model.predict(data)
     return(p[0])

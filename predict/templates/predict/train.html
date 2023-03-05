@@ -17,32 +17,6 @@
 
 
 
-<div class="col-6">
-    <div style="margin-top:10px;height:650px"class="content-section">
-        <h2>Create Dataset</h2>
-        <div style="width:100%;">
-            <label for="seasons-input">Seasons:</label>
-            <input maxlength="140" id="seasons-input" value="2020-2019-2018-2017-2016-2015-2014" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-    
-            </input>
-            <label for="testGame-input">Number of test games:</label>
-            <input maxlength="140" id="testGame-input" value="500" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-    
-            </input>
-            <br></br>
-
-        </div>
-        <button onClick="makeDataset()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Create Dataset <i class="fas fa-database"></i></button>
-        <br>
-        <br>
-        <p>Note: training/creating datasets may take a bit depending on your computer.  manage.py outputs what the server is currently doing</p>
-        <br>
-        <br>
-        <p>Activations: selu, ReLU, LeakyReLU, tanh, full list <a href="https://www.tensorflow.org/api_docs/python/tf/keras/activations">here</a>.</p>
-        <p>Optimizers: adam, adamax, RMSprop, full list <a href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">here</a>.</p>
-
-        </div>
-    </div>
 
 
 
@@ -51,50 +25,168 @@
         <h2>Train Model</h2>
 
         <div style="width:100%;">
-            <label for="epochs-input">Epochs:</label>
-            <input maxlength="140" id="epochs-input" value="{{epochs}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label for="epochs-input">Epochs: <p style="display:inline"id="epochs-display">{{epochs}}</p></label>
+            <input min="1" max="100" type="range" id="epochs-input" value="{{epochs}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             </input>
-            <label for="batch-size">Batch Size:</label>
-            <input maxlength="140" id="batch-size" value="{{batchSize}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+
+            <label for="batch-size">Batch Size: <p style="display:inline"id="batch-display">{{batchSize}}</p></label>
+            <input min="16" max="513" type="range"  id="batch-size" value="{{batchSize}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             </input>
-            <label for="layer1-count">Layer 1 neurons:</label>
-            <input maxlength="140" id="layer1-count" value="{{layer1Count}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-            <label for="layer1-activation">Layer 1 activation:</label>
-            <input maxlength="140" id="layer1-activation" value="{{layer1Activation}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-            <label for="layer2-count">Layer 2 neurons:</label>
-            <input maxlength="140" id="layer2-count" value="{{layer2Count}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-            <label for="layer2-activation">Layer 2 activation:</label>
-            <input maxlength="140" id="layer2-activation" value="{{layer2Activation}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-            </input>
+            <label for="layer1-count">Layer 1 Count: <p style="display:inline"id="1count-display">{{layer1Count}}</p></label>
+            <input min="16" max="513" type="range"  id="layer1-count" value="{{layer1Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label for="layer1-activation">Layer 1 Activation:</label>
+            <select id="layer1-activation" style="width:100%;height:35px;margin-bottom: 2px !important;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if layer1Activation == "relu"%}
+                <option value="0" selected>relu</option>
+                {% else %}
+                <option value="0">relu</option>
+                {% endif %}
+                {%if layer1Activation == "LeakyReLU"%}
+                <option value="1" selected>LeakyReLU</option>
+                {% else %}
+                <option value="1">LeakyReLU</option>
+                {% endif %}
+                {%if layer1Activation == "swish"%}
+                <option value="2" selected>swish</option>
+                {% else %}
+                <option value="2">swish</option>
+                {% endif %}
+                {%if layer1Activation == "elu"%}
+                <option value="3" selected>elu</option>
+                {% else %}
+                <option value="3">elu</option>
+                {% endif %}
+                {%if layer1Activation == "gelu"%}
+                <option value="4" selected>gelu</option>
+                {% else %}
+                <option value="4">gelu</option>
+                {% endif %}
+                {%if layer1Activation == "selu"%}
+                <option value="5" selected>selu</option>
+                {% else %}
+                <option value="5">selu</option>
+                {% endif %}
+              </select>            
+            <label for="layer2-count">Layer 2 Count: <p style="display:inline"id="2count-display">{{layer2Count}}</p></label>
+            <input min="16" max="513" type="range" id="layer2-count" value="{{layer2Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label for="layer2-activation">Layer 2 Activation:</label>
+            <select id="layer2-activation" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if layer2Activation == "relu"%}
+                <option value="0" selected>relu</option>
+                {% else %}
+                <option value="0">relu</option>
+                {% endif %}
+                {%if layer2Activation == "LeakyReLU"%}
+                <option value="1" selected>LeakyReLU</option>
+                {% else %}
+                <option value="1">LeakyReLU</option>
+                {% endif %}
+                {%if layer2Activation == "swish"%}
+                <option value="2" selected>swish</option>
+                {% else %}
+                <option value="2">swish</option>
+                {% endif %}
+                {%if layer2Activation == "elu"%}
+                <option value="3" selected>elu</option>
+                {% else %}
+                <option value="3">elu</option>
+                {% endif %}
+                {%if layer2Activation == "gelu"%}
+                <option value="4" selected>gelu</option>
+                {% else %}
+                <option value="4">gelu</option>
+                {% endif %}
+                {%if layer2Activation == "selu"%}
+                <option value="5" selected>selu</option>
+                {% else %}
+                <option value="5">selu</option>
+                {% endif %}
+              </select>            
             <label for="optimizer">Optimizer:</label>
-            <input maxlength="140" id="optimizer" value="{{optimizer}}" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
-            </input>
+            <select id="optimizer" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if optimizer == "adam"%}
+                <option value="0" selected>adam</option>
+                {% else %}
+                <option value="0">adam</option>
+                {% endif %}
+
+                {%if optimizer == "adamax"%}
+                <option value="1" selected>adamax</option>
+                {% else %}
+                <option value="1">adamax</option>
+                {% endif %}
+
+                {%if optimizer == "RMSprop"%}
+                <option value="2" selected>RMSprop</option>
+                {% else %}
+                <option value="2">RMSprop</option>
+                {% endif %}
+
+              </select>
             <br></br>
 
         </div>
-        <button onClick="trainModel()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Train Model <i class="fas fa-graduation-cap"></i></button>
+        <button id="train-button"onClick="trainModel()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Train Model <i class="fas fa-robot"></i></i></button>
+        <button id="train-button"onclick="window.location.href='{%url 'reset-model'%}';"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Reset Model <i class="fas fa-trash"></i></button>
+        <div id="loading-div" style="opacity:0;position:absolute;margin-top:0px!important;margin-left:5px!important;display:inline">
+            <div style=""id="loading"></div>
+        </div>
+        <hr>
+        <p>Activation funtions <a target="_blank" href="https://www.tensorflow.org/api_docs/python/tf/keras/activations">here</a>, and Optimizers  <a target="_blank" href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">here</a>.</p>
+
 
         </div>
+       
+
+    </div>
+
+{% if showresults %}
+<div class="col-6">
+    <div style="margin-top:10px;height:650px"class="content-section">
+        
+        <h2>Evaluation </h2>
+        {%for line in results%}
+        <p>{{line}}</p>
+        {%endfor%}
+        <hr>
+        <p>Note: training can take up to a few minutes to complete.  Install project for better results.  If the request times out with code 502, then the server is busy and does not have enough resources to train.  Do not overuse, this is meant to demo a full install... train on your gpu, not my single core server.</p>
+
     </div>
 </div>
-{% if showresults %}
-<div class="col-12">
-    <div style="margin-top:10px;"class="content-section">
-        <h2>Model Settings:</h2>
+{% endif %}
+</div>
+<div class="col-12" >
+    <div class="content-section" style="margin-top:10px">
+        <h2>Saved Settings:</h2>
+        <hr>
         <p>Layer1Count: {{layer1Count}}</p>
         <p>Layer1Activation: {{layer1Activation}}</p>
         <p>Layyer2Count: {{layer2Count}}</p>
         <p>Layer2Activation: {{layer2Activation}}</p>
         <p>Optimizer: {{optimizer}}</p>
         <hr>
-        <h2>Results:</h2>
-        {%for line in results%}
-            <p>{{line}}</p>
-        {%endfor%}
+        <center>
+            Take's a few tries to get a model that converges properly, without overfitting. Overfitting is when the model effectively remembers previous game results rather than learning the essence of the game compared to the inputs, causing poor performance on test games never seen before, and good performance on training games the model remembers and has seen before.  60-70% accuracy on the margin 3 and 4 metrics is about the max ive gotten so far.
+        </center>
     </div>
+
 </div>
-{% endif %}
+
 <script>
+    
+    document.getElementById("epochs-input").addEventListener("input", () => {
+        document.getElementById("epochs-display").innerHTML = document.getElementById("epochs-input").value;
+    });
+
+    document.getElementById("batch-size").addEventListener("input", () => {
+        document.getElementById("batch-display").innerHTML = document.getElementById("batch-size").value;
+    });
+    document.getElementById("layer1-count").addEventListener("input", () => {
+        document.getElementById("1count-display").innerHTML = document.getElementById("layer1-count").value;
+    });
+    document.getElementById("layer2-count").addEventListener("input", () => {
+        document.getElementById("2count-display").innerHTML = document.getElementById("layer2-count").value;
+    });
     function makeDataset(){
         seasons = document.getElementById("seasons-input").value
         numgames = document.getElementById("testGame-input").value
@@ -109,11 +201,35 @@
         layer2Count = document.getElementById("layer2-count").value
         layer2Activation = document.getElementById("layer2-activation").value
         optimizer = document.getElementById("optimizer").value
-        window.location.href = "{% url 'train-model' %}"+ epochs+'/'+batchSize +'/'+layer1Count+'/'+layer1Activation+'/'+layer2Count+'/'+layer2Activation+'/'+optimizer
+        optimizers = ['adam','adamax','RMSprop']
+        activations = ['relu','LeakyReLU','swish','elu','gelu','selu']
+        document.getElementById("loading-div").style.opacity = 1
+
+        
+        window.location.href = "{% url 'train-model' %}"+ epochs+'/'+batchSize +'/'+layer1Count+'/'+activations[layer1Activation]+'/'+layer2Count+'/'+activations[layer2Activation]+'/'+optimizers[optimizer]
 
     }
 </script>
+<style>
+    #loading {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    }
 
+    @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+    }
+    @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+    }
+
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

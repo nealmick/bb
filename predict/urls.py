@@ -20,5 +20,6 @@ urlpatterns = [
     path('trainmodel/', views.makeDataSet , name='train-model'),
     path('trainmodel/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>', views.trainModel , name='train-model'),
     #path('predicttoday/', views.predictToday , name='predict-today'),
+    path('resetmodel/', views.resetModel , name='reset-model'),
 
 ]
