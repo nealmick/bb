@@ -13,6 +13,7 @@ playersPerTeam = 7
 path = "csv/train.csv"
 def main(labels,seasons,**kwargs):
     writeCSVHeader(labels, path)
+    pc =0
     
     numnotfound = 0
     for s in range(len(seasons)):
@@ -98,10 +99,10 @@ def main(labels,seasons,**kwargs):
             visitorPlayerIds = playerIdByTeamID[str(g['visitor_id'])]
             homeTeam = []
             visitorTeam = []
-
             for player in g['data']:
                 if player['player'] is None:
-                    continue
+                    #continue
+                    break
     
                 if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
                     try:
@@ -118,11 +119,20 @@ def main(labels,seasons,**kwargs):
                         save_obj(seasonAverages,season+'SeasonAverages')
                         print('error')
                 
+            '''
+            
+            '''
 
             print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
             if(len(visitorTeam)<7 or len(homeTeam)<7):
                 print(len(visitorTeam),len(homeTeam),' found game with too few players--------------------------------------------------')
-                continue
+                homeTeam = []
+                visitorTeam=[]
+
+                for id in homePlayerIds:
+                    homeTeam.append(seasonAverages[id])
+                for id in visitorPlayerIds:
+                    visitorTeam.append(seasonAverages[id])
             bestH = []
             for i in range(0,playersPerTeam):
                 b = getBestPlayer(homeTeam)
@@ -161,7 +171,7 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
 
 
     if season == '2020':
-        if foo > 900:#sets split of test/train on final season.....
+        if foo > 750:#sets split of test/train on final season.....
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''

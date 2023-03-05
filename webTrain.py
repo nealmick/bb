@@ -9,7 +9,7 @@ import datetime
 
 
 
-def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer):
+def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username):
     path = "csv/train.csv"
     test_path = "csv/test.csv"
     current_time = str(time.time())
@@ -31,22 +31,26 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
     model = tf.keras.Sequential([
 
-        tf.keras.layers.Dense(layer1Count, activation=layer1Activation),
-        tf.keras.layers.Dense(layer2Count, activation=layer2Activation),
+        tf.keras.layers.Dense(layer1Count, activation=layer1Activation, kernel_regularizer=tf.keras.regularizers.l2(0.001)),
+        tf.keras.layers.Dense(layer2Count, activation=layer2Activation, kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         
         tf.keras.layers.Dense(2, activation='linear'),
 
 
 
     ])
-
+    EarlyStopping = tf.keras.callbacks.EarlyStopping(
+        monitor='val_loss',
+        restore_best_weights=True,
+        patience=4, verbose=0, mode='auto')
+    
     log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+    TensorBoard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     #checkpoint = ModelCheckpoint(filepath='./checkpoints/my_checkpoint',save_best_only=True)
     #creating and training model then saving
     model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['accuracy'])
-    model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[tensorboard_callback],shuffle=True)
-    model.save_weights('./checkpoints/my_checkpoint')
+    model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard,EarlyStopping],shuffle=False)
+    model.save_weights('./userModels/'+username.username+'/checkpoints/my_checkpoint')
 
 
 
@@ -186,18 +190,18 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
         r = []
 
-        r.append('percent correct winners: '+str(c/n*100)+'%')
-        r.append('spread percent correct winners: '+ str(s/n*100)+'%')
-        r.append('expected value all games: '+str(ev/n*100)+'%')
-        r.append('expected value over 1 point margins: '+str(evMargin1)+'/'+str(evMargin1Count)+'='+ str(evMargin1/evMargin1Count*100)+'%')
+        r.append('percent correct winners: '+str(round(c/n*100))+'%')
+        r.append('spread percent correct winners: '+ str(round(s/n*100))+'%')
+        r.append('expected value all games: '+str(round(ev/n*100))+'%')
+        r.append('expected value over 1 point margins: '+str(evMargin1)+'/'+str(evMargin1Count)+'='+ str(round(evMargin1/evMargin1Count*100))+'%')
         r.append('spent: '+str(round(evMargin1Count*100))+' profits: '+str(round((evMargin1 * 190.91)-(evMargin1Count*100)))+' total: '+str(round((evMargin1 * 190.91))))
-        r.append('expected value over 2 point margins: '+str(evMargin2)+'/'+str(evMargin2Count)+'='+ str(evMargin2/evMargin2Count*100)+'%')
+        r.append('expected value over 2 point margins: '+str(evMargin2)+'/'+str(evMargin2Count)+'='+ str(round(evMargin2/evMargin2Count*100))+'%')
         r.append('spent: '+str(round(evMargin2Count*100))+' profits: '+str(round((evMargin2 * 190.91)-(evMargin2Count*100)))+' total: '+str(round((evMargin2 * 190.91))))
 
-        r.append('expected value over 3 point margins: '+str(evMargin3)+'/'+str(evMargin3Count)+'='+ str(evMargin3/evMargin3Count*100)+'%')
+        r.append('expected value over 3 point margins: '+str(evMargin3)+'/'+str(evMargin3Count)+'='+ str(round(evMargin3/evMargin3Count*100))+'%')
         r.append('spent: '+str(round(evMargin3Count*100))+' profits: '+str(round((evMargin3 * 190.91)-(evMargin3Count*100)))+' total: '+str(round((evMargin3 * 190.91))))
 
-        r.append('expected value over 4 point margins: '+str(evMargin4)+'/'+str(evMargin4Count)+'='+ str(evMargin4/evMargin4Count*100)+'%')
+        r.append('expected value over 4 point margins: '+str(evMargin4)+'/'+str(evMargin4Count)+'='+ str(round(evMargin4/evMargin4Count*100))+'%')
         r.append('spent: '+str(round(evMargin4Count*100))+' profits: '+str(round((evMargin4 * 190.91)-(evMargin4Count*100)))+' total: '+str(round((evMargin4 * 190.91))))
 
         return r

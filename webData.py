@@ -99,26 +99,26 @@ def CreateDataset(seasons,numgames,**kwargs):
             visitorPlayerIds = playerIdByTeamID[str(g['visitor_id'])]
             homeTeam = []
             visitorTeam = []
-            '''
 
-                        for player in g['data']:
-                            if player['player'] is None:
-                                continue
+            for player in g['data']:
+                if player['player'] is None:
+                    continue
+    
+                if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
+                    try:
+                        
+                            if int(player['team']['id']) == int(g['home_id']):
+                                homeTeam.append(seasonAverages[int(player['player']['id'])])
+                            elif int(player['team']['id']) == int(g['visitor_id']):
+                                visitorTeam.append(seasonAverages[int(player['player']['id'])])
+                            else:
+                                print('dddddddddddidnt match team')
+                    except KeyError:
+                        data = getSeaonAverage(int(player['player']['id']),season,labels)
+                        seasonAverages.update({int(player['player']['id']):data})
+                        save_obj(seasonAverages,season+'SeasonAverages')
+                        print('error')
                 
-                            if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
-                                try:
-                                    
-                                        if int(player['team']['id']) == int(g['home_id']):
-                                            homeTeam.append(seasonAverages[int(player['player']['id'])])
-                                        elif int(player['team']['id']) == int(g['visitor_id']):
-                                            visitorTeam.append(seasonAverages[int(player['player']['id'])])
-                                        else:
-                                            print('dddddddddddidnt match team')
-                                except KeyError:
-                                    data = getSeaonAverage(int(player['player']['id']),season,labels)
-                                    seasonAverages.update({int(player['player']['id']):data})
-                                    save_obj(seasonAverages,season+'SeasonAverages')
-                                    print('error')
             '''
 
                 
@@ -127,6 +127,7 @@ def CreateDataset(seasons,numgames,**kwargs):
                 homeTeam.append(seasonAverages[id])
             for id in visitorPlayerIds:
                 visitorTeam.append(seasonAverages[id])
+            '''
 
             print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
             
