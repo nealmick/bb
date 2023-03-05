@@ -29,6 +29,8 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
 <img src="https://i.imgur.com/KIzXqh6.png" width="600" height="400" />
 <img src="https://i.imgur.com/LY7u9xB.png" width="600" height="300" />
+<img src="https://i.imgur.com/bisms9b.png" width="600" height="350" />
+
 
 # Install:
 
