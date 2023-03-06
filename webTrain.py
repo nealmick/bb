@@ -190,9 +190,18 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
         r = []
 
+
+
+
+
+
+
+
+        
         r.append('percent correct winners: '+str(round(c/n*100))+'%')
         r.append('spread percent correct winners: '+ str(round(s/n*100))+'%')
         r.append('expected value all games: '+str(round(ev/n*100))+'%')
+       
         r.append('expected value over 1 point margins: '+str(evMargin1)+'/'+str(evMargin1Count)+'='+ str(round(evMargin1/evMargin1Count*100))+'%')
         r.append('spent: '+str(round(evMargin1Count*100))+' profits: '+str(round((evMargin1 * 190.91)-(evMargin1Count*100)))+' total: '+str(round((evMargin1 * 190.91))))
         r.append('expected value over 2 point margins: '+str(evMargin2)+'/'+str(evMargin2Count)+'='+ str(round(evMargin2/evMargin2Count*100))+'%')
@@ -203,7 +212,23 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
         r.append('expected value over 4 point margins: '+str(evMargin4)+'/'+str(evMargin4Count)+'='+ str(round(evMargin4/evMargin4Count*100))+'%')
         r.append('spent: '+str(round(evMargin4Count*100))+' profits: '+str(round((evMargin4 * 190.91)-(evMargin4Count*100)))+' total: '+str(round((evMargin4 * 190.91))))
+        eval = {}
 
-        return r
+        eval['correct'] = c
+        eval['wrong'] = n-c
+        eval['spreadCorrect'] = s
+        eval['spreadWrong'] = n-s
+        eval['evMargin1'] = evMargin1
+        eval['evMargin1wrong'] = evMargin1Count-evMargin1
+        eval['evMargin2'] = evMargin2
+        eval['evMargin2wrong'] = evMargin2Count-evMargin2
+        eval['evMargin3'] = evMargin3
+        eval['evMargin3wrong'] = evMargin3Count-evMargin3
+        
+
+
+
+
+        return [r,eval]
     r = print_prediction(model, data)
     return r
