@@ -122,6 +122,18 @@
                 <option value="2">RMSprop</option>
                 {% endif %}
 
+
+                {%if optimizer == "adagrad"%}
+                <option value="3" selected>adagrad</option>
+                {% else %}
+                <option value="3">adagrad</option>
+                {% endif %}
+
+                {%if optimizer == "nadam"%}
+                <option value="4" selected>nadam</option>
+                {% else %}
+                <option value="4">nadam</option>
+                {% endif %}
               </select>
             <br></br>
 
@@ -201,7 +213,7 @@
         layer2Count = document.getElementById("layer2-count").value
         layer2Activation = document.getElementById("layer2-activation").value
         optimizer = document.getElementById("optimizer").value
-        optimizers = ['adam','adamax','RMSprop']
+        optimizers = ['adam','adamax','RMSprop','adagrad','nadam']
         activations = ['relu','LeakyReLU','swish','elu','gelu','selu']
         document.getElementById("loading-div").style.opacity = 1
 
