@@ -77,6 +77,11 @@ def trainView(request):
     username = request.user
     try:
         modelSettings = load_obj(str(username.username)+'ModelSettings')
+        try:
+            eval = modelSettings['eval']
+            context['eval'] = eval
+        except KeyError:
+            print('no eval')
         context['showresults'] = True
         context['results'] = modelSettings['results']
         context['layer1Count']=modelSettings['layer1Count']
@@ -86,8 +91,15 @@ def trainView(request):
         context['optimizer']=modelSettings['optimizer']
         context['epochs']=modelSettings['epochs']
         context['batchSize']=modelSettings['batchSize']
+
     except FileNotFoundError:
         modelSettings = load_obj('DefaultModelSettings')
+        try:
+            eval = modelSettings['eval']
+            context['eval'] = eval
+
+        except KeyError:
+            print('old model, no saved eval')
         context['showresults'] = True
         context['results'] = modelSettings['results']
         context['layer1Count']=modelSettings['layer1Count']
@@ -107,7 +119,6 @@ def makeDataSet(request,seasons,numgames):
 
 def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer):
     username = request.user
-    print(username)
     context = {}
     size = batchSize
     modelSettings = {}
@@ -121,11 +132,12 @@ def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count
 
 
     results = webTrain.webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username)
-    modelSettings['results']=results
+    modelSettings['results']=results[0]
+    modelSettings['eval']=results[1]
     save_obj(modelSettings,str(username.username)+'ModelSettings')
 
     context['showresults'] = True
-    context['results'] = results
+    context['results'] = results[0]
     context['layer1Count']=layer1Count
     context['layer1Activation']=layer1Activation
     context['layer2Count']=layer2Count
@@ -133,6 +145,8 @@ def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count
     context['optimizer']=optimizer
     context['epochs']=epochs
     context['batchSize']=batchSize
+    eval = modelSettings['eval']
+    context['eval'] = eval
     return render(request,'predict/train.html',context)
 
 

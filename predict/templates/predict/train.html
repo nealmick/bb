@@ -167,19 +167,111 @@
 </div>
 {% endif %}
 </div>
+
+
+
+
+
+<div class="col-12">
+    <div style="margin-top:10px;"class="content-section">
+
+        <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+            <canvas id="barChart"></canvas>
+          </div>
+        <div class="row" style="margin-top:25px;height:250px">
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 1 tracks games with predictions more than 1 point off the spread.">Margin 1</h5>
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin1"></canvas>
+                  </div>
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 2 tracks games with predictions more than 2 points off the spread.">Margin 2</h5>
+
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin2"></canvas>
+                  </div>
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 3 tracks games with predictions more than 3 points off the spread.">Margin 3</h5>
+
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin3"></canvas>
+                  </div>
+            </div>
+        </div>
+        <div class="row"style="height:250px;margin-top:10px;">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <center>
+                    <h5 style="margin-left:40px;"data-toggle="tooltip" data-placement="bottom" title="Predicted game winners without spread.">Win/Loss</h5>
+
+                </center>
+    
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="win_loss"style="margin-left: auto !important;margin-right: auto !important;"></canvas>
+                  </div>
+    
+    
+            </div>
+            
+            <div class="col-4">
+                <center>
+                    <h5 style="margin-left:25px;"data-toggle="tooltip" data-placement="bottom" title="How often spread chooses correct winner.">Spread Win/Loss</h5>
+
+                </center>
+    
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="spred_win"style="margin-left: auto !important;margin-right: auto !important;"></canvas>
+                  </div>
+    
+    
+            </div>
+        </div>
+    </div>
+    
+    
+    
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="col-12" >
     <div class="content-section" style="margin-top:10px">
-        <h2>Saved Settings:</h2>
-        <hr>
-        <p>Layer1Count: {{layer1Count}}</p>
-        <p>Layer1Activation: {{layer1Activation}}</p>
-        <p>Layyer2Count: {{layer2Count}}</p>
-        <p>Layer2Activation: {{layer2Activation}}</p>
-        <p>Optimizer: {{optimizer}}</p>
-        <hr>
+        <br>
+
         <center>
             Take's a few tries to get a model that converges properly, without overfitting. Overfitting is when the model effectively remembers previous game results rather than learning the essence of the game compared to the inputs, causing poor performance on test games never seen before, and good performance on training games the model remembers and has seen before.  60-70% accuracy on the margin 3 and 4 metrics is about the max ive gotten so far.
         </center>
+        <br>
     </div>
 
 </div>
@@ -243,9 +335,28 @@
 
 </style>
 
+{{ eval.spreadCorrect|json_script:"scorrect" }}
+{{ eval.spreadWrong|json_script:"swrong" }}
+
+
+{{ eval.correct|json_script:"correct" }}
+{{ eval.wrong|json_script:"wrong" }}
+
+{{ eval.evMargin1|json_script:"evMargin1" }}
+{{ eval.evMargin1wrong|json_script:"evMargin1wrong" }}
+
+{{ eval.evMargin2|json_script:"evMargin2" }}
+{{ eval.evMargin2wrong|json_script:"evMargin2wrong" }}
+
+{{ eval.evMargin3|json_script:"evMargin3" }}
+{{ eval.evMargin3wrong|json_script:"evMargin3wrong" }}
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script  src="{% static 'predict/stats.js'%}" defer></script>
+<script  src="{% static 'predict/eval.js'%}" defer></script>
 
 
 </div>
