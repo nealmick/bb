@@ -409,8 +409,14 @@ def saveEdit(request,pk,change,**kwargs):
 
     #p = float(p[0])
 
-    pmscore = p[0]-p[1]
-    margin = abs(pmscore)-abs(float(g.values('home_spread')[0]['home_spread']))
+    pmscore = float(p[0]-p[1])
+    spread = float(g.values('home_spread')[0]['home_spread'])
+    margin = abs(pmscore)-abs(spread)
+    print('spread ',g.values('home_spread')[0]['home_spread'],'pmscore ',p[0]-p[1])
+    print('spread ',spread,'pmscore ',pmscore)
+    if float(pmscore) < 0 and float(spread) < 0:
+        print('both negative')
+        margin = pmscore+spread
     g.update(home_score_prediction=round(p[0],2))
     g.update(visitor_score_prediction=round(p[1],2))
     g.update(pmscore=p[0]-p[1])
@@ -663,8 +669,7 @@ def getScore(request,pk,**kwargs):
 
             pmp = pmscore
             pmscore = int(h)-int(v)
-            margin = abs(pmp)-abs(spread)
-            Game.objects.filter(pk=pk).update(margin=margin)
+            margin = float(Game.objects.filter(pk=pk).values('margin')[0]['margin'])
             pred = ''
             print(spread,pmp)
 
