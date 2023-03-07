@@ -137,25 +137,32 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
                 mcorrect = False
                 print('wrong agaist spread',pred,swin)
 
+            margin = abs(pmp)-abs(spread[i])
 
-            if abs(pmp-spread[i]) > 4:
+            if float(pmp) < 0 and spread[i] < 0:
+                print('both negative')
+                margin = pmscore+spread[i]
+
+
+
+            if abs(margin) > 4:
                 evMargin4Count+=1
                 if mcorrect:
                     evMargin4+=1
 
-            if abs(pmp-spread[i]) > 3:
+            if abs(margin) > 3:
                 evMargin3Count+=1
                 if mcorrect:
                     evMargin3+=1
                 
-            if abs(pmp-spread[i]) > 2:
+            if abs(margin) > 2:
 
                 evMargin2Count+=1
                 if mcorrect:
 
                     evMargin2+=1
 
-            if abs(pmp-spread[i]) > 1:
+            if abs(margin) > 1:
                 
                 evMargin1Count+=1
                 if mcorrect:
