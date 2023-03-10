@@ -99,7 +99,6 @@ def trainView(request):
             context['es']='true'
             context['rmw']='true'
             context['kr']='true'
-        print(modelSettings['kr'],modelSettings['es'])
     except FileNotFoundError:
         modelSettings = load_obj('DefaultModelSettings')
         try:
