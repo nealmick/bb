@@ -9,7 +9,7 @@ import datetime
 
 
 
-def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username):
+def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr):
     path = "csv/train.csv"
     test_path = "csv/test.csv"
     current_time = str(time.time())
@@ -28,28 +28,45 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
     #x_train = tf.keras.utils.normalize(x_train, axis=1)
     #x_test = tf.keras.utils.normalize(x_test, axis=1)
-
-    model = tf.keras.Sequential([
-
-        tf.keras.layers.Dense(layer1Count, activation=layer1Activation, kernel_regularizer=tf.keras.regularizers.l2(0.001)),
-        tf.keras.layers.Dense(layer2Count, activation=layer2Activation, kernel_regularizer=tf.keras.regularizers.l2(0.001)),
-        
-        tf.keras.layers.Dense(2, activation='linear'),
+    if kr =='true':
 
 
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(layer1Count, activation=layer1Activation, kernel_regularizer=tf.keras.regularizers.l2(0.001)),
+            tf.keras.layers.Dense(layer2Count, activation=layer2Activation, kernel_regularizer=tf.keras.regularizers.l2(0.001)),
+            
+            tf.keras.layers.Dense(2, activation='linear'),
 
-    ])
-    EarlyStopping = tf.keras.callbacks.EarlyStopping(
-        monitor='val_loss',
-        restore_best_weights=True,
-        patience=4, verbose=0, mode='auto')
-    
+        ])
+    else:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(layer1Count, activation=layer1Activation),
+            tf.keras.layers.Dense(layer2Count, activation=layer2Activation),
+            
+            tf.keras.layers.Dense(2, activation='linear'),
+
+        ])
+    if rmw =='true':
+        EarlyStopping = tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss',
+            restore_best_weights=True,
+            patience=4, verbose=0, mode='auto')
+    else:       
+        EarlyStopping = tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss',
+            restore_best_weights=False,
+            patience=4, verbose=0, mode='auto')
+
     log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     TensorBoard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     #checkpoint = ModelCheckpoint(filepath='./checkpoints/my_checkpoint',save_best_only=True)
     #creating and training model then saving
     model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['accuracy'])
-    model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard,EarlyStopping],shuffle=False)
+    if es =='true':
+        model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard,EarlyStopping],shuffle=False)
+    else:
+        model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard],shuffle=False)
+
     model.save_weights('./userModels/'+username.username+'/checkpoints/my_checkpoint')
 
 
