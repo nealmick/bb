@@ -6,7 +6,7 @@ Developed with Python utilizing the TensorFlow library, the model is trained on 
 
 
 
-The project is under development...
+# Under Development
 
 
 #### Django apps:
@@ -74,9 +74,8 @@ http://localhost:6006/
 <img src="https://i.imgur.com/Ha6OHxn.png" width="800" height="300" />
 <img src="https://i.imgur.com/Zu3YQrU.png" width="800" height="300" />
 
-# Under Development*
 
-FAQ:
+# FAQ:
 
-https://nbadata.cloud/predict/faq/
+# https://nbadata.cloud/predict/faq/
 
