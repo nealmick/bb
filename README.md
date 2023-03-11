@@ -75,7 +75,6 @@ http://localhost:6006/
 <img src="https://i.imgur.com/Zu3YQrU.png" width="800" height="300" />
 
 
-# FAQ:
+# FAQ:  https://nbadata.cloud/predict/faq/
 
-# https://nbadata.cloud/predict/faq/
 
