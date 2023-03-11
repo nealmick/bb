@@ -76,6 +76,8 @@ http://localhost:6006/
 
 # Under Development*
 
+FAQ:
+https://nbadata.cloud/predict/faq/
 
 
 API used for future team data, injuries and odds. rate limit 2000 / day :
