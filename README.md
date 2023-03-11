@@ -80,17 +80,3 @@ FAQ:
 
 https://nbadata.cloud/predict/faq/
 
-
-API used for future team data, injuries and odds. rate limit 2000 / day :
-
-https://rapidapi.com/tank01/api/tank01-fantasy-stats/
-
-API used for scores, games, and season averages, both future and historical. rate limit 1 / second :
-
-https://www.balldontlie.io/
-
-Dataset used for historical team win/loss ratio, and odds:
-
-https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting
-
-
