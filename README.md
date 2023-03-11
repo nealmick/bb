@@ -68,7 +68,8 @@ http://localhost:6006/
 
 ```
 
-# TensorBoard:
+# TensorBoard:  http://nbadata.cloud:6006/
+Note: Tensorboard isnt always running on live server.
 <img src="https://i.imgur.com/P8hmfxM.png" width="800" height="300" />
 <img src="https://i.imgur.com/opg7vk4.png" width="800" height="300" />
 <img src="https://i.imgur.com/Ha6OHxn.png" width="800" height="300" />
