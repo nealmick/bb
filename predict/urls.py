@@ -5,7 +5,7 @@ from .views import GameListView
 urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
     path('edit/<int:pk>/', views.editGame, name='edit-predict'),
-    path('edit/<int:pk>/<str:change>', views.saveEdit, name='save-edit'),
+    path('edit/<int:pk>/<str:model>/<str:change>', views.saveEdit, name='save-edit'),
     path('edit/<int:pk>/remove/<str:player>', views.removePlayer, name='remove-player'),
 
     path('new/<str:home>/<str:visitor>/<str:date>/', views.quickcreate, name='quick-create'),
@@ -14,12 +14,12 @@ urlpatterns = [
     path('date/<str:dateSelected>', GameListView.as_view() , name='home-predict'),
     path('#<int:pk>', views.getScore , name='get-score'),
     path('stats/', views.statsView , name='stats-view'),
-    path('train/', views.trainView , name='train-view'),
+    path('train/<str:model>', views.trainView , name='train-view'),
     path('makedataset', views.makeDataSet , name='make-dataset'),
     path('makedataset/<str:seasons>/<int:numgames>', views.makeDataSet , name='make-dataset'),
-    path('trainmodel/', views.makeDataSet , name='train-model'),
-    path('trainmodel/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>/<str:es>/<str:rmw>/<str:kr>', views.trainModel , name='train-model'),
+    path('trainmodel/<str:model>/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>/<str:es>/<str:rmw>/<str:kr>', views.trainModel , name='train-model'),
     #path('predicttoday/', views.predictToday , name='predict-today'),
-    path('resetmodel/', views.resetModel , name='reset-model'),
+    path('resetmodel/<str:model>', views.resetModel , name='reset-model'),
+    path('faq/', views.faq , name='faq'),
 
 ]

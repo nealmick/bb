@@ -1,0 +1,48 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content%}
+
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  
+  
+  
+  
+  <div class="col-12" style="padding:0px">
+      <div style="margin-top:10px"class="content-section">
+        <h1>FAQ:</h1>
+        <hr>
+        <h5>What does the model predict?</h5>
+        <p>The model predicts the home and vistor scores.</p>
+        <hr>
+        <h5>What is the input for each game?</h5>
+        <p>Each games is input the top 7 players by player time for each team, along with there win/loss/streak and point spread provided by FandDuel.</p>
+        <hr>
+        <h5>What is the remove player function?</h5>
+        <p>Click on a player's name to remove the player from the input data.  This is very usefull if players are injured.</p>
+        <hr>
+        <h5>How is the player injury data gathered?</h5>
+        <p>The injury data is gathered from nba.com Injuries have an expiration date set by the doctor, however players may begin playing sooner.</p>
+        <hr>
+        <h5>What is the origin of the player season average data?</h5>
+        <p>The season averages are gathered from an api available <a href="https://www.balldontlie.io/home.html#introduction">here</a>.</p>
+        <hr>
+        <h5>What is the origin of the team and odds data?</h5>
+        <p>The team and odds data are gathered from an api available <a href="https://rapidapi.com/tank01/api/tank01-fantasy-stats/">here</a>.</p>
+        <hr>
+        <h5>What does margin mean?</h5>
+        <p>Margin is the distance between the predicted outcome and the point spread.</p>
+        <hr>
+        <h5>What does export data do?</h5>
+        <p>Export data creates a csv file containing all of your predictions.</p>
+        <hr>
+       
+    </div>
+</div>
+{% endblock content%}

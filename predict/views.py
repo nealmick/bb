@@ -66,17 +66,22 @@ TEAMCOLORS = {
     'UTA':'#FAA403',
     'WAS':'#CF142C',
 }
-def resetModel(request):
-    if os.path.exists("userModels/"+str(request.user.username)):
-        shutil.rmtree("userModels/"+str(request.user.username))
-        os.remove("updatedObj/"+str(request.user.username) +"ModelSettings.pkl")
 
-    return redirect('train-view')
-def trainView(request):
+def faq(request):
+
+    return render(request,'predict/faq.html')
+def resetModel(request,model):
+    if os.path.exists("userModels/"+str(request.user.username)+'/'+model+'/'):
+        shutil.rmtree("userModels/"+str(request.user.username)+'/'+model+'/')
+        os.remove("updatedObj/"+str(request.user.username) +"ModelSettings"+model+".pkl")
+
+    return redirect('train-view',model)
+def trainView(request,model):
     context = {}
+    context['model'] = model
     username = request.user
     try:
-        modelSettings = load_obj(str(username.username)+'ModelSettings')
+        modelSettings = load_obj(str(username.username)+'ModelSettings'+model)
         try:
             eval = modelSettings['eval']
             context['eval'] = eval
@@ -125,9 +130,10 @@ def trainView(request):
             context['es']='true'
             context['rmw']='true'
             context['kr']='true'
-        print(context['kr'],context['es'])
         
     return render(request,'predict/train.html',context)
+
+
 def makeDataSet(request,seasons,numgames):
     print(seasons,numgames)
     seasons = seasons.split('-')
@@ -135,9 +141,10 @@ def makeDataSet(request,seasons,numgames):
     webData.CreateDataset(seasons,numgames)
     return redirect('train-view')
 
-def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,es,rmw,kr):
+def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,es,rmw,kr):
     username = request.user
     context = {}
+    context['model'] = model
     size = batchSize
     modelSettings = {}
     modelSettings['layer1Count']=layer1Count
@@ -152,10 +159,10 @@ def trainModel(request,epochs,batchSize,layer1Count,layer1Activation,layer2Count
     modelSettings['es']=es
     modelSettings['rmw']=rmw
 
-    results = webTrain.webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr)
+    results = webTrain.webappTrain(model,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr)
     modelSettings['results']=results[0]
     modelSettings['eval']=results[1]
-    save_obj(modelSettings,str(username.username)+'ModelSettings')
+    save_obj(modelSettings,str(username.username)+'ModelSettings'+model)
 
     context['showresults'] = True
     context['results'] = results[0]
@@ -347,7 +354,7 @@ def exportGames(request):
 
 
 
-def saveEdit(request,pk,change,**kwargs):
+def saveEdit(request,model,pk,change,**kwargs):
     username = request.user
     changes = change[7:].split('-')
     changes.pop(-1)
@@ -428,7 +435,7 @@ def saveEdit(request,pk,change,**kwargs):
         f = open(path,'a')
         f.write(ss+'\n')
     w(data, path,g)  
-    p = predict(path,username)
+    p = predict(model,path,username)
     print(p)
 
     #p = float(p[0])
@@ -1345,7 +1352,7 @@ def load_obj(name):
         return pickle.load(f)
 #------------------------------------------------------------------------#TensorFlow Time lets get it####################
 
-def predict(path,username):
+def predict(modelNum,path,username):
 
     data = pd.read_csv(path)
 
@@ -1361,7 +1368,7 @@ def predict(path,username):
     #x_test = tf.keras.utils.normalize(x_test, axis=1)
 
     try:
-        modelSettings = load_obj(str(username.username)+'ModelSettings')
+        modelSettings = load_obj(str(username.username)+'ModelSettings'+modelNum)
     except FileNotFoundError:
         modelSettings = load_obj('DefaultModelSettings')
 
@@ -1376,8 +1383,8 @@ def predict(path,username):
         
     model.compile(optimizer=modelSettings['optimizer'], loss='mean_squared_error', metrics=['accuracy'])
     try:
-        modelSettings = load_obj(str(username.username)+'ModelSettings')
-        model.load_weights('./userModels/'+username.username+'/checkpoints/my_checkpoint')
+        modelSettings = load_obj(str(username.username)+'ModelSettings'+modelNum)
+        model.load_weights('./userModels/'+username.username+'/'+modelNum+'/checkpoints/my_checkpoint')
     except FileNotFoundError:
         model.load_weights('./checkpoints/my_checkpoint')
 

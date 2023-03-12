@@ -16,10 +16,33 @@
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js" defer></script>
 
 <div class="col-lg-6">
-    <div style="margin-top:10px;height:650px"class="content-section" >
-        <h2>Train Model</h2>
+    <div style="margin-top:10px;height:725px"class="content-section" >
+
         <div style="width:100%;">
-            
+            <h2>Train Model</h2>
+            <select id="model-slot" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if model == '0' %}
+                <option value="0" selected>Model 0</option>
+                {% else %}
+                <option value="0" >Model 0</option>
+                {% endif%}
+                {%if model == '1' %}
+                <option value="1" selected>Model 1</option>
+
+                {% else %}
+                <option value="1">Model 1</option>
+
+                {% endif%}
+                {%if model == '2' %}
+                <option value="2" selected>Model 2</option>
+                {% else %}
+                <option value="2">Model 2</option>
+                {% endif%}
+
+
+              </select>
+              <hr>
+
             <label data-toggle="tooltip" data-placement="bottom" title="Each epoch is a single pass of the entire training dataset through the neural network model. " for="epochs-input">Epochs: <p style="display:inline"id="epochs-display">{{epochs}}</p></label>
             <input min="1" max="100" type="range" id="epochs-input" value="{{epochs}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             </input>
@@ -177,14 +200,14 @@
                 <div class="form-check" style="padding-top:3px">
                     <input class="form-check-input" type="checkbox" value="" id="m" checked disabled>
                     <label class="form-check-label" for="m">
-                        Comming soon
+                        Coming soon
                     </label>
                 </div>
             </div>            
 
         </div>
         <button id="train-button"onClick="trainModel()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Train Model <i class="fas fa-robot"></i></i></button>
-        <button id="train-button"onclick="window.location.href='{%url 'reset-model'%}';"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Reset Model <i class="fas fa-trash"></i></button>
+        <button id="train-button"onclick="window.location.href='{%url 'home-predict'%}'+'resetmodel/'+document.getElementById('model-slot').value ;"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;height:35px; border:none">Reset Model <i class="fas fa-trash"></i></button>
         <div id="loading-div" style="opacity:0;position:absolute;margin-top:0px!important;margin-left:5px!important;display:inline">
             <div style=""id="loading"></div>
         </div>
@@ -197,7 +220,7 @@
 
 {% if showresults %}
 <div class="col-lg-6">
-    <div style="margin-top:10px;height:650px"class="content-section">
+    <div style="margin-top:10px;height:725px"class="content-section">
         
         <h2>Evaluation </h2>
         {%for line in results%}
@@ -335,6 +358,10 @@
     document.getElementById("layer2-count").addEventListener("input", () => {
         document.getElementById("2count-display").innerHTML = document.getElementById("layer2-count").value;
     });
+    document.getElementById("model-slot").addEventListener("input", () => {
+        model = document.getElementById("model-slot").value
+        window.location.href = "{% url 'home-predict' %}"+'train/'+model
+    });
 
     function makeDataset(){
         seasons = document.getElementById("seasons-input").value
@@ -357,9 +384,10 @@
         optimizers = ['adam','adamax','RMSprop','adagrad','nadam']
         activations = ['relu','LeakyReLU','swish','elu','gelu','selu']
         document.getElementById("loading-div").style.opacity = 1
-
         
-        window.location.href = "{% url 'train-model' %}"+ epochs+'/'+batchSize +'/'+layer1Count+'/'+activations[layer1Activation]+'/'+layer2Count+'/'+activations[layer2Activation]+'/'+optimizers[optimizer]+'/'+es+'/'+rmw+'/'+kr
+        model = document.getElementById("model-slot").value
+        
+        window.location.href = "{% url 'home-predict' %}"+'trainmodel/'+model+'/'+ epochs+'/'+batchSize +'/'+layer1Count+'/'+activations[layer1Activation]+'/'+layer2Count+'/'+activations[layer2Activation]+'/'+optimizers[optimizer]+'/'+es+'/'+rmw+'/'+kr
 
     }
 </script>
