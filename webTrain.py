@@ -9,7 +9,7 @@ import datetime
 
 
 
-def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr):
+def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr):
     path = "csv/train.csv"
     test_path = "csv/test.csv"
     current_time = str(time.time())
@@ -67,7 +67,7 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
     else:
         model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard],shuffle=False)
 
-    model.save_weights('./userModels/'+username.username+'/checkpoints/my_checkpoint')
+    model.save_weights('./userModels/'+username.username+'/'+str(modelNum)+'/checkpoints/my_checkpoint')
 
 
 
@@ -89,6 +89,10 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
         n = 0#count all
         s = 0#count spread correct winner
         ev = 0#count expected value
+
+        evMargin6Count = 0#count expected 
+        evMargin6 = 0# expected margin
+
 
         evMargin4Count = 0#count expected 
         evMargin4 = 0# expected margin
@@ -158,9 +162,14 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
             if float(pmp) < 0 and spread[i] < 0:
                 print('both negative')
-                margin = pmscore+spread[i]
+                #margin = pmscore+spread[i]
 
 
+
+            if abs(margin) > 6:
+                evMargin6Count+=1
+                if mcorrect:
+                    evMargin6+=1
 
             if abs(margin) > 4:
                 evMargin4Count+=1
@@ -185,7 +194,7 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
                 if mcorrect:
 
                     evMargin1+=1
-
+            print(abs(margin))
 
             #prediction - spread > 0 and winner 1
             #prediction - spread < 0 and winner 0
@@ -236,6 +245,9 @@ def webappTrain(epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activ
 
         r.append('expected value over 4 point margins: '+str(evMargin4)+'/'+str(evMargin4Count)+'='+ str(round(evMargin4/evMargin4Count*100))+'%')
         r.append('spent: '+str(round(evMargin4Count*100))+' profits: '+str(round((evMargin4 * 190.91)-(evMargin4Count*100)))+' total: '+str(round((evMargin4 * 190.91))))
+
+        #r.append('expected value over 6 point margins: '+str(evMargin6)+'/'+str(evMargin6Count)+'='+ str(round(evMargin6/evMargin6Count*100))+'%')
+        #r.append('spent: '+str(round(evMargin6Count*100))+' profits: '+str(round((evMargin6 * 190.91)-(evMargin6Count*100)))+' total: '+str(round((evMargin6 * 190.91))))
         eval = {}
 
         eval['correct'] = c
