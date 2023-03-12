@@ -355,6 +355,7 @@ def exportGames(request):
 
 
 def saveEdit(request,model,pk,change,**kwargs):
+    model = str(model)
     username = request.user
     changes = change[7:].split('-')
     changes.pop(-1)

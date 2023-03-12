@@ -5,7 +5,7 @@ from .views import GameListView
 urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
     path('edit/<int:pk>/', views.editGame, name='edit-predict'),
-    path('edit/<int:pk>/<str:model>/<str:change>', views.saveEdit, name='save-edit'),
+    path('edit/<int:pk>/<int:model>/<str:change>', views.saveEdit, name='save-edit'),
     path('edit/<int:pk>/remove/<str:player>', views.removePlayer, name='remove-player'),
 
     path('new/<str:home>/<str:visitor>/<str:date>/', views.quickcreate, name='quick-create'),
