@@ -333,7 +333,7 @@ def exportGames(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="export.csv"'
-    header = ['gameid','gamedate','home','visitor','margin','spread_preadiction','won_vs_spread','home_score','visitor_score','home_score_prediction','visitor_score_prediction','home_spread','visitor_spread','home_games_won','home_games_loss','visitor_games_won','visitor_games_loss','pmscore','home_injury','visitor_injury','removed_players']    
+    header = ['gameid','gamedate','home','visitor','margin','spread_prediction','won_vs_spread','home_score','visitor_score','home_score_prediction','visitor_score_prediction','home_spread','visitor_spread','home_games_won','home_games_loss','visitor_games_won','visitor_games_loss','pmscore','home_injury','visitor_injury','removed_players']    
     
     writer = csv.writer(response)
 
@@ -342,7 +342,7 @@ def exportGames(request):
     qs = Game.objects.filter(author=user)
     lines = []
     for game in qs:
-        g = [game.gameid,game.gamedate,game.home,game.visitor,game.margin,game.spread_preadiction,game.ev_won,game.home_score,game.visitor_score,
+        g = [game.gameid,game.gamedate,game.home,game.visitor,game.margin,game.spread_prediction,game.ev_won,game.home_score,game.visitor_score,
         game.home_score_prediction,game.visitor_score_prediction,game.home_spread,game.visitor_spread,
         game.home_games_won,game.home_games_loss,game.visitor_games_won,game.visitor_games_loss,game.pmscore,game.homeInjury,game.visitorInjury,game.removed_players]
         line = []
@@ -469,7 +469,7 @@ def saveEdit(request,model,pk,change,**kwargs):
         pred = 1
     elif spread<pmp and pmp >0:
         pred = 1
-    g.update(spread_preadiction=pred)
+    g.update(spread_prediction=pred)
 
     return redirect('home-predict')
 
@@ -617,7 +617,7 @@ def editGame(request,pk,**kwargs):
     context['removed_players'] = g.values('removed_players')[0]['removed_players']
     context['ev_won'] = g.values('ev_won')[0]['ev_won']
     context['author'] = u
-    context['spread_preadiction'] = g.values('spread_preadiction')[0]['spread_preadiction']
+    context['spread_prediction'] = g.values('spread_prediction')[0]['spread_prediction']
     if g.values('homeInjuryComplex')[0]['homeInjuryComplex'] is not None:
         context['hInjuryComplex'] = json.loads(g.values('homeInjuryComplex')[0]['homeInjuryComplex'])
         context['hInjuryDisplay'] = True
