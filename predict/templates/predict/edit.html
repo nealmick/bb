@@ -334,10 +334,58 @@
 
         </table>
       </div>
+
+      {% if hInjuryDisplay %}
+      <br>
+      <div style="margin-top:35px;overflow: auto; color:white;">
+        <table align="center" style="width:100%">
+            <tr>
+                <td style="width:200px"><center>Home Injuries</center></td>
+                <td style="width:600px"><center>Description</center></td>
+                <td><center>Date</center></td>
+                <td><center>Status</center></td>
+
+            </tr>
+
+            {%for i in hInjuryComplex%}
+              <tr>
+                {% for foo in i%}
+                <td><center>{{foo}}</center></td>
+                {% endfor %}
+              </tr>
+            {% endfor%}
+          </table>
+        </div>
+
+        {% endif %}
+        {% if vInjuryDisplay %}
+        <br>
+        <div style="margin-top:35px;overflow: auto; color:white;">
+          <table align="center" style="width:100%">
+              <tr>
+                  <td style="width:200px"><center>Visitor Injuries</center></td>
+                  <td style="width:600px"><center>Description</center></td>
+                  <td><center>Date</center></td>
+                  <td><center>Status</center></td>
+  
+              </tr>
+  
+              {%for i in vInjuryComplex%}
+                <tr>
+                  {% for foo in i%}
+
+                  <td><center>{{foo}}</center></td>
+                  {% endfor %}
+                </tr>
+              {% endfor%}
+            </table>
+          </div>
+          {% endif %}
+
       <br>
       <br>
       <p class="text-muted"style="white-space: pre-line;">User: {{author}}    &nbsp&nbsp&nbsp csvid: {{csvid}}    &nbsp&nbsp&nbsp  GameID: {{gameid}}   &nbsp&nbsp&nbsp  created: {{date_posted}}</p>
-      <p class="text-muted"style="white-space: pre-line;">Removed Players: {{removed_players}}</p>
+      <p class="text-muted"style="white-space: pre-line;">Model: {{model}} &nbsp&nbsp&nbsp Removed Players: {{removed_players}}</p>
 </div>
         
         <script defer>

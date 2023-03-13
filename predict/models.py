@@ -79,12 +79,17 @@ class Game(models.Model):
     margin = models.CharField(null=True, blank=True, max_length=10)
 
     homeInjury = models.CharField(null=True, blank=True, max_length=1000)
+    homeInjuryComplex = models.CharField(null=True, blank=True, max_length=10000)
     visitorInjury = models.CharField(null=True, blank=True, max_length=1000)
+    visitorInjuryComplex = models.CharField(null=True, blank=True, max_length=10000)
 
     removed_players = models.CharField(null=True, blank=True, max_length=1000)
 
     spread_preadiction = models.CharField(null=True, blank=True, max_length=10)
     
+
+    model = models.CharField(default='0', max_length=10)
+
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)

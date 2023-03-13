@@ -287,17 +287,20 @@ def removePlayer(request,pk,player):
 
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
+    homeTeamInjuryComplex = homeTeamStats.pop(-1)
+
     homeTeamInjury = homeTeamStats.pop(-1)
     
     visitorTeamStats = stats[1]
-    
+    visitorTeamInjuryComplex = visitorTeamStats.pop(-1)
     visitorTeamInjury = visitorTeamStats.pop(-1)
     
     home_streak = homeTeamStats.pop(-1)
     visitor_streak = visitorTeamStats.pop(-1)
 
     #print('spread: ', spread)
-    
+    homeTeamInjuryComplex = json.dumps(homeTeamInjuryComplex)
+    visitorTeamInjuryComplex = json.dumps(visitorTeamInjuryComplex)
     found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
 
 
@@ -318,7 +321,7 @@ def removePlayer(request,pk,player):
         gameid=gameid,home_spread=home_spread,visitor_spread=visitor_spread,dk_home_spread=home_spread,dk_visitor_spread=visitor_spread,
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
         visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
-        homeInjury=homeInjury, visitorInjury=visitorInjury,removed_players=removed_players_dump)
+        homeInjury=homeInjury, visitorInjury=visitorInjury,removed_players=removed_players_dump,homeInjuryComplex=homeTeamInjuryComplex,visitorInjuryComplex=visitorTeamInjuryComplex)
     return redirect('edit-predict',pk)
 
 
@@ -453,6 +456,7 @@ def saveEdit(request,model,pk,change,**kwargs):
     g.update(visitor_score_prediction=round(p[1],2))
     g.update(pmscore=p[0]-p[1])
     g.update(margin=abs(margin))
+    g.update(model=model)
     spread = float(g.values('home_spread')[0]['home_spread'])*-1
     pmp = pmscore
     print(spread,pmp)
@@ -614,7 +618,19 @@ def editGame(request,pk,**kwargs):
     context['ev_won'] = g.values('ev_won')[0]['ev_won']
     context['author'] = u
     context['spread_preadiction'] = g.values('spread_preadiction')[0]['spread_preadiction']
+    if g.values('homeInjuryComplex')[0]['homeInjuryComplex'] is not None:
+        context['hInjuryComplex'] = json.loads(g.values('homeInjuryComplex')[0]['homeInjuryComplex'])
+        context['hInjuryDisplay'] = True
+    else:
+        context['hInjuryDisplay'] = False
+        context['hInjuryComplex'] = []
+    if g.values('visitorInjuryComplex')[0]['visitorInjuryComplex'] is not None:
+        context['vInjuryComplex'] = json.loads(g.values('visitorInjuryComplex')[0]['visitorInjuryComplex'])
+        context['vInjuryDisplay'] = True
 
+    else:
+        context['vInjuryComplex'] = []
+        context['vInjuryDisplay'] = False
     hi = g.values('homeInjury')[0]['homeInjury']
     if hi is None:
         context['home_injury'] = 0
@@ -637,6 +653,7 @@ def editGame(request,pk,**kwargs):
         
     context['game'] = g
     context['g'] = g
+    context['model']=g.values('model')[0]['model']
     #print(players)
 
     return render(request, 'predict/edit.html',context)
@@ -941,15 +958,17 @@ def quickcreate(request,home,visitor,date):
     print('visitor spread==========',visitor_spread)
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
+    homeTeamInjuryComplex = homeTeamStats.pop(-1)
     homeTeamInjury = homeTeamStats.pop(-1)
-    
     visitorTeamStats = stats[1]
-    
+    visitorTeamInjuryComplex = visitorTeamStats.pop(-1)
     visitorTeamInjury = visitorTeamStats.pop(-1)
     
     home_streak = homeTeamStats.pop(-1)
     visitor_streak = visitorTeamStats.pop(-1)
-
+    print('complex injury report',homeTeamInjuryComplex,visitorTeamInjuryComplex)
+    homeTeamInjuryComplex = json.dumps(homeTeamInjuryComplex)
+    visitorTeamInjuryComplex = json.dumps(visitorTeamInjuryComplex)
     removed_players = []
     found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
     homeInjury = ''
@@ -972,7 +991,7 @@ def quickcreate(request,home,visitor,date):
         gameid=gameid,home_spread=home_spread,visitor_spread=visitor_spread,dk_home_spread=home_spread,dk_visitor_spread=visitor_spread,
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
         visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
-        homeInjury=homeInjury, visitorInjury=visitorInjury)
+        homeInjury=homeInjury, visitorInjury=visitorInjury,homeInjuryComplex=homeTeamInjuryComplex,visitorInjuryComplex=visitorTeamInjuryComplex)
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
@@ -1060,13 +1079,20 @@ def getTeamData(home,visitor):
         GP = int(W)+int(L)
         c = 0
         injuries = []
+        injuriesComplex = []
         for player in r[team]['Roster']:
             if r[team]['Roster'][player]['injury']['injDate'] != '':
                 c+=1
                 #print(r[team]['Roster'][player]['injury']['injDate'])
                 #print(r[team]['Roster'][player]['nbaComName'])
+                d = r[team]['Roster'][player]['injury']['description']
+                if len(r[team]['Roster'][player]['injury']['description']) < 5:
+                    d= "No Description"
+                foo = [r[team]['Roster'][player]['nbaComName'],d,r[team]['Roster'][player]['injury']['injDate'],r[team]['Roster'][player]['injury']['designation']]
+                injuriesComplex.append(foo)
+
                 injuries.append(r[team]['Roster'][player]['nbaComName'])
-        teamStats.update({r[team]['teamAbv']:[GP,W,L,steakLength,injuries]})
+        teamStats.update({r[team]['teamAbv']:[GP,W,L,steakLength,injuries,injuriesComplex]})
 
     #print(teamStats)
     #save_obj(teamStats,"teamStats")
