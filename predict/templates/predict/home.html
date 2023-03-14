@@ -193,10 +193,55 @@
                         {% else%}
 
                                             
-                        <p style="">{{ game.gamedate }}</p>
+                        <p style="margin-bottom:3px">{{ game.gamedate }}</p>
                         {% endif %}
-                        <div style="height: 75px !important;">
-                        <canvas  id="{{ game.pk }}" ></canvas>
+                        <div style="height: 65px !important;">
+                        <canvas  style=''id="{{ game.pk }}" ></canvas>
+                          
+
+
+
+                      {% if game.visitor_spread == '0' %}
+                      {% elif game.pmscore != 0 %}
+                      <p style="margin:0px;"class="text-muted">
+                      
+                      {% if game.finished %}
+                        {% if game.ev_won == '1'%}
+                        <p class="text-muted"style="margin-bottom: 0px;">
+                          {% if game.spread_prediction == '1'%}
+                          Margin: {{ game.margin |floatformat:2}}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-right"></i>
+                          {% else%}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-left"></i>
+                          Margin: {{ game.margin |floatformat:2}}
+                          {%endif%}
+                        </p>
+                        
+                        {% else %}
+                        <p class="text-muted" style="margin-bottom: 0px;">
+                          {% if game.spread_prediction == '1'%}
+                          Margin {{ game.margin |floatformat:2}}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-right"></i> 
+
+                          {% else %}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-left"></i> 
+
+                          Margin: {{ game.margin |floatformat:2}}
+                          {% endif %}
+                          {% endif %}
+
+                        {% else %}
+                      
+                      {% if game.spread_prediction == '1'%}
+                        Margin {{ game.margin |floatformat:2}}
+                        <i class="fas fa-arrow-right"></i> 
+
+                        {% else %}
+                        <i  class="fas fa-arrow-left"></i> 
+                        Margin: {{ game.margin |floatformat:2}}
+                      {% endif %}
+                      {% endif %}
+                      {% endif %}
                         </div>
                         </center>
 
@@ -262,8 +307,8 @@
                                     layout: {
                                       padding: {
                                           // Any unspecified dimensions are assumed to be 0                     
-                                          top: 5,
-                                          bottom: 5,
+                                          top: 0,
+                                          bottom: 0,
                                           left: 5,
                                           right: 5,
                                       }
