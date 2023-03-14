@@ -13,6 +13,7 @@ from django.views.generic import CreateView
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponsePermanentRedirect
 from .models import Game
 from users.models import Profile, Message
@@ -70,12 +71,15 @@ TEAMCOLORS = {
 def faq(request):
 
     return render(request,'predict/faq.html')
+@login_required
 def resetModel(request,model):
     if os.path.exists("userModels/"+str(request.user.username)+'/'+model+'/'):
         shutil.rmtree("userModels/"+str(request.user.username)+'/'+model+'/')
         os.remove("updatedObj/"+str(request.user.username) +"ModelSettings"+model+".pkl")
 
     return redirect('train-view',model)
+
+@login_required
 def trainView(request,model):
     context = {}
     context['model'] = model
@@ -133,14 +137,14 @@ def trainView(request,model):
         
     return render(request,'predict/train.html',context)
 
-
+@login_required
 def makeDataSet(request,seasons,numgames):
     print(seasons,numgames)
     seasons = seasons.split('-')
     print(seasons)
     webData.CreateDataset(seasons,numgames)
     return redirect('train-view')
-
+@login_required
 def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,es,rmw,kr):
     username = request.user
     context = {}
@@ -180,7 +184,7 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     context['eval'] = eval
     return render(request,'predict/train.html',context)
 
-
+@login_required
 def statsView(request):
     context = {}
     user = request.user
@@ -657,14 +661,7 @@ def editGame(request,pk,**kwargs):
     #print(players)
 
     return render(request, 'predict/edit.html',context)
-def predictToday(request,**kwargs):
-    #print(request)
 
-
-
-
-    print('predictToday------------------############-------------')
-    return redirect('home-predict')
 
 def getScore(request,pk,**kwargs):
     print('b')
@@ -802,7 +799,10 @@ def getScore(request,pk,**kwargs):
     #return HttpResponsePermanentRedirect(reverse('home-predict') + "?page="+str(page_num))
     return redirect('home-predict')
 
-def todaysGames(self,date):
+
+
+
+def todaysGames(date):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     eastern = timezone('America/Los_Angeles')
     fmt = '%Y-%m-%d'
@@ -830,7 +830,6 @@ def todaysGames(self,date):
 
 
 
-
 class GameListView(ListView, LoginRequiredMixin):
     model = Game
     template_name = 'predict/home.html'
@@ -852,7 +851,7 @@ class GameListView(ListView, LoginRequiredMixin):
         print(dateSelected)
         user = self.request.user
         context = super(GameListView, self).get_context_data(**kwargs)
-        x = todaysGames(self,dateSelected)
+        x = todaysGames(dateSelected)
         context['today'] = x
         context['tc'] = TEAMCOLORS
         context['correct'] = Profile.objects.filter(user=user).values('correct')[0]['correct']
@@ -933,6 +932,19 @@ class GameListView(ListView, LoginRequiredMixin):
 
 
 
+def predictAll(request,dateSelected,**kwargs):
+    print(dateSelected)
+
+    tg = todaysGames(dateSelected)
+    print(tg)
+
+    for game in tg:
+        quickcreate(request,game['habv'],game['vabv'],game['date'])
+        g = Game.objects.filter(author=request.user).order_by('-date_posted').first()
+        saveEdit(request,'0',g.pk,'',**kwargs)
+        print('asdf')
+    return redirect('home-predict')
+
 
 def quickcreate(request,home,visitor,date):
     print('testing quick create---------------------')
@@ -995,6 +1007,9 @@ def quickcreate(request,home,visitor,date):
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
+
+
+
 def getTeamData(home,visitor):
     
     convert = {

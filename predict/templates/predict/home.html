@@ -127,11 +127,18 @@
                 {%endif%}
                 {% endfor %}
 
+                {% if today|length > 1 %}
+                  <button class="btn btn-grey-secondary" onClick="predictAll()" style="width:150px;margin-left:auto;margin-right:auto;margin-top:15px;">Predict All!</button>
+                {% endif %}
 
               </ul>
               </div>
               </div>
-
+<script>
+  function predictAll(){
+    window.location.href = "{% url 'predict-all' %}"+ document.getElementById("Datetimepicker").value
+  }
+</script>
 
 
         <div id="games-div"class="col-lg-6 " style="margin-bottom: 10px;padding-left:0px">

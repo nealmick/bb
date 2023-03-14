@@ -12,6 +12,8 @@ urlpatterns = [
 
     path('', GameListView.as_view() , name='home-predict'),
     path('date/<str:dateSelected>', GameListView.as_view() , name='home-predict'),
+    path('all/', views.predictAll , name='predict-all'),
+    path('all/<str:dateSelected>', views.predictAll , name='predict-all'),
     path('#<int:pk>', views.getScore , name='get-score'),
     path('stats/', views.statsView , name='stats-view'),
     path('train/<str:model>', views.trainView , name='train-view'),
