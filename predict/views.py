@@ -449,13 +449,13 @@ def saveEdit(request,model,pk,change,**kwargs):
     #p = float(p[0])
 
     pmscore = float(p[0]-p[1])
-    spread = float(g.values('home_spread')[0]['home_spread'])
-    margin = abs(pmscore)-abs(spread)
+    spread = float(g.values('home_spread')[0]['home_spread'])*-1
+    margin = abs(spread-pmscore)
     print('spread ',g.values('home_spread')[0]['home_spread'],'pmscore ',p[0]-p[1])
     print('spread ',spread,'pmscore ',pmscore)
     if float(pmscore) < 0 and float(spread) < 0:
         print('both negative')
-        margin = pmscore+spread
+        #margin = pmscore+spread
     g.update(home_score_prediction=round(p[0],2))
     g.update(visitor_score_prediction=round(p[1],2))
     g.update(pmscore=p[0]-p[1])
