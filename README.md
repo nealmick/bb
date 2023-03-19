@@ -5,7 +5,6 @@ Developed with Python utilizing the TensorFlow library, the model is trained on 
 
 
 
-
 # Under Development
 
 
