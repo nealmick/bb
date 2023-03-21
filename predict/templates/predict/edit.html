@@ -308,9 +308,11 @@
                 </td>
 
                   {% else %}
-                  <td >
-
-                  <center>{{k}}</center>
+                  <td  class="oof" >
+                    <button  style="background: transparent;
+                    border: none !important;color: #333333"onclick="window.location.href='{% url 'player-detail-name' k%}';">
+                      {{k}}
+                    </button>
                 </td>
                   
                   {% endif %}
