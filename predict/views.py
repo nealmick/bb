@@ -110,6 +110,21 @@ def updatePlayerStats(request,playerId,**kwargs):
     save_obj(seasonAverages,'2022SeasonAverages')
     return redirect('player-detail',playerId)
 
+
+
+def playerDetailbyName(request,key):
+    obj = load_obj('2019PlayerNamesByID')
+    player_id =''
+    for id in obj:
+        if obj[id].replace("'", "-") == key:
+            print(id)
+            player_id = id
+            break
+
+    return redirect('player-detail', player_id)
+
+
+
 def playerDetail(request,playerId):
     context={}
     context['id'] = playerId
