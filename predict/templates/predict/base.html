@@ -45,12 +45,14 @@
                 
                 <a class="nav-item nav-link" href="{% url 'home-predict' %}"><i class="fas fa-list-ul"></i><span> Dashboard</span></a>
                 <a class="nav-item nav-link" href="{% url 'stats-view'%}"><i class="fas fa-chart-line"></i><span> Stats</span></a>
-                <a class="nav-item nav-link" href="{% url 'train-view' 1 %}"><i class="fas fa-robot"></i><span> Train</span></a>
-                  <a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span> Profile</span></a>
-                  <a class="nav-item nav-link" href="{% url 'logout'%}"><i class="fas fa-sign-in-alt"></i><span> Logout</span></a>
+                <a class="nav-item nav-link" href="{% url 'train-view' 0 %}"><i class="fas fa-robot"></i><span> Train</span></a>
+                <a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span> Profile</span></a>
+                <a class="nav-item nav-link" href="{% url 'player-search' %}"><i class="fas fa-search"></i><span> Players</span></a>
+                <a class="nav-item nav-link" href="{% url 'logout'%}"><i class="fas fa-sign-in-alt"></i><span> Logout</span></a>
                 {% else %}
-                  <a class="nav-item nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i><span> Login</span></a>
-                  <a class="nav-item nav-link" href="{% url 'register'%}"><i class="far fa-user"></i><span> Register</span></a>
+                <a class="nav-item nav-link" href="{% url 'faq'%}"><i class="far fa-question-circle"></i><span> About </span></a>
+                <a class="nav-item nav-link" href="{% url 'login'%}"><span><i style="width:17px;margin-right:5px"class="fas fa-sign-in-alt"></i>Login</span></a>
+                <a class="nav-item nav-link" href="{% url 'register'%}"><span><i style="width:17px;margin-right:5px" class="far fa-user"></i>Register</span></a>
                 {% endif %}
                 </ul>
               </div>

@@ -1,0 +1,91 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12" style="margin-top:25px;">
+    <div class="content-section" >
+        <div class="media">
+            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
+            <div class="media-body" style="margin-left:10px;">
+                <h2 class="player-name" style="margin-top:30px">{{name}}</h2>
+                <p>{{team_name}}</p>
+            </div>
+
+        </div>
+
+        <hr>
+        <a class='btn btn-grey-secondary' href="{% url 'update-stats' id %}">Update Stats</a>
+        <a class='btn btn-grey-secondary' href="{% url 'update-team' id %}">Update Team</a>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-lg-6">
+                <p>Positon: {{position}}</p>
+                <p>Conference: {{conference}}</p>
+                <p>Division: {{division}}</p>
+
+            </div>
+            <div class="col-lg-6">
+                <p>Height Feet: {{height_feet}} </p>
+                <p>Height Inches: {{height_inches}}</p>
+                <p>Weight: {{weight_pounds}}</p>
+
+            </div>
+
+        </div>
+
+
+
+        <div style="margin-top:25px;overflow: auto; color:white;margin-bottom:100px">
+            <table align="center" style="width:100%">
+                <tr>
+                      {% for label in labels %}
+                      <td style="width:10px"><center>{{label}}</center></td>
+                      {% endfor %}
+    
+                </tr>
+                <tr>
+                    {% for stat in seasonAverage %}
+                    <td>
+                        <center>
+                            {{stat}} 
+    
+                        </center>
+                    </td>
+    
+                    {% endfor%}
+    
+                </tr>
+
+                </table>
+        </div>
+        <div  style="position:absolute;bottom:5px">
+            <p class="text-muted" style="margin-bottom:0px">TeamID: {{team}}</p>
+            <p class="text-muted"style="margin-bottom:25px">API: <a class="text-muted" href="https://www.balldontlie.io/api/v1/players/{{id}}" target="_blank">balldontlie.io/api/v1/players/{{id}}</a></p>
+                
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+  
+
+</script>
+{% endblock content%}

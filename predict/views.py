@@ -32,9 +32,12 @@ import pandas as pd
 import csv
 
 
+labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
 
-#asdfasdf
+
+
 playersPerTeam = 7
+
 TEAMCOLORS = {
     'ATL':'#E03A3E',
     'BKN':'#000000',
@@ -68,9 +71,133 @@ TEAMCOLORS = {
     'WAS':'#CF142C',
 }
 
+
+
+def updatePlayerTeam(request,playerId,**kwargs):
+    print('updating team')
+    url = 'https://www.balldontlie.io/api/v1/players/' + str(playerId)
+    r = req(url)
+    updatedId=int(r['team']['id'])
+    savedId=0
+    playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
+    for team in playerIdByTeamID:
+        count=0
+        for id in playerIdByTeamID[team]:
+            if str(playerId) == str(id):
+                savedId = team
+                if int(savedId) != int(updatedId):
+                    print('remove index:',count)
+                    #uncomment to make this work, not tested as there are not trades to test....
+                    #playerIdByTeamID[team].pop(count)
+                    #playerIdByTeamID[updatedId].append(playerId)
+            count+=1
+            
+    print('saved team id:',savedId)
+    print('updated team id:',updatedId)
+    
+    return redirect('player-detail',playerId)
+
+def updatePlayerStats(request,playerId,**kwargs):
+    print('updating stats')
+    seasonAverages = load_obj('2022SeasonAverages')
+    url='https://www.balldontlie.io/api/v1/season_averages?player_ids[]='+str(playerId)
+    r=req(url)
+    res = []
+    for label in labels:
+        res.append(r['data'][0][label])
+    seasonAverages[playerId] = res
+    print(seasonAverages[playerId])
+    save_obj(seasonAverages,'2022SeasonAverages')
+    return redirect('player-detail',playerId)
+
+def playerDetail(request,playerId):
+    context={}
+    context['id'] = playerId
+    context['labels'] = labels
+    url = 'https://www.balldontlie.io/api/v1/players/' + str(playerId)
+    r = req(url)
+    print(r)
+    
+    context['weight_pounds'] = r['weight_pounds']
+    context['height_feet'] = r['height_feet']
+    context['height_inches'] = r['height_inches']
+    context['position'] = r['position']
+    context['conference'] = r['team']['conference']
+    context['division'] = r['team']['division']
+    context['abv'] = r['team']['abbreviation']
+
+    obj = load_obj('2019PlayerNamesByID')
+    playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
+    seasonAverages = load_obj('2022SeasonAverages')
+    teamNamesbyID = load_obj('teamNamesbyID')
+    try:
+        context['name'] = obj[str(playerId)]
+    except KeyError:
+        context['name'] = obj[int(playerId)]
+        print('e')
+    context['seasonAverage'] = seasonAverages[playerId]
+    context['team'] = 0
+    for team in playerIdByTeamID:
+        for id in playerIdByTeamID[team]:
+
+            if str(playerId) == str(id):
+                context['team'] = team
+                context['team_name'] = teamNamesbyID[int(team)]
+
+
+    return render(request,'predict/playerDetail.html',context)
+
+
+def searchResults(request,playerName):
+    context = {}
+    context['playerName'] = playerName
+    obj = load_obj('2019PlayerNamesByID')
+    playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
+    seasonAverages = load_obj('2022SeasonAverages')
+
+    res = []
+    for player in obj:
+        if playerName.lower() in obj[player].lower():
+            p = {}
+            p['name']= obj[player]
+            p['id']=player
+            try:
+                p['seasonAverage']=seasonAverages[int(player)]
+                print(seasonAverages[int(player)])
+            except KeyError:
+            
+                print('not found')
+                continue
+            res.append(p)
+    context['res'] = res
+    context['labels'] = labels
+
+    return render(request,'predict/searchResults.html',context)
+
+
+def playerSearch(request):
+    context = {}
+    return render(request,'predict/playerSearch.html',context)
+
+
+
+def getAllScores(request):
+    qs = Game.objects.filter(author=request.user)
+    for instance in qs:
+        print(instance.home_score)
+        if int(instance.home_score)==0:
+            time.sleep(1.1)
+            getScore(request,instance.pk)
+    return redirect('home-predict')
+
+
+
+
 def faq(request):
 
     return render(request,'predict/faq.html')
+
+
 @login_required
 def resetModel(request,model):
     if os.path.exists("userModels/"+str(request.user.username)+'/'+model+'/'):
@@ -362,6 +489,7 @@ def exportGames(request):
 
 
 def saveEdit(request,model,pk,change,**kwargs):
+
     model = str(model)
     username = request.user
     changes = change[7:].split('-')
@@ -371,6 +499,9 @@ def saveEdit(request,model,pk,change,**kwargs):
     user = request.user
     g = Game.objects.filter(pk=pk)
     csvid = g.values('csvid')[0]['csvid']
+    g.update(ip=request.META.get("REMOTE_ADDR"))
+    print(request.META.get("REMOTE_ADDR"))
+
     path = 'csv/'+str(user.username)+str(csvid)+'.csv'
     csv = open(path,'r')
     first=True

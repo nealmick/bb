@@ -4,6 +4,15 @@ from . import views
 from .views import GameListView
 urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
+
+
+    path('update-stats/<int:playerId>', views.updatePlayerStats, name='update-stats'),
+    path('update-team/<int:playerId>', views.updatePlayerTeam, name='update-team'),
+
+    path('player-details/<int:playerId>', views.playerDetail, name='player-detail'),
+    path('player-search/', views.playerSearch, name='player-search'),
+    path('player-search/<str:playerName>', views.searchResults, name='search-result'),
+    path('getAllScores/', views.getAllScores, name='all-scores'),
     path('edit/<int:pk>/', views.editGame, name='edit-predict'),
     path('edit/<int:pk>/<int:model>/<str:change>', views.saveEdit, name='save-edit'),
     path('edit/<int:pk>/remove/<str:player>', views.removePlayer, name='remove-player'),
