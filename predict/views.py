@@ -499,9 +499,6 @@ def saveEdit(request,model,pk,change,**kwargs):
     user = request.user
     g = Game.objects.filter(pk=pk)
     csvid = g.values('csvid')[0]['csvid']
-    g.update(ip=request.META.get("REMOTE_ADDR"))
-    print(request.META.get("REMOTE_ADDR"))
-
     path = 'csv/'+str(user.username)+str(csvid)+'.csv'
     csv = open(path,'r')
     first=True
