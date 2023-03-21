@@ -124,7 +124,6 @@ def playerDetailbyName(request,key):
     return redirect('player-detail', player_id)
 
 
-
 def playerDetail(request,playerId):
     context={}
     context['id'] = playerId
@@ -160,8 +159,113 @@ def playerDetail(request,playerId):
                 context['team_name'] = teamNamesbyID[int(team)]
 
 
+
+
+    data = getPlayerInfo(context['abv'],context['name'])
+    context['data']=data
     return render(request,'predict/playerDetail.html',context)
 
+def getPlayerInfo(team,playerName):
+
+    convert = {
+        'ATL' : 'ATL',
+        'BKN':  'BKN',
+        'BOS':  'BOS',
+        'CHA':  'CHA',
+        'CHI':  'CHI',
+        'CLE':  'CLE',
+        'DAL':  'DAL',
+        'DEN':  'DEN',
+        'DET':  'DET',
+        'GSW':  'GS',
+        'HOU':  'HOU',
+        'IND':  'IND',
+        'LAC':  'LAC',
+        'LAL':  'LAL',
+        'MEM':  'MEM',
+        'MIA':  'MIA',
+        'MIL':  'MIL',
+        'MIN':  'MIN',
+        'NOP':  'NO',
+        'NYK':  'NY',
+        'OKC':  'OKC',
+        'ORL':  'ORL',
+        'PHI':  'PHI',
+        'PHX':  'PHO',
+        'POR':  'POR',
+        'SAC':  'SAC',
+        'SAS':  'SA',
+        'TOR':  'TOR',
+        'UTA':  'UTA',
+        'WAS':  'WAS',
+        }
+    
+    t=convert[team]
+    url = "https://tank01-fantasy-stats.p.rapidapi.com/getNBATeams"
+
+    querystring = {"schedules":"true","rosters":"true"}
+
+
+    key = 'c25bdc2c24msh8b9b73d7c986ea0p1a2cc1jsn7aaf7636b342'
+    
+    headers = {
+        "X-RapidAPI-Key": key,
+        "X-RapidAPI-Host": "tank01-fantasy-stats.p.rapidapi.com"
+    }
+    seconds = 0
+    teamStats = load_obj('teamStats')
+    response = []
+    try:
+        lastupdate = teamStats['lastupdate']
+        now = datetime.now()
+        time_diff = now-lastupdate
+        seconds = time_diff.total_seconds()
+        print('Seconds since last update',seconds)
+    except KeyError:
+        print('no saved team stats found')
+        teamStats = {}
+    if seconds == 0 or seconds>1800:
+        print('getting updated results')
+
+        response = requests.request("GET", url, headers=headers, params=querystring).json()
+        lastupdate = datetime.now()
+        teamStats['response']=response
+        teamStats['lastupdate']=lastupdate
+        save_obj(teamStats,'teamStats')
+    else:
+        print('loaded cached results')
+        response = teamStats['response']
+
+    r = response['body']
+    data = {}
+    for team in range(len(r)):
+        print(r[team]['teamAbv'])
+        print(str(r[team]['teamAbv']) == str(t))
+        if str(r[team]['teamAbv']) == str(t):
+            for player in r[team]['Roster']:
+                if(r[team]['Roster'][player]['espnName']==playerName):
+                    print('Found Player---------')
+                    data['nbaComHeadshot']=r[team]['Roster'][player]['nbaComHeadshot']
+                    data['nbaComLink']=r[team]['Roster'][player]['nbaComLink']
+                    data['espnLink']=r[team]['Roster'][player]['espnLink']
+                    if r[team]['Roster'][player]['injury']['injDate'] != '':
+                        d = r[team]['Roster'][player]['injury']['description']
+                        if len(r[team]['Roster'][player]['injury']['description']) < 5:
+                            d= "No Description"
+                        designation = r[team]['Roster'][player]['injury']['designation']
+                        date = r[team]['Roster'][player]['injury']['injDate']
+                        data['injury'] = True
+                        data['designation'] = designation
+                        data['date'] = date
+                        data['description'] = d
+                    else:
+                        data['injury'] = False
+
+    #print(teamStats)
+    #save_obj(teamStats,"teamStats")
+        
+
+    return data
 
 def searchResults(request,playerName):
     context = {}
