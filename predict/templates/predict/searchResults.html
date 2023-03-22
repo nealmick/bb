@@ -20,7 +20,7 @@
         <div style="margin-top:25px;overflow: auto; color:white;">
           <table align="center" style="width:100%">
               <tr>
-                    <td style="width: 10px !important;">View</td>
+
                     <td style="width:50px !important"><center>Name</center></td>
                     {% for label in labels %}
                     <td style="width:10px"><center>{{label}}</center></td>
@@ -32,15 +32,14 @@
 
             {% for player in res %}
             <tr>
-                <td>
-                    <center>
-                        <a href="{% url 'player-detail' player.id %}"> <i style="font-size:24px;"class="far fa-eye text-muted"></i> </a>
 
-                    </center>
-                </td>
-                <td>
+                <td class="oof">
                     <center>
-                        {{player.name}} 
+                      <button  style="background: transparent;
+                      border: none !important;color: #333333"onclick="window.location.href='{% url 'player-detail-name' player.name%}';">
+                        {{player.name}}
+                      </button>
+                      
 
                     </center>
                 </td>

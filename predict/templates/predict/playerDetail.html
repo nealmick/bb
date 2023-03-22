@@ -27,7 +27,8 @@
                 </div>
                 <div class="col-lg-4">
                     <center>                    
-                        <h2 class="player-name" style="margin-top:30px">{{name}} {{position}}.</h2>
+                        <h2 class="player-name" style="margin-top:30px;white-space: nowrap;">{{name}} {{position}}.</h2>
+
                         <a class='btn btn-grey-secondary' href="{% url 'update-stats' id %}">Update Stats</a>
                         <a class='btn btn-grey-secondary' href="{% url 'update-team' id %}">Update Team</a>
                     </center>
@@ -35,7 +36,10 @@
                 </div>
                 <div class="col-lg-4">
                     <center>
-                        <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
+                        <a href="{% url 'team-view' abv%}">
+                            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
+
+                        </a>
                     </center>
 
                 </div>
@@ -48,7 +52,7 @@
 
 
 
-        <div style="margin-top:0px;overflow: auto; color:white;margin-bottom:20px;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">
+        <div style="margin-top:0px;overflow: auto; color:white;margin-bottom:100px;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">
             <table align="center" style="width:100%;">
                 <tr>
                       {% for label in labels %}
@@ -63,7 +67,17 @@
                             {{stat}} 
     
                         </center>
-                    </td>
+                    </td> 
+                    {% empty %}
+                    {% for label in labels %}
+                    <td>
+                      <center>
+                        0
+                      </center>
+                  </td>
+    
+    
+                  {% endfor %}
     
                     {% endfor%}
     

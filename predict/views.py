@@ -73,6 +73,72 @@ TEAMCOLORS = {
 
 
 
+def teamView(request,abv):
+    abv = abv.upper()
+    print(abv)
+    context={}
+
+    obj = load_obj('2019PlayerNamesByID')
+    playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
+    seasonAverages = load_obj('2022SeasonAverages')
+    teamNamesbyID = load_obj('teamNamesbyID')
+    teamAbvById = load_obj('teamAbvById')
+    teamId = 0
+    for id in teamAbvById:
+        if teamAbvById[id] == abv:
+            teamId=id
+    teamName = teamNamesbyID[int(teamId)]
+    players = playerIdByTeamID[str(teamId)]
+    print(len(players))
+    p = []
+    for player in players:
+        foo = {}
+        try:
+            foo['name'] = obj[str(player)]
+        except KeyError:
+            try:
+                foo['name'] = obj[int(player)]
+            except KeyError:
+                url = 'https://www.balldontlie.io/api/v1/players/'
+                r = req(url+str(player))
+                fn = r['first_name']
+                ln = r['last_name']
+                full = fn+' '+ln
+                obj.update({str(player) : full})
+                save_obj(obj,'2019PlayerNamesByID')
+                foo['name'] = full
+        foo['avg'] = seasonAverages[player]
+        foo['id'] = player
+        data = getPlayerInfo(abv,foo['name'])
+        foo['data'] = data 
+
+        p.append(foo)
+
+
+    context['p'] = p
+
+    context['labels'] = labels
+
+
+
+
+
+    stats = getTeamData(abv,abv)
+    stats = stats[0]
+    win = stats[1]
+    loss = stats[2]
+    streak = stats[3]
+    context['team'] = teamName
+    context['abv'] = abv
+    context['win'] = win
+    context['loss'] = loss
+    context['streak'] = streak
+
+    return render(request,'predict/team.html',context)
+
+
+
+
 def updatePlayerTeam(request,playerId,**kwargs):
     print('updating team')
     url = 'https://www.balldontlie.io/api/v1/players/' + str(playerId)
@@ -104,13 +170,15 @@ def updatePlayerStats(request,playerId,**kwargs):
     r=req(url)
     res = []
     for label in labels:
-        res.append(r['data'][0][label])
+        try:
+            res.append(r['data'][0][label])
+        except IndexError:
+            return redirect('player-detail',playerId)
+
     seasonAverages[playerId] = res
     print(seasonAverages[playerId])
     save_obj(seasonAverages,'2022SeasonAverages')
     return redirect('player-detail',playerId)
-
-
 
 def playerDetailbyName(request,key):
     obj = load_obj('2019PlayerNamesByID')
@@ -122,6 +190,7 @@ def playerDetailbyName(request,key):
             break
 
     return redirect('player-detail', player_id)
+    
 
 
 def playerDetail(request,playerId):
@@ -239,8 +308,6 @@ def getPlayerInfo(team,playerName):
     r = response['body']
     data = {}
     for team in range(len(r)):
-        print(r[team]['teamAbv'])
-        print(str(r[team]['teamAbv']) == str(t))
         if str(r[team]['teamAbv']) == str(t):
             for player in r[team]['Roster']:
                 if(r[team]['Roster'][player]['espnName']==playerName):
@@ -618,6 +685,7 @@ def saveEdit(request,model,pk,change,**kwargs):
     user = request.user
     g = Game.objects.filter(pk=pk)
     csvid = g.values('csvid')[0]['csvid']
+
     path = 'csv/'+str(user.username)+str(csvid)+'.csv'
     csv = open(path,'r')
     first=True

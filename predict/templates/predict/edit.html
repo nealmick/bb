@@ -18,11 +18,17 @@
 
                     <div class="col-3"style="padding:0">
                       <center>
-                        <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+                        <a href="{% url 'team-view' visitor%}">
+                          <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+
+                      </a>
 
                         <p style="margin:0px">Predicted Score: {{ pvscore }} </p>
+
                         <p style="margin:0px">Actual Score: {{ visitor_score }} </p>
+
                         <p style="margin:0px"data-toggle="tooltip" data-placement="bottom" title="Injured players    {{visitor_injuries}}">{{ vw }} / {{ vl }} / {{ visitor_streak }} / {{visitor_injury}}</p>
+
                         <p style="margin:0px"> {{ visitor_spread }} / {{ dk_visitor_spread }}</p>
 
                     </center>
@@ -237,7 +243,11 @@
                     </div>
                       <div class="col-3" style="padding:0">
                         <center>
-                          <img  id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+                          <a href="{% url 'team-view' home%}">
+                            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+  
+                        </a>
+  
 
                           <p style="margin:0px">Predicted Score: {{ phscore }} </p>
                           <p style="margin:0px">Actual Score: {{ home_score }} </p>
