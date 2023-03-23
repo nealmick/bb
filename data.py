@@ -100,31 +100,32 @@ def main(labels,seasons,**kwargs):
             homeTeam = []
             visitorTeam = []
             for player in g['data']:
-                if player['player'] is None:
-                    #continue
-                    break
-    
-                if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0:
+               
+                if player['pts']!= 0 or player['reb'] != 0 or player['stl'] != 0 or player['blk'] != 0 or player['pf'] != 0 or player['player'] is None or player['pts'] == None:
                     try:
-                        
-                            if int(player['team']['id']) == int(g['home_id']):
-                                homeTeam.append(seasonAverages[int(player['player']['id'])])
-                            elif int(player['team']['id']) == int(g['visitor_id']):
-                                visitorTeam.append(seasonAverages[int(player['player']['id'])])
-                            else:
-                                print('dddddddddddidnt match team')
+                            try:
+                            
+                                if int(player['team']['id']) == int(g['home_id']):
+                                    homeTeam.append(seasonAverages[int(player['player']['id'])])
+                                elif int(player['team']['id']) == int(g['visitor_id']):
+                                    visitorTeam.append(seasonAverages[int(player['player']['id'])])
+                                else:
+                                    print('dddddddddddidnt match team')
+                            except TypeError:
+                                continue
                     except KeyError:
                         data = getSeaonAverage(int(player['player']['id']),season,labels)
                         seasonAverages.update({int(player['player']['id']):data})
                         save_obj(seasonAverages,season+'SeasonAverages')
                         print('error')
+
                 
-            '''
-            
-            '''
+   
 
             print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
             if(len(visitorTeam)<7 or len(homeTeam)<7):
+
+            
                 print(len(visitorTeam),len(homeTeam),' found game with too few players--------------------------------------------------')
                 homeTeam = []
                 visitorTeam=[]
@@ -133,6 +134,7 @@ def main(labels,seasons,**kwargs):
                     homeTeam.append(seasonAverages[id])
                 for id in visitorPlayerIds:
                     visitorTeam.append(seasonAverages[id])
+  
             bestH = []
             for i in range(0,playersPerTeam):
                 b = getBestPlayer(homeTeam)
@@ -275,4 +277,3 @@ def getSeaonAverage(playerId,season,labels):
 
 
 main(labels,seasons)
-
