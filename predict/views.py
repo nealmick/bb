@@ -1274,16 +1274,16 @@ class GameListView(ListView, LoginRequiredMixin):
 
 
 
-def predictAll(request,dateSelected,**kwargs):
+def predictAll(request,dateSelected,model,**kwargs):
     print(dateSelected)
 
     tg = todaysGames(dateSelected)
     print(tg)
-
+    model = str(model)
     for game in tg:
         quickcreate(request,game['habv'],game['vabv'],game['date'])
         g = Game.objects.filter(author=request.user).order_by('-date_posted').first()
-        saveEdit(request,'0',g.pk,'',**kwargs)
+        saveEdit(request,model,g.pk,'',**kwargs)
         print('asdf')
     return redirect('home-predict')
 
