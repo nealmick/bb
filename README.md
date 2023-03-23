@@ -30,6 +30,7 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 <img src="https://i.imgur.com/LY7u9xB.png" width="600" height="300" />
 <img src="https://i.imgur.com/bisms9b.png" width="600" height="350" />
 <img src="https://i.imgur.com/H4ClI69.png" width="600" height="300" />
+
 # Install:
 
 ```bash
