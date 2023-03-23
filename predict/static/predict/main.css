@@ -507,3 +507,8 @@ li {
   }
 
 }
+
+#predict-all-btn:hover{
+  border-width: 1px !important;
+  border-color: #969696 !important;
+}
