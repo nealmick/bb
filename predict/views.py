@@ -162,15 +162,15 @@ def teamView(request,abv):
     context['streak'] = streak
 
     return render(request,'predict/team.html',context)
-
-
+    
+    
 
 
 def updatePlayerTeam(request,playerId,**kwargs):
     print('updating team')
     url = 'https://www.balldontlie.io/api/v1/players/' + str(playerId)
     r = req(url)
-    updatedId=int(r['team']['id'])
+    updatedId=str(r['team']['id'])
     savedId=0
     playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
     for team in playerIdByTeamID:
@@ -181,14 +181,16 @@ def updatePlayerTeam(request,playerId,**kwargs):
                 if int(savedId) != int(updatedId):
                     print('remove index:',count)
                     #uncomment to make this work, not tested as there are not trades to test....
-                    #playerIdByTeamID[team].pop(count)
-                    #playerIdByTeamID[updatedId].append(playerId)
+                    playerIdByTeamID[team].pop(count)
+                    playerIdByTeamID[updatedId].append(playerId)
             count+=1
-            
+    
+    save_obj(playerIdByTeamID,'2022PlayerIdByTeamID')
     print('saved team id:',savedId)
     print('updated team id:',updatedId)
-    
     return redirect('player-detail',playerId)
+
+
 
 def updatePlayerStats(request,playerId,**kwargs):
     print('updating stats')
