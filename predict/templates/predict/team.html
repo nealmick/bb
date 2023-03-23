@@ -14,18 +14,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-<div class="col-12">
+<div class="col-12" style="margin-top:10px">
     <div class="content-section" >
+        <center>
 
-        <div class="media">
-            <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
-            <div class="media-body">
-              <h2 class="" style="margin-top:10px">{{ team }}</h2>
-              <p>Win: {{win}}</p>
-              <p>Loss: {{loss}}</p>
-              <p>Streak: {{streak}}</p>
-            </div>
-          </div>
+          <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
+          <h2 class="" style="margin-top:10px">{{ team }}</h2>
+          <p>Win: {{win}} Loss: {{loss}} Streak: {{streak}}</p>
+      
+        </center>
+          <br>
 
           <table align="center" style="width:100%;">
             <tr>
@@ -69,7 +67,10 @@
             </tr>
 
                 {% endfor%}
-
+          </table>
+          <br>
+          <p class="text-muted">TeamId: {{teamId}}</p>
+          <p class="text-muted">API: <a class="text-muted" href="https://www.balldontlie.io/api/v1/teams/{{teamId}}">https://www.balldontlie.io/api/v1/teams/{{teamId}}</a></p>
       </div>
 
 </div>

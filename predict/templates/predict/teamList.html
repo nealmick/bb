@@ -1,0 +1,50 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12" style="margin-top:10px">
+    <div class="content-section" >
+        <center>
+            <h1>Teams</h1>
+
+        </center>
+        <hr>
+        
+        {% for team in teams %}
+        <a href="{% url 'team-view' team.abv %}" style="text-decoration: none;color:#333333">
+            <div class="media">
+                <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ team.abv }}.webp">
+    
+                <div class="media-body"style="margin-left:10px;">
+                    <h2 style="margin-top:25px">{{team.name}}</h2>
+                    <p>Win: {{team.win}}</p>
+                    <p>Loss: {{team.loss}}</p>
+                    <p>Streak: {{team.streak}}</p>
+                </div>
+              </div>
+        </a>
+
+        <hr>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+</script>
+{% endblock content%}

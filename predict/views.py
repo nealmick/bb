@@ -73,6 +73,32 @@ TEAMCOLORS = {
 
 
 
+def teamListView(request):
+   
+    context={}
+
+    teamNamesbyID = load_obj('teamNamesbyID')
+    teamAbvById = load_obj('teamAbvById')
+    teamId = 0
+    teams = []
+    for id in teamNamesbyID:
+        team = {}
+        team['id'] = id
+        team['name'] = teamNamesbyID[int(id)]
+        team['abv'] = teamAbvById[int(id)]
+        stats = getTeamData(team['abv'],team['abv'])
+        stats = stats[0]
+        win = stats[1]
+        loss = stats[2]
+        streak = stats[3]
+        team['win'] = win
+        team['loss'] = loss
+        team['streak'] = streak
+        teams.append(team)
+
+    context['teams'] = teams
+    return render(request,'predict/teamList.html',context)
+
 def teamView(request,abv):
     abv = abv.upper()
     print(abv)
@@ -87,6 +113,7 @@ def teamView(request,abv):
     for id in teamAbvById:
         if teamAbvById[id] == abv:
             teamId=id
+    context['teamId'] = teamId
     teamName = teamNamesbyID[int(teamId)]
     players = playerIdByTeamID[str(teamId)]
     print(len(players))
