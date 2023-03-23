@@ -128,10 +128,10 @@
                 {% endfor %}
 
                 {% if today|length > 1 %}
-                <li id="game" class="list-group-item list-group-item-light" style="padding:3px;min-height: 50px;">
-                  <button id="train-button"  className="btn btn-grey-secondary" onClick="predictAll()" style="color:#333333;background-color:#FFFFFF;border-radius: 10px;border-radius: 10px;height:35px;width:25%;margin-left:5px;margin-top:5px;margin-bottom:2px; border:none">Predict All! </button>
-
-                  <select id="model-slot" style="color:#333333;float:right;margin-right:5px;margin-top:5px;width:70%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                <div style="padding:0px;min-height: 50px;">
+                  <button id="predict-all-btn"className="list-group-item list-group-item-light btn btn-grey-secondary" onClick="predictAll()" style="box-shadow: 2px 4px 8px rgba(0, 0, 0, .5);background-color: rgba(248, 248, 248,.8)!important;color:#333333;background-color:#FFFFFF;border-radius: 3px;height:45px;width:25%;margin-left:0px;margin-top:2px;margin-bottom:2px; border-width:0px;">Predict All! </button>
+                  
+                  <select class="list-group-item list-group-item-light" id="model-slot" style="background-color: rgba(248, 248, 248,.8)!important;color:#333333;float:right;margin-right:0px;margin-top:2px;width:73.5%;height:45px;border-radius: 3px;;margin-bottom: 2px !important;padding:5px;border: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
                     <option value="0" selected>Model 0</option>
      
                     <option value="1">Model 1</option>
@@ -140,7 +140,7 @@
     
     
                   </select>
-                </li>
+                </div>
                 {% endif %}
 
               </ul>
