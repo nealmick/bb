@@ -21,23 +21,26 @@
 
         </center>
         <hr>
-        
-        {% for team in teams %}
-        <a href="{% url 'team-view' team.abv %}" style="text-decoration: none;color:#333333">
-            <div class="media">
-                <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ team.abv }}.webp">
-    
-                <div class="media-body"style="margin-left:10px;">
-                    <h2 style="margin-top:25px">{{team.name}}</h2>
-                    <p>Win: {{team.win}}</p>
-                    <p>Loss: {{team.loss}}</p>
-                    <p>Streak: {{team.streak}}</p>
-                </div>
-              </div>
-        </a>
+        <div class="row">
+            {% for team in teams %}
+                    <div class="col-lg-4">
+                            <a href="{% url 'team-view' team.abv %}" style="text-decoration: none;color:#333333">
+                                <center>
+                                    <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ team.abv }}.webp">
 
-        <hr>
-        {% endfor %}
+                                    <h2 style="margin-top:25px">{{team.name}}</h2>
+                                    <p>Win: {{team.win}} Loss: {{team.loss}} Streak: {{team.streak}}</p>
+                                </center>
+
+                            </a>
+          
+                    </div>
+    
+          
+    
+            {% endfor %}
+        </div>
+        
 
     </div>
 

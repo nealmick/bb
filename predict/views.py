@@ -70,9 +70,48 @@ TEAMCOLORS = {
     'UTA':'#FAA403',
     'WAS':'#CF142C',
 }
+def betsList(request):
+    context = {}
+    g = Game.objects.filter(author=request.user)
+    g = g.filter(bet=True)
+    g = g.filter(finished=True)
+    count = 0
+    total= -100
+    min = -100
+    for game in g:
+        if game.ev_won == '1':
+            count+=1
+            total+=190.1
+        else:
+            total-=100
+        if total < min:
+            min=total
 
 
 
+
+
+
+    context['numBets'] = len(g)
+    context['correct'] = count
+    context['totalSpent'] = len(g)*100
+    context['totalWon'] = count*190
+    context['totalProfit'] = count*190-len(g)*100
+    context['total'] = total
+    context['maxSpent'] = min
+
+    context['p'] = round(count/len(g)*100)
+    context['games'] = g
+    return render(request,'predict/bets.html',context)
+
+def setBet(request, pk):
+    g = Game.objects.filter(pk=pk)
+    bet = g.values('bet')[0]['bet']
+    if bet:
+        g.update(bet=False)
+    else:
+        g.update(bet=True)
+    return redirect('edit-predict', pk)
 def teamListView(request):
    
     context={}
@@ -162,8 +201,8 @@ def teamView(request,abv):
     context['streak'] = streak
 
     return render(request,'predict/team.html',context)
-    
-    
+
+
 
 
 def updatePlayerTeam(request,playerId,**kwargs):
@@ -188,9 +227,8 @@ def updatePlayerTeam(request,playerId,**kwargs):
     save_obj(playerIdByTeamID,'2022PlayerIdByTeamID')
     print('saved team id:',savedId)
     print('updated team id:',updatedId)
+    
     return redirect('player-detail',playerId)
-
-
 
 def updatePlayerStats(request,playerId,**kwargs):
     print('updating stats')
@@ -401,7 +439,7 @@ def getAllScores(request):
     for instance in qs:
         print(instance.home_score)
         if int(instance.home_score)==0:
-            time.sleep(1.1)
+            time.sleep(1.3)
             getScore(request,instance.pk)
     return redirect('home-predict')
 
@@ -783,7 +821,7 @@ def saveEdit(request,model,pk,change,**kwargs):
         for st in data:
             ss+=','+st
         print('$$$$$$$$$',ss)
-        printp=(path)
+        print(path)
         f = open(path,'a')
         f.write(ss+'\n')
     w(data, path,g)  
@@ -1002,6 +1040,7 @@ def editGame(request,pk,**kwargs):
     context['game'] = g
     context['g'] = g
     context['model']=g.values('model')[0]['model']
+    context['bet']=g.values('bet')[0]['bet']
     #print(players)
 
     return render(request, 'predict/edit.html',context)
@@ -1742,7 +1781,7 @@ def predict(modelNum,path,username):
 
     data = pd.read_csv(path)
 
-    data.drop(['gameid'], axis=1, inplace=True)
+    data.drop(['gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
     #data.drop(['home_streak'], axis=1, inplace=True)
     #data.drop(['visitor_streak'], axis=1, inplace=True)
 

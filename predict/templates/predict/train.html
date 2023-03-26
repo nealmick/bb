@@ -51,7 +51,7 @@
             </input>
             
             <label data-toggle="tooltip" data-placement="bottom" title="every neuron in the layer is connected to every neuron in the previous layer." for="layer1-count">Layer 1 Count: <p style="display:inline"id="1count-display">{{layer1Count}}</p></label>
-            <input min="16" max="513" type="range"  id="layer1-count" value="{{layer1Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <input min="4" max="513" type="range"  id="layer1-count" value="{{layer1Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             <label data-toggle="tooltip" data-placement="bottom" title="mathematical function that is applied to the output of each layer, introducing non-linearity into the model."  for="layer1-activation">Layer 1 Activation:</label>
             <select id="layer1-activation" style="width:100%;height:35px;margin-bottom: 2px !important;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
                 {%if layer1Activation == "relu"%}
@@ -86,7 +86,7 @@
                 {% endif %}
               </select>            
             <label data-toggle="tooltip" data-placement="bottom" title="every neuron in the layer is connected to every neuron in the previous layer." for="layer2-count">Layer 2 Count: <p style="display:inline"id="2count-display">{{layer2Count}}</p></label>
-            <input min="16" max="513" type="range" id="layer2-count" value="{{layer2Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <input min="4" max="513" type="range" id="layer2-count" value="{{layer2Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
             <label data-toggle="tooltip" data-placement="bottom" title="mathematical function that is applied to the output of each layer, introducing non-linearity into the model." for="layer2-activation">Layer 2 Activation:</label>
             <select id="layer2-activation" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
                 {%if layer2Activation == "relu"%}

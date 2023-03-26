@@ -396,6 +396,12 @@
 
       <br>
       <br>
+      {% if bet %}
+      <a class="btn btn-grey"href="{%url 'bet' pk %}">Bet True</a>
+
+      {% else %}
+      <a class="btn btn-grey"href="{%url 'bet' pk %}">Bet False</a>
+      {% endif%}
       <p class="text-muted"style="white-space: pre-line;">User: {{author}}    &nbsp&nbsp&nbsp csvid: {{csvid}}    &nbsp&nbsp&nbsp  GameID: {{gameid}}   &nbsp&nbsp&nbsp  created: {{date_posted}}</p>
       <p class="text-muted"style="white-space: pre-line;">Model: {{model}} &nbsp&nbsp&nbsp Removed Players: {{removed_players}}</p>
 </div>

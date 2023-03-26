@@ -4,7 +4,8 @@ from . import views
 from .views import GameListView
 urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
-
+    path('bet/<int:pk>', views.setBet, name='bet'),
+    path('bets/', views.betsList, name='bet-list'),
     path('team/<str:abv>', views.teamView, name='team-view'),
     path('teams/', views.teamListView, name='team-list'),
     path('player-detail-name/<str:key>', views.playerDetailbyName, name='player-detail-name'),

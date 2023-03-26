@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 # Create your models here.
 
-        
+
 class Game(models.Model):
     CHOICES = (
         ('ATL', 'Atlanta Hawks'),
@@ -87,6 +87,8 @@ class Game(models.Model):
 
     spread_prediction = models.CharField(null=True, blank=True, max_length=10)
     
+
+    bet = models.BooleanField(default=False)
 
     model = models.CharField(default='0', max_length=10)
 
