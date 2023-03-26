@@ -18,7 +18,7 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
 
     homeScore = data['home_score'].values
     visitorScore = data['visitor_score'].values
-    data.drop(['home_score', 'visitor_score', 'gameid'], axis=1, inplace=True)
+    data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
 
 
     data = data.values
@@ -76,10 +76,8 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
     homeTestScore = data['home_score'].values
     visitorTestScore = data['visitor_score'].values
     spread = data['spread'].values
+    data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
 
-    data.drop(['gameid'], axis=1, inplace=True)
-    data.drop(['home_score'], axis=1, inplace=True)
-    data.drop(['visitor_score'], axis=1, inplace=True)
 
     data = data.values
     data = data.astype(float)
