@@ -1,7 +1,7 @@
 import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
-seasons = ['2020','2019','2018','2017','2016','2015','2014']#,'2012']
+seasons = ['2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010']
 
 #seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
 #seasonsCSV.reverse()
@@ -47,6 +47,12 @@ def main(labels,seasons,**kwargs):
             print(game,g['spread'], g['winner'],g['date'],g['home_id'],g['home_score'],g['visitor_id'],g['visitor_score'])
             print('spread:',g['spread'],' vscore-hscore:',g['visitor_score']-g['home_score'])
             print()
+            if g['spread'] == 0 or g['spread']== '':
+                continue
+            if season == '2022':
+                g['spread'] = g['spread']*-1
+            else:
+                g['spread'] = round(float(g['spread']))
 
 
             beforeStreaks = streaks.copy()
@@ -125,7 +131,7 @@ def main(labels,seasons,**kwargs):
             print(len(visitorTeam),len(homeTeam),'--------------------------------------------------')
             if(len(visitorTeam)<7 or len(homeTeam)<7):
 
-            
+                continue
                 print(len(visitorTeam),len(homeTeam),' found game with too few players--------------------------------------------------')
                 homeTeam = []
                 visitorTeam=[]
@@ -159,6 +165,7 @@ def main(labels,seasons,**kwargs):
 def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks):
     line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)+','+str(streaks[int(homeId)])
     for stat in homeTeamStats:
+
         line+=','+str(stat)
     line += ','+str(visitorId)+','+str(streaks[int(visitorId)])
     for stat in visitorTeamStats:
@@ -172,12 +179,12 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
     
 
 
-    if season == '2020':
-        if foo > 750:#sets split of test/train on final season.....
+    if season == '2022':
+        if foo > 150:#sets split of test/train on final season.....
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''
-        #return ''#uncomment to not train on same season as test
+        return ''#uncomment to not train on same season as test
 
     csv = open(path,'a')
     csv.write(line+'\n')
