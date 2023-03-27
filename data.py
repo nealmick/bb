@@ -1,7 +1,7 @@
 import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
-seasons = ['2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010']
+seasons = ['2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009']
 
 #seasonsCSV = ['2018-19','2017-18','2016-17','2015-16','2014-15','2013-14']#,'2012-13','2011-12']
 #seasonsCSV.reverse()
@@ -180,7 +180,7 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
 
 
     if season == '2022':
-        if foo > 150:#sets split of test/train on final season.....
+        if foo > 1:#sets split of test/train on final season.....
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
             return ''
