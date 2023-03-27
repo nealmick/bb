@@ -99,8 +99,10 @@ def betsList(request):
     context['totalProfit'] = count*190-len(g)*100
     context['total'] = total
     context['maxSpent'] = min
-
-    context['p'] = round(count/len(g)*100)
+    try:
+        context['p'] = round(count/len(g)*100)
+    except ZeroDivisionError:
+        context['p'] = 0
     context['games'] = g
     return render(request,'predict/bets.html',context)
 
@@ -1041,6 +1043,13 @@ def editGame(request,pk,**kwargs):
     context['g'] = g
     context['model']=g.values('model')[0]['model']
     context['bet']=g.values('bet')[0]['bet']
+
+    if request.user == u:
+        context['isAuthor'] = True
+    else:
+        context['isAuthor'] = False
+
+
     #print(players)
 
     return render(request, 'predict/edit.html',context)
