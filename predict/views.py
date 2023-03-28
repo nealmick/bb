@@ -78,6 +78,7 @@ def betsList(request):
     count = 0
     total= -100
     min = -100
+    max = 0
     for game in g:
         if game.ev_won == '1':
             count+=1
@@ -86,6 +87,8 @@ def betsList(request):
             total-=100
         if total < min:
             min=total
+        if total > max:
+            max=total
 
 
 
@@ -99,6 +102,7 @@ def betsList(request):
     context['totalProfit'] = count*190-len(g)*100
     context['total'] = total
     context['maxSpent'] = min
+    context['maxWon'] = round(max)
     try:
         context['p'] = round(count/len(g)*100)
     except ZeroDivisionError:
@@ -546,8 +550,8 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     modelSettings['rmw']=rmw
 
     results = webTrain.webappTrain(model,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr)
-    modelSettings['results']=results[0]
-    modelSettings['eval']=results[1]
+    modelSettings['results']=results[1]
+    modelSettings['eval']=results[0]
     save_obj(modelSettings,str(username.username)+'ModelSettings'+model)
 
     context['showresults'] = True
@@ -564,6 +568,7 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     context['kr']=kr
     eval = modelSettings['eval']
     context['eval'] = eval
+    context['results'] = modelSettings['results']
     return render(request,'predict/train.html',context)
 
 @login_required
@@ -1771,7 +1776,7 @@ def req(url):
     dict.update({'http' : proxy[p]})
     r = requests.get(url)
     print('proxy: ', proxy[p], 'url: ', url, 'response: ', r)
-    if str(r) != '<Response [200]>':#means we request too fast..fast af boi so like anything under 1 r/sec cause error at 60 seconds in....
+    if str(r) != '<Response [200]>':#means we request too fast
         time.sleep(5)
         req(url)
     #time.sleep(.1)
@@ -1784,7 +1789,7 @@ def save_obj(obj, name):
 def load_obj(name):
     with open('updatedObj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
-#------------------------------------------------------------------------#TensorFlow Time lets get it####################
+#------------------------------------------------------------------------#
 
 def predict(modelNum,path,username):
 

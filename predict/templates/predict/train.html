@@ -222,9 +222,82 @@
     <div style="margin-top:10px;height:725px"class="content-section">
         
         <h2>Evaluation </h2>
-        {%for line in results%}
-        <p>{{line}}</p>
-        {%endfor%}
+        <p>Win/Loss: {{ results.wl }}%</p>
+        <p>Spread Win/Loss: {{ results.swl }}%</p>
+        <center>
+            <table style="width:100%">
+                <tr>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="This is the model evalution consiting of {{ results.count }} test games the model has never seen.">Eval</td>
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Games won against spread.">Win</td>
+
+                    </center>
+
+                    <center>
+                        <td style="text-align: center" data-toggle="tooltip" data-placement="bottom" title="Total games tested.">Total</td>
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Percent correct against spread.">%</td>
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Postive varience game count.">+</td>
+
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Negative varience game count.">-</td>
+                    </center>
+
+
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Total Profit at end of test.">Profit</td>
+                    </center>
+
+                </tr>
+    
+                <tr style="text-align: center">
+                    <td>Margin 1</td>
+                    <td>{{ results.evMargin1 }}</td>
+                    <td>{{ results.evMargin1Count }}</td>
+                    <td>{{ results.evMargin1Pct }}%</td>
+                    <td>{{ results.evMargin1Max }}</td>
+                    <td>{{ results.evMargin1Min }}</td>
+                    <td>{{ results.evMargin1Profit }}$</td>
+                </tr>
+                    
+                <tr style="text-align: center">
+                    <td>Margin 2</td>
+                    <td>{{ results.evMargin2 }}</td>
+                    <td>{{ results.evMargin2Count }}</td>
+                    <td>{{ results.evMargin2Pct }}%</td>
+                    <td>{{ results.evMargin2Max }}</td>
+                    <td>{{ results.evMargin2Min }}</td>
+                    <td>{{ results.evMargin2Profit }}$</td>
+                </tr>
+                    
+                <tr style="text-align: center">
+                    <td>Margin 3</td>
+                    <td>{{ results.evMargin3 }}</td>
+                    <td>{{ results.evMargin3Count }}</td>
+                    <td>{{ results.evMargin3Pct }}%</td>
+                    <td>{{ results.evMargin3Max }}</td>
+                    <td>{{ results.evMargin3Min }}</td>
+                    <td>{{ results.evMargin3Profit }}$</td>
+                </tr>
+                    
+                <tr style="text-align: center">
+                    <td>Margin 4</td>
+                    <td>{{ results.evMargin4 }}</td>
+                    <td>{{ results.evMargin4Count }}</td>
+                    <td>{{ results.evMargin4Pct }}%</td>
+                    <td>{{ results.evMargin4Max }}</td>
+                    <td>{{ results.evMargin4Min }}</td>
+                    <td>{{ results.evMargin4Profit }}$</td>
+                </tr>
+            </table>
+        </center>
+        
         <hr>
         <p>Note: training can take up to a few minutes to complete.</p>
         <p>Activation funtions <a target="_blank" href="https://www.tensorflow.org/api_docs/python/tf/keras/activations">here</a>, and Optimizers  <a target="_blank" href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">here</a>.</p>

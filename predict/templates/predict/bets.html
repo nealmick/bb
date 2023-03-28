@@ -16,12 +16,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   
-  <div class="col-12" style="padding:0px">
-      <div style="margin-top:10px"class="content-section">
+  <div class="col-lg-6" style="padding:5px">
+      <div style="margin-top:10px;height:635px;"class="content-section">
         <center>
-            <h2>Bets</h2>
-
-            <table>
+          <div style="margin-left: auto;margin-right: auto;height: 250px; width: 100%; ">
+            <canvas id="myChart2"></canvas>
+          </div>
+            <table style="margin-top:75px">
                 <tr>
                     <td style="width:10px"><center>Correct</center></td>
                     <td style="width:10px"><center>Count</center></td>
@@ -33,7 +34,6 @@
 
                     <td style="width:10px"><center>TotalProfit</center></td>
 
-                    <td style="width:10px"><center>MaxSpent</center></td>
   
                  </tr>
                  <tr>
@@ -44,13 +44,28 @@
                     <td style="width:10px"><center>{{totalSpent}}</center></td>
                     <td style="width:10px"><center>{{totalWon}}</center></td>
                     <td style="width:10px"><center>{{totalProfit}}</center></td>
-                    <td style="width:10px"><center>{{maxSpent}}</center></td>
 
                  </tr>
+                 <tr>
+                  <td colspan="3" style=""><center>Positive Varience</center></td>
+                  <td colspan="3" style=""><center>Negative Varience</center></td>
+
+
+               </tr>
+               <tr>
+                <td colspan="3" style=""><center>{{ maxWon }}</center></td>
+                <td colspan="3" style=""><center>{{maxSpent}}</center></td>
+
+
+             </tr>
             </table>
 
         </center>
-        <br>
+    </div>
+    </div>
+    
+  <div class="col-lg-6" style="padding:5px">
+    <div style="margin-top:10px;height:635px;overflow: scroll"class="content-section">
         {% for game in games %}
 
 
@@ -291,4 +306,10 @@
           {% endfor %}
     </div>
 </div>
+
+
+{{ maxWon |json_script:"pv" }}
+{{ maxSpent |json_script:"nv" }}
+
+<script  src="{% static 'predict/betStats.js'%}" defer></script>
 {% endblock content%}
