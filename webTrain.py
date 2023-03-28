@@ -92,16 +92,33 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
         evMargin6 = 0# expected margin
 
 
-        evMargin4Count = 0#count expected 
+        evMargin4Count = 0#count expected  
         evMargin4 = 0# expected margin
+        evMargin4Min = -1
+        evMargin4Max = 0
+        evMargin4Current = 0
+
 
         evMargin3Count = 0#count expected 
         evMargin3 = 0# expected margin
+        evMargin3Min = -1
+        evMargin3Max = 0
+
+        evMargin3Current = 0    
+
+
         evMargin2Count = 0#count expected 
         evMargin2 = 0# expected margin
+        evMargin2Min = -1
+        evMargin2Max = 0
+        evMargin2Current = 0
+
+
         evMargin1Count = 0#count e~xpected 
         evMargin1 = 0# expected margin
-
+        evMargin1Min = -1
+        evMargin1Max = 0
+        evMargin1Current = 0
 
         for i in range(len(p)):
             correct = False#if prediction is correct winner
@@ -173,25 +190,58 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
                 evMargin4Count+=1
                 if mcorrect:
                     evMargin4+=1
+                    evMargin4Current += 1
+                else:
+                    evMargin4Current -= 1
+
+                if evMargin4Current < evMargin4Min:
+                    evMargin4Min = evMargin4Current
+                if evMargin4Current > evMargin4Max:
+                    evMargin4Max = evMargin4Current
 
             if abs(margin) > 3:
                 evMargin3Count+=1
                 if mcorrect:
                     evMargin3+=1
-                
-            if abs(margin) > 2:
+                    evMargin3Current += 1
+                else:
+                    evMargin3Current -= 1
 
+                if evMargin3Current < evMargin3Min:
+                    evMargin3Min = evMargin3Current
+
+                if evMargin3Current > evMargin3Max:
+                    evMargin3Max = evMargin3Current
+
+
+            if abs(margin) > 2:
                 evMargin2Count+=1
                 if mcorrect:
-
                     evMargin2+=1
+                    evMargin2Current += 1
+                else:
+                    evMargin2Current -= 1
+
+                if evMargin2Current < evMargin2Min:
+                    evMargin2Min = evMargin2Current
+
+                if evMargin2Current > evMargin2Max:
+                    evMargin2Max = evMargin2Current
 
             if abs(margin) > 1:
-                
                 evMargin1Count+=1
                 if mcorrect:
-
                     evMargin1+=1
+                    evMargin1Current += 1
+                else:
+                    evMargin1Current -= 1
+
+                if evMargin1Current < evMargin1Min:
+                    evMargin1Min = evMargin1Current
+                
+                if evMargin1Current > evMargin1Max:
+                    evMargin1Max = evMargin1Current
+
             print(abs(margin))
 
             #prediction - spread > 0 and winner 1
@@ -203,7 +253,7 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
 
             print('spread:',spreadCorrect,spread[i], 'prediction: ',correct,round(p[i][0]),round(p[i][1]),'=',round(p[i][0]-p[i][1]),' actual:' ,homeTestScore[i],visitorTestScore[i],'=',pmscore)
 
-            print('#-------------------------------------------#')
+            print('#-------------------------------------------#'+' variance: '+str(evMargin1Min*100))
             if correct:
                 c+=1
         #betting 100$ pergame at 110/100 
@@ -219,7 +269,6 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
         print('expected value over 4 point margins: ',evMargin4,'/',evMargin4Count,'=', evMargin4/evMargin4Count*100,'%')
         print('spent:', round(evMargin4Count*100),' profits :',round((evMargin4 * 190.91)-(evMargin4Count*100)),' total :',round((evMargin4 * 190.91)))
 
-        r = []
 
 
 
@@ -227,22 +276,50 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
 
 
 
-
+        res = {}
+        res['wl'] = round(c/n*100)
+        res['swl'] = round(s/n*100)
+        res['count'] = round(n)
+        res['evMargin1'] = str(evMargin1)
+        res['evMargin1Count'] = str(evMargin1Count)
+        res['evMargin1Pct'] = str(round(evMargin1/evMargin1Count*100))
+        res['evMargin1Min'] = evMargin1Min
+        res['evMargin1Max'] = evMargin1Max
+        res['evMargin1Total'] = round((evMargin1Count * 100))
+        res['evMargin1Profit'] = round((evMargin1 * 190.91)-(evMargin1Count*100))
         
-        r.append('percent correct winners: '+str(round(c/n*100))+'%')
-        r.append('spread percent correct winners: '+ str(round(s/n*100))+'%')
-        r.append('expected value all games: '+str(round(ev/n*100))+'%')
-       
-        r.append('expected value over 1 point margins: '+str(evMargin1)+'/'+str(evMargin1Count)+'='+ str(round(evMargin1/evMargin1Count*100))+'%')
-        r.append('spent: '+str(round(evMargin1Count*100))+' profits: '+str(round((evMargin1 * 190.91)-(evMargin1Count*100)))+' total: '+str(round((evMargin1 * 190.91))))
-        r.append('expected value over 2 point margins: '+str(evMargin2)+'/'+str(evMargin2Count)+'='+ str(round(evMargin2/evMargin2Count*100))+'%')
-        r.append('spent: '+str(round(evMargin2Count*100))+' profits: '+str(round((evMargin2 * 190.91)-(evMargin2Count*100)))+' total: '+str(round((evMargin2 * 190.91))))
+        res['evMargin2'] = str(evMargin2)
+        res['evMargin2Count'] = str(evMargin2Count)
+        res['evMargin2Pct'] = str(round(evMargin2/evMargin2Count*100))
+        res['evMargin2Min'] = evMargin2Min
+        res['evMargin2Max'] = evMargin2Max
+        res['evMargin2Total'] = round((evMargin2Count * 100))
+        res['evMargin2Profit'] = round((evMargin2 * 190.91)-(evMargin2Count*100))
+        
 
-        r.append('expected value over 3 point margins: '+str(evMargin3)+'/'+str(evMargin3Count)+'='+ str(round(evMargin3/evMargin3Count*100))+'%')
-        r.append('spent: '+str(round(evMargin3Count*100))+' profits: '+str(round((evMargin3 * 190.91)-(evMargin3Count*100)))+' total: '+str(round((evMargin3 * 190.91))))
+        res['evMargin3'] = str(evMargin3)
+        res['evMargin3Count'] = str(evMargin3Count)
+        res['evMargin3Pct'] = str(round(evMargin3/evMargin3Count*100))
+        res['evMargin3Min'] = evMargin3Min
+        res['evMargin3Max'] = evMargin3Max
 
-        r.append('expected value over 4 point margins: '+str(evMargin4)+'/'+str(evMargin4Count)+'='+ str(round(evMargin4/evMargin4Count*100))+'%')
-        r.append('spent: '+str(round(evMargin4Count*100))+' profits: '+str(round((evMargin4 * 190.91)-(evMargin4Count*100)))+' total: '+str(round((evMargin4 * 190.91))))
+        res['evMargin3Total'] = round((evMargin3Count * 100))
+        res['evMargin3Profit'] = round((evMargin3 * 190.91)-(evMargin3Count*100))
+        
+
+        res['evMargin4'] = str(evMargin4)
+        res['evMargin4Count'] = str(evMargin4Count)
+        res['evMargin4Pct'] = str(round(evMargin4/evMargin4Count*100))
+        res['evMargin4Min'] = evMargin4Min
+        res['evMargin4Max'] = evMargin4Max
+
+        res['evMargin4Total'] = round((evMargin4Count * 100))
+        res['evMargin4Profit'] = round((evMargin4 * 190.91)-(evMargin4Count*100))
+        
+
+
+
+
 
         #r.append('expected value over 6 point margins: '+str(evMargin6)+'/'+str(evMargin6Count)+'='+ str(round(evMargin6/evMargin6Count*100))+'%')
         #r.append('spent: '+str(round(evMargin6Count*100))+' profits: '+str(round((evMargin6 * 190.91)-(evMargin6Count*100)))+' total: '+str(round((evMargin6 * 190.91))))
@@ -263,6 +340,6 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
 
 
 
-        return [r,eval]
+        return [eval,res]
     r = print_prediction(model, data)
     return r
