@@ -92,6 +92,8 @@ class Game(models.Model):
 
     model = models.CharField(default='0', max_length=10)
 
+    complexSpread = models.CharField(null=True, blank=True, max_length=10000)
+
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)

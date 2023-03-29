@@ -91,10 +91,6 @@ def betsList(request):
             max=total
 
 
-
-
-
-
     context['numBets'] = len(g)
     context['correct'] = count
     context['totalSpent'] = len(g)*100
@@ -182,7 +178,7 @@ def teamView(request,abv):
         foo['avg'] = seasonAverages[player]
         foo['id'] = player
         data = getPlayerInfo(abv,foo['name'])
-        foo['data'] = data 
+        foo['data'] = data
 
         p.append(foo)
 
@@ -1049,6 +1045,18 @@ def editGame(request,pk,**kwargs):
     context['model']=g.values('model')[0]['model']
     context['bet']=g.values('bet')[0]['bet']
 
+
+    if g.values('complexSpread')[0]['complexSpread'] is not None:
+        foo = json.loads(g.values('complexSpread')[0]['complexSpread'])
+        complexSpread = []
+        for k in foo:
+            foo[k]['name'] = k
+            complexSpread.append(foo[k])
+        context['complexSpread'] = sortSpreadLines(complexSpread) 
+        
+        context['complexSpreadDisplay'] = True
+
+
     if request.user == u:
         context['isAuthor'] = True
     else:
@@ -1058,7 +1066,20 @@ def editGame(request,pk,**kwargs):
     #print(players)
 
     return render(request, 'predict/edit.html',context)
+def sortSpreadLines(complexSpread):
+    sorted = []
+    while len(complexSpread)>0:
+        min = 100000
+        index = None
+        for line in range(len(complexSpread)):
+            print(line)
+            if float(complexSpread[line]['homeTeamSpread']) < min:
+                min = float(complexSpread[line]['homeTeamSpread'])
+                index = line
+        sorted.append(complexSpread[index])
+        complexSpread.pop(index)
 
+    return sorted
 
 def getScore(request,pk,**kwargs):
     print('b')
@@ -1363,8 +1384,8 @@ def quickcreate(request,home,visitor,date):
     print(spread)
     home_spread = spread[0]
     visitor_spread = spread[1]
-
-    print('visitor spread==========',visitor_spread)
+    complexSpread = spread[2]
+    complexSpread=json.dumps(complexSpread)
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
     homeTeamInjuryComplex = homeTeamStats.pop(-1)
@@ -1375,10 +1396,10 @@ def quickcreate(request,home,visitor,date):
     
     home_streak = homeTeamStats.pop(-1)
     visitor_streak = visitorTeamStats.pop(-1)
-    print('complex injury report',homeTeamInjuryComplex,visitorTeamInjuryComplex)
     homeTeamInjuryComplex = json.dumps(homeTeamInjuryComplex)
     visitorTeamInjuryComplex = json.dumps(visitorTeamInjuryComplex)
     removed_players = []
+
     found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
     homeInjury = ''
     for player in homeTeamInjury:
@@ -1400,7 +1421,7 @@ def quickcreate(request,home,visitor,date):
         gameid=gameid,home_spread=home_spread,visitor_spread=visitor_spread,dk_home_spread=home_spread,dk_visitor_spread=visitor_spread,
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
         visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
-        homeInjury=homeInjury, visitorInjury=visitorInjury,homeInjuryComplex=homeTeamInjuryComplex,visitorInjuryComplex=visitorTeamInjuryComplex)
+        homeInjury=homeInjury, visitorInjury=visitorInjury,homeInjuryComplex=homeTeamInjuryComplex,visitorInjuryComplex=visitorTeamInjuryComplex,complexSpread=complexSpread)
 
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
@@ -1590,13 +1611,39 @@ def getSpread(home,visitor,date):
     print(r)
     if len(r) < 1:
         return ['0','0']
+    spread = {}
+    books = ['fanduel','wynnbet','caesars_sportsbook','betmgm','unibet','pointsbet','betrivers','sports_illustrated']
     for line in r:
         teams = line.split('_')[1].split('@')
         print(teams)
         if teams[0] == convert[home] or teams[1] == convert[home]:
             if teams[0] == convert[visitor] or teams[1] == convert[visitor]:
+                print('spread------------')
+
+                for book in books:
+
+                    spread[book] = {}
+                    spread[book]['homeTeamSpread']=r[line][book]['homeTeamSpread']
+                    spread[book]['awayTeamSpread']=r[line][book]['awayTeamSpread']
+                    spread[book]['homeTeamMLOdds']=r[line][book]['homeTeamMLOdds']
+                    spread[book]['awayTeamMLOdds']=r[line][book]['awayTeamMLOdds']
+                    spread[book]['totalUnder']=r[line][book]['totalUnder']
+                    spread[book]['totalOver']=r[line][book]['totalOver']
+
+                print('complex spread report:',spread)
+
+                '''
+
                 print(r[line]['fanduel']['homeTeamSpread'])
-                return [r[line]['fanduel']['homeTeamSpread'],r[line]['fanduel']['awayTeamSpread']]
+                print(r[line]['wynnbet']['homeTeamSpread'])
+                print(r[line]['caesars_sportsbook']['homeTeamSpread'])
+                print(r[line]['betmgm']['homeTeamSpread'])
+                
+
+                '''
+                
+
+                return [r[line]['fanduel']['homeTeamSpread'],r[line]['fanduel']['awayTeamSpread'],spread]
 
 
 

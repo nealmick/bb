@@ -393,7 +393,36 @@
             </table>
           </div>
           {% endif %}
+          <br>
+          <br>
+          {% if complexSpreadDisplay %}
+            <div style="margin-top:35px;overflow: auto; color:white;">
+              <table align="center" style="width:100%">
+                <tr>
+                  <td style=""><center>Book</center></td>
+                  <td style=""><center>HomeSpread</center></td>
+                  <td><center>VisitorSpread</center></td>
+                  <td><center>HomeML</center></td>
+                  <td><center>VisitorML</center></td>
+                  <td><center>totalUnder</center></td>
+                  <td><center>totalOver</center></td>
+                  
+              </tr>
+              {% for line in complexSpread %}
+              <tr>
+                <td><center>{{ line.name }}</center></td>
+                <td><center>{{ line.homeTeamSpread }}</center></td>
+                <td><center>{{ line.awayTeamSpread }}</center></td>
+                <td><center>{{ line.homeTeamMLOdds }}</center></td>
+                <td><center>{{ line.awayTeamMLOdds }}</center></td>
+                <td><center>{{ line.totalUnder }}</center></td>
+                <td><center>{{ line.totalOver }}</center></td>
+              </tr>
+              {% endfor %}
+              </table>
+            </div>
 
+          {% endif %}
       <br>
       <br>
           <div style="margin-left:10x">
