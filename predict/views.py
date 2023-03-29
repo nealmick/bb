@@ -70,6 +70,20 @@ TEAMCOLORS = {
     'UTA':'#FAA403',
     'WAS':'#CF142C',
 }
+
+def updateSpread(request, pk):
+    print('updatespread')
+    g = Game.objects.filter(pk=pk)
+    home = g.values('home')[0]['home']
+    visitor = g.values('visitor')[0]['visitor']
+    date = g.values('gamedate')[0]['gamedate']
+    spread = getSpread(home,visitor,date)
+    complexSpread = spread[2]
+    complexSpread=json.dumps(complexSpread)
+
+    g.update(complexSpread=complexSpread)
+    return redirect('edit-predict',pk)
+
 def betsList(request):
     context = {}
     g = Game.objects.filter(author=request.user)
@@ -1066,6 +1080,9 @@ def editGame(request,pk,**kwargs):
     #print(players)
 
     return render(request, 'predict/edit.html',context)
+
+
+
 def sortSpreadLines(complexSpread):
     sorted = []
     while len(complexSpread)>0:

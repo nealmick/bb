@@ -425,7 +425,10 @@
           {% endif %}
       <br>
       <br>
+
           <div style="margin-left:10x">
+            <a style='margin-left:3px' class="btn btn-grey-secondary"href="{%url 'update-spread' pk %}">Update Odds</a>
+
             {% if isAuthor %}
           {% if bet %}
           <a style='margin-left:3px' class="btn btn-grey-secondary"href="{%url 'bet' pk %}">Bet True</a>
