@@ -1640,13 +1640,20 @@ def getSpread(home,visitor,date):
                 for book in books:
 
                     spread[book] = {}
-                    spread[book]['homeTeamSpread']=r[line][book]['homeTeamSpread']
-                    spread[book]['awayTeamSpread']=r[line][book]['awayTeamSpread']
-                    spread[book]['homeTeamMLOdds']=r[line][book]['homeTeamMLOdds']
-                    spread[book]['awayTeamMLOdds']=r[line][book]['awayTeamMLOdds']
-                    spread[book]['totalUnder']=r[line][book]['totalUnder']
-                    spread[book]['totalOver']=r[line][book]['totalOver']
-
+                    try:
+                        spread[book]['homeTeamSpread']=r[line][book]['homeTeamSpread']
+                        spread[book]['awayTeamSpread']=r[line][book]['awayTeamSpread']
+                        spread[book]['homeTeamMLOdds']=r[line][book]['homeTeamMLOdds']
+                        spread[book]['awayTeamMLOdds']=r[line][book]['awayTeamMLOdds']
+                        spread[book]['totalUnder']=r[line][book]['totalUnder']
+                        spread[book]['totalOver']=r[line][book]['totalOver']
+                    except KeyError:
+                        spread[book]['homeTeamSpread']=0
+                        spread[book]['awayTeamSpread']=0
+                        spread[book]['homeTeamMLOdds']=0
+                        spread[book]['awayTeamMLOdds']=0
+                        spread[book]['totalUnder']=0
+                        spread[book]['totalOver']=0
                 print('complex spread report:',spread)
 
                 '''
