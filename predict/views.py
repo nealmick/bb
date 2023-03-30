@@ -74,8 +74,11 @@ TEAMCOLORS = {
 
 def clearGames(request):
     Game.objects.filter(author=request.user).delete()
-
     return redirect('home-predict')
+
+def confirmClearGames(request):
+    
+    return render(request,'predict/confirm.html')
 
 
 def updateSpread(request, pk):

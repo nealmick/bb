@@ -8,6 +8,8 @@ urlpatterns = [
 
     path('cleargames/', views.clearGames, name='clear-games'),
 
+    path('confirmcleargames/', views.confirmClearGames, name='confirm-clear-games'),
+
     path('updatespread/<int:pk>', views.updateSpread, name='update-spread'),
     path('bet/<int:pk>', views.setBet, name='bet'),
     path('bets/', views.betsList, name='bet-list'),
