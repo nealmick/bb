@@ -71,6 +71,13 @@ TEAMCOLORS = {
     'WAS':'#CF142C',
 }
 
+
+def clearGames(request):
+    Game.objects.filter(author=request.user).delete()
+
+    return redirect('home-predict')
+
+
 def updateSpread(request, pk):
     print('updatespread')
     g = Game.objects.filter(pk=pk)
