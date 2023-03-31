@@ -12,16 +12,32 @@
   
   
   
+  <div class="col-lg-12" style='padding:5px;'>
+      <div style="margin-top:10px;height:300px;margin-bottom:0px;"class="content-section">
+        <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+          <canvas id="history-chart"></canvas>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      </div>
+
+  </div>
   
   
   <div class="col-lg-6" style="padding:5px">
-      <div style="margin-top:10px;height:635px;"class="content-section">
+      <div style="margin-top:0px;height:635px;"class="content-section">
         <center>
-          <div style="margin-left: auto;margin-right: auto;height: 250px; width: 100%; ">
-            <canvas id="myChart2"></canvas>
+          <div class="row">
+            <div class="col-6">
+              <canvas id="myChart2"></canvas>
+
+            </div>
+            <div class="col-6">
+              <canvas id="myChartCW"></canvas>
+
+            </div>
+
           </div>
+     
             <table style="margin-top:75px">
                 <tr>
                     <td style="width:10px"><center>Correct</center></td>
@@ -65,7 +81,35 @@
     </div>
     
   <div class="col-lg-6" style="padding:5px">
-    <div style="margin-top:10px;height:635px;overflow: scroll"class="content-section">
+    <div style="margin-top:0px;height:635px;overflow: scroll"class="content-section">
+      <select id="filter-team" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+        {%if filter == 'all' %}
+        <option value="all" selected>All Teams</option>
+        {% else %}
+        <option value="all" >All Teams</option>
+        {% endif%}
+        {% for team in abv %}
+
+          {%if filter == team %}
+          <option value="{{team}}" selected>{{team}}</option>
+          {% else %}
+          <option value="{{team}}" >{{team}}</option>
+          {% endif%}
+
+        {% endfor %}
+
+
+      </select>
+      <script>
+
+
+      document.getElementById("filter-team").addEventListener("input", () => {
+              team = document.getElementById("filter-team").value
+              window.location.href = "{% url 'bet-list' %}"+team
+          });
+
+      </script>
+      <br>
         {% for game in games %}
 
 
@@ -298,7 +342,7 @@
             {% empty %}
               <br>
               <center>
-                <h2>You have no bets!</h2>
+                <h2>No bets found!</h2>
                 <p>Click Bet False at the bottom of a game.</p>
               </center>
               <br>
@@ -310,6 +354,12 @@
 
 {{ maxWon |json_script:"pv" }}
 {{ maxSpent |json_script:"nv" }}
+
+
+{{ correct |json_script:"correct" }}
+{{ wrong |json_script:"wrong" }}
+
+{{ history |json_script:"history" }}
 
 <script  src="{% static 'predict/betStats.js'%}" defer></script>
 {% endblock content%}

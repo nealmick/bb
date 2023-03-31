@@ -1,9 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 import webData
 import webTrain
-
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.template import loader
@@ -37,7 +37,38 @@ labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','or
 
 
 playersPerTeam = 7
-
+ABV = [
+    'ATL',
+    'BKN',
+    'BOS',
+    'CHA',
+    'CHI',
+    'CLE',
+    'DAL',
+    'DEN',
+    'DET',
+    'GSW',
+    'HOU',
+    'IND',
+    'LAC',
+    'LAL',
+    'MEM',
+    'MIA',
+    'MIL',
+    'MIN',
+    'NOP',
+    'NYK',
+    'OKC',
+    'ORL',
+    'PHI',
+    'PHX',
+    'POR',
+    'SAC',
+    'SAS',
+    'TOR',
+    'UTA',
+    'WAS',
+]
 TEAMCOLORS = {
     'ATL':'#E03A3E',
     'BKN':'#000000',
@@ -117,15 +148,42 @@ def updateSpread(request, pk):
     g.update(complexSpread=complexSpread)
     return redirect('edit-predict',pk)
 
-def betsList(request):
+def betsList(request,team=None):
     context = {}
     g = Game.objects.filter(author=request.user)
     g = g.filter(bet=True)
     g = g.filter(finished=True)
+    if team != 'all' and team is not None:
+        print('filtering for team',team)
+        context['filter'] = team
+        g = g.filter(Q(home__startswith=team) | Q(visitor__startswith=team))
+    else:
+        context['filter'] = 'all'
+    g = g.order_by('-gameid')
     count = 0
     total= -100
     min = -100
     max = 0
+    
+    history = []
+    last = 0
+
+
+    historyTotal = -100
+
+    for day in range(30,0,-1):
+        history.append(historyTotal)
+        print(day)
+        foo = datetime.now() - timedelta(days=day)
+        print(foo)
+        for game in g:
+            d = datetime.strptime(game.gamedate, '%Y-%m-%d')
+            if foo.strftime('%Y-%m-%d') == d.strftime('%Y-%m-%d'):
+                if game.ev_won == '1':
+                    historyTotal+=190.1
+                else:
+                    historyTotal-=100
+
     for game in g:
         if game.ev_won == '1':
             count+=1
@@ -136,10 +194,13 @@ def betsList(request):
             min=total
         if total > max:
             max=total
+       
 
-
+    h = json.dumps(history)
+    context['history'] = h
     context['numBets'] = len(g)
     context['correct'] = count
+    context['wrong'] = len(g)-count
     context['totalSpent'] = len(g)*100
     context['totalWon'] = count*190
     context['totalProfit'] = count*190-len(g)*100
@@ -151,7 +212,10 @@ def betsList(request):
     except ZeroDivisionError:
         context['p'] = 0
     context['games'] = g
+    context['abv'] = ABV
     return render(request,'predict/bets.html',context)
+
+
 
 def setBet(request, pk):
     g = Game.objects.filter(pk=pk)

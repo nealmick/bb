@@ -14,6 +14,9 @@ urlpatterns = [
     path('updatespread/<int:pk>', views.updateSpread, name='update-spread'),
     path('bet/<int:pk>', views.setBet, name='bet'),
     path('bets/', views.betsList, name='bet-list'),
+    path('bets/<str:team>', views.betsList, name='bet-list'),
+
+
     path('team/<str:abv>', views.teamView, name='team-view'),
     path('teams/', views.teamListView, name='team-list'),
     path('player-detail-name/<str:key>', views.playerDetailbyName, name='player-detail-name'),
