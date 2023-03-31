@@ -71,12 +71,35 @@ TEAMCOLORS = {
     'WAS':'#CF142C',
 }
 
+def clearStats(request):
+    if request.user == 'demo':
+        return redirect('home-predict')
+    
+    obj = Profile.objects.filter(user=request.user)
+    obj.update(correct=0)
+    obj.update(predictions=0)
+    obj.update(loss=0)
+    obj.update(gain=0)
+    obj.update(ev_margin1=0)
+    obj.update(ev_margin2=0)
+    obj.update(ev_margin3=0)
+    obj.update(ev_won_count=0)
+    obj.update(ev_margin1_count=0)
+    obj.update(ev_margin2_count=0)
+    obj.update(ev_margin3_count=0)
+
+    return redirect('home-predict')
+
 
 def clearGames(request):
+    if request.user == 'demo':
+        return redirect('home-predict')
+    
     Game.objects.filter(author=request.user).delete()
     return redirect('home-predict')
 
 def confirmClearGames(request):
+
     
     return render(request,'predict/confirm.html')
 
@@ -1100,6 +1123,10 @@ def sortSpreadLines(complexSpread):
         index = None
         for line in range(len(complexSpread)):
             print(line)
+            if complexSpread[line]['awayTeamSpread'] == 'PK':
+                complexSpread[line]['awayTeamSpread'] = 0
+            if complexSpread[line]['homeTeamSpread'] == 'PK':
+                complexSpread[line]['homeTeamSpread'] = 0
             if float(complexSpread[line]['homeTeamSpread']) < min:
                 min = float(complexSpread[line]['homeTeamSpread'])
                 index = line

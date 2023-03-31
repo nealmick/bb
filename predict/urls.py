@@ -6,6 +6,7 @@ urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
 
 
+    path('clearstats/', views.clearStats, name='clear-stats'),
     path('cleargames/', views.clearGames, name='clear-games'),
 
     path('confirmcleargames/', views.confirmClearGames, name='confirm-clear-games'),
