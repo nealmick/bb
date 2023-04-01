@@ -1,8 +1,10 @@
 
 let history = JSON.parse(document.getElementById('history').textContent).slice(1, -1);
+
+let days = JSON.parse(document.getElementById('days').textContent)
 history=history.split(',')
 const data = {
-  labels: [...Array(31).keys()].reverse(),
+  labels: [...Array(days).keys()].reverse(),
   datasets: [{
     label: 'Profit',
     data: history,

@@ -14,7 +14,7 @@ urlpatterns = [
     path('updatespread/<int:pk>', views.updateSpread, name='update-spread'),
     path('bet/<int:pk>', views.setBet, name='bet'),
     path('bets/', views.betsList, name='bet-list'),
-    path('bets/<str:team>', views.betsList, name='bet-list'),
+    path('bets/<str:team>/<int:days>', views.betsList, name='bet-list'),
 
 
     path('team/<str:abv>', views.teamView, name='team-view'),

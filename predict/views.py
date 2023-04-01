@@ -148,15 +148,16 @@ def updateSpread(request, pk):
     g.update(complexSpread=complexSpread)
     return redirect('edit-predict',pk)
 
-def betsList(request,team=None):
+def betsList(request,team=None, days=30):
     context = {}
     g = Game.objects.filter(author=request.user)
     g = g.filter(bet=True)
     g = g.filter(finished=True)
+    print(team)
     if team != 'all' and team is not None:
         print('filtering for team',team)
         context['filter'] = team
-        g = g.filter(Q(home__startswith=team) | Q(visitor__startswith=team))
+        g = g.filter(Q(home=team) | Q(visitor=team))
     else:
         context['filter'] = 'all'
     g = g.order_by('-gameid')
@@ -171,7 +172,7 @@ def betsList(request,team=None):
 
     historyTotal = -100
 
-    for day in range(30,0,-1):
+    for day in range(days,0,-1):
         history.append(historyTotal)
         print(day)
         foo = datetime.now() - timedelta(days=day)
@@ -183,8 +184,17 @@ def betsList(request,team=None):
                     historyTotal+=190.1
                 else:
                     historyTotal-=100
-
+    foo = datetime.now()
+    c = 0
+    cut = 0
     for game in g:
+        c+=1
+        d = datetime.strptime(game.gamedate, '%Y-%m-%d')
+        d = str(foo - d).split(' ')[0]
+        if int(d) >= days:
+            cut = c
+            break
+        
         if game.ev_won == '1':
             count+=1
             total+=190.1
@@ -194,8 +204,9 @@ def betsList(request,team=None):
             min=total
         if total > max:
             max=total
-       
-
+    if c>1:
+        g = g[0:c-1]
+    print(len(g),c)
     h = json.dumps(history)
     context['history'] = h
     context['numBets'] = len(g)
@@ -213,6 +224,7 @@ def betsList(request,team=None):
         context['p'] = 0
     context['games'] = g
     context['abv'] = ABV
+    context['days'] = days
     return render(request,'predict/bets.html',context)
 
 
@@ -1502,8 +1514,11 @@ def quickcreate(request,home,visitor,date):
     print(spread)
     home_spread = spread[0]
     visitor_spread = spread[1]
-    complexSpread = spread[2]
-    complexSpread=json.dumps(complexSpread)
+    try:
+        complexSpread = spread[2]
+        complexSpread=json.dumps(complexSpread)
+    except IndexError:
+        complexSpread = []
     stats = getTeamData(home,visitor)
     homeTeamStats = stats[0]
     homeTeamInjuryComplex = homeTeamStats.pop(-1)
