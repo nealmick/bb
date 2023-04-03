@@ -15,7 +15,7 @@
 
 
 <div class="col-12" style="margin-top:10px">
-    <div class="content-section" >
+    <div class="content-section" style="overflow:scroll;">
         <center>
 
           <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
@@ -25,7 +25,7 @@
         </center>
           <br>
 
-          <table align="center" style="width:100%;">
+          <table align="center" id="margin-display" style="width:100%;">
             <tr>
                   <td style="width:10px"><center>Name</center></td>
                   {% for label in labels %}

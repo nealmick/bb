@@ -19,7 +19,7 @@
 
 
 
-    <div class="col-lg-6" style="">
+    <div  id="home-graph-display" class="col-lg-6" style="">
 
         <div class="content-section"style="min-height:225px;">
         <div class="row">
@@ -211,6 +211,7 @@
                         <canvas  style=''id="{{ game.pk }}" ></canvas>
                           
 
+                      <div id="margin-display">
 
 
                       {% if game.visitor_spread == '0' %}
@@ -254,6 +255,12 @@
                       {% endif %}
                       {% endif %}
                       {% endif %}
+
+                      </div>
+
+
+
+
                         </div>
                         </center>
 

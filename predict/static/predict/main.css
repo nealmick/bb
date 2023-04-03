@@ -507,6 +507,18 @@ li {
   }
 
 }
+
+@media screen and (max-width: 500px) {
+  #margin-display{
+    display:none
+  }
+  #home-graph-display{
+    display:none
+
+  }
+
+}
+
 #predict-all-btn:hover{
   border-width: 1px !important;
   border-color: #969696 !important;
