@@ -31,12 +31,11 @@ import numpy as np
 import pandas as pd
 import csv
 
-
+#stats for season averages
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-
-
-
+#number of top players input for each game
 playersPerTeam = 7
+
 ABV = [
     'ATL',
     'BKN',
@@ -69,6 +68,7 @@ ABV = [
     'UTA',
     'WAS',
 ]
+
 TEAMCOLORS = {
     'ATL':'#E03A3E',
     'BKN':'#000000',
@@ -102,6 +102,8 @@ TEAMCOLORS = {
     'WAS':'#CF142C',
 }
 
+
+#clear user's profile stats in order to reset account...
 def clearStats(request):
     if request.user == 'demo':
         return redirect('home-predict')
@@ -123,7 +125,9 @@ def clearStats(request):
 
     return redirect('home-predict')
 
-
+#Delete all games
+#this delete's Game model instances, and does not delete csv game files
+#might be a good idea to delete csv files in future if there gets to be alot...
 def clearGames(request):
     if request.user == 'demo':
         return redirect('home-predict')
@@ -131,12 +135,13 @@ def clearGames(request):
     Game.objects.filter(author=request.user).delete()
     return redirect('home-predict')
 
+## renders confirm clear template for account reset.
 def confirmClearGames(request):
-
-    
     return render(request,'predict/confirm.html')
 
-
+#Updates spread table at bottom of edit game view
+#this does not update spread at top displayed draftking/fanduel
+#maybe work on that in future
 def updateSpread(request, pk):
     print('updatespread')
     g = Game.objects.filter(pk=pk)
@@ -150,6 +155,8 @@ def updateSpread(request, pk):
     g.update(complexSpread=complexSpread)
     return redirect('edit-predict',pk)
 
+# Bet list view
+# calculates time series data, and can be filtered for teams
 def betsList(request,team=None, days=30):
     context = {}
     g = Game.objects.filter(author=request.user)
@@ -230,7 +237,7 @@ def betsList(request,team=None, days=30):
     return render(request,'predict/bets.html',context)
 
 
-
+#Sets game bet true/false
 def setBet(request, pk):
     g = Game.objects.filter(pk=pk)
     bet = g.values('bet')[0]['bet']
@@ -239,6 +246,9 @@ def setBet(request, pk):
     else:
         g.update(bet=True)
     return redirect('edit-predict', pk)
+
+# all 30 teams list view
+# then added the search view at top and repurposed into a general data view
 def teamListView(request):
    
     context={}
@@ -265,6 +275,9 @@ def teamListView(request):
     context['teams'] = teams
     return render(request,'predict/teamList.html',context)
 
+
+# Team detail page
+# Displays teams current status, with the full rosters in no particular order
 def teamView(request,abv):
     abv = abv.upper()
     print(abv)
@@ -331,7 +344,8 @@ def teamView(request,abv):
 
 
 
-
+# Takes player id as input, request current team from api, then compares with saved roster
+# if savedId != updatedId the player will be removed from old team and added to new.
 def updatePlayerTeam(request,playerId,**kwargs):
     print('updating team')
     url = 'https://www.balldontlie.io/api/v1/players/' + str(playerId)
@@ -357,6 +371,8 @@ def updatePlayerTeam(request,playerId,**kwargs):
     
     return redirect('player-detail',playerId)
 
+# takes player api id, Request new season averages
+# then loads season averages object and updates the player stats
 def updatePlayerStats(request,playerId,**kwargs):
     print('updating stats')
     seasonAverages = load_obj('2022SeasonAverages')
@@ -374,6 +390,8 @@ def updatePlayerStats(request,playerId,**kwargs):
     save_obj(seasonAverages,'2022SeasonAverages')
     return redirect('player-detail',playerId)
 
+# Used by player search result to convert results of a player name to player id
+# takes player name or Key and redirects to player detail of id
 def playerDetailbyName(request,key):
     obj = load_obj('2019PlayerNamesByID')
     player_id =''
@@ -386,7 +404,8 @@ def playerDetailbyName(request,key):
     return redirect('player-detail', player_id)
     
 
-
+# Player detail view shows ESPN image, current stats, and status.
+# takes player API ID
 def playerDetail(request,playerId):
     context={}
     context['id'] = playerId
@@ -428,6 +447,9 @@ def playerDetail(request,playerId):
     context['data']=data
     return render(request,'predict/playerDetail.html',context)
 
+
+# called in playerDetail to request individual player details
+# takes team abv and player name, returns data['espnLink'] etc....
 def getPlayerInfo(team,playerName):
 
     convert = {
@@ -528,6 +550,10 @@ def getPlayerInfo(team,playerName):
 
     return data
 
+# Search result view takes player name input string
+# lower case contains search all saved player names
+# converts names to id's, then to season averages
+# returns data for table in results view
 def searchResults(request,playerName):
     context = {}
     context['playerName'] = playerName
@@ -554,13 +580,14 @@ def searchResults(request,playerName):
 
     return render(request,'predict/searchResults.html',context)
 
-
+# simple search input view
 def playerSearch(request):
     context = {}
     return render(request,'predict/playerSearch.html',context)
 
 
-
+# gets all scores dont abuse, this will take down api easily, raise time sleep 2 or 3
+# dont use this on accounts with lots of junk games.
 def getAllScores(request):
     qs = Game.objects.filter(author=request.user)
     for instance in qs:
@@ -570,14 +597,16 @@ def getAllScores(request):
             getScore(request,instance.pk)
     return redirect('home-predict')
 
-
-
-
+# renders faq page
 def faq(request):
 
     return render(request,'predict/faq.html')
 
 
+
+
+# Reset model slot, takes int model slot and gets user from requests
+# Deletes the model checkpoints and saves user model settings object file.
 @login_required
 def resetModel(request,model):
     if os.path.exists("userModels/"+str(request.user.username)+'/'+model+'/'):
@@ -586,6 +615,11 @@ def resetModel(request,model):
 
     return redirect('train-view',model)
 
+
+# Model training view input model int
+# saves checkpoints in userModels folder
+# saves model settings in updatedObj folder
+# Renders training view for currently selected model
 @login_required
 def trainView(request,model):
     context = {}
@@ -644,6 +678,7 @@ def trainView(request,model):
         
     return render(request,'predict/train.html',context)
 
+# makes dataset, no longer supported. might add back again oneday
 @login_required
 def makeDataSet(request,seasons,numgames):
     print(seasons,numgames)
@@ -651,6 +686,10 @@ def makeDataSet(request,seasons,numgames):
     print(seasons)
     webData.CreateDataset(seasons,numgames)
     return redirect('train-view')
+
+
+# trains a model, takes input for all the sliders and settings
+# calls webappTrain from webTrain.py
 @login_required
 def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,es,rmw,kr):
     username = request.user
@@ -692,6 +731,7 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     context['results'] = modelSettings['results']
     return render(request,'predict/train.html',context)
 
+#Renders profile stats like margin 1-3 and win/loss with graphs.
 @login_required
 def statsView(request):
     context = {}
@@ -755,6 +795,10 @@ def statsView(request):
 
     return render(request,'predict/stats.html',context)
 
+# Remove player from game
+# takes game pk id and player id
+# adds player id to blacklisted players and recreates game without player..
+# redirects back to game edit view
 def removePlayer(request,pk,player):
     print(pk)
     print(player)
@@ -840,7 +884,8 @@ def removePlayer(request,pk,player):
 
 
 
-
+# creates csv file with all games on account. 
+# exports them and supplies an instant download.
 def exportGames(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
@@ -868,7 +913,9 @@ def exportGames(request):
     return response
 
 
-
+# Saved edited game stats, and makes prediction
+# takes model slot to user, pk id of game, and str of any changes made to stats
+# returns redirect to dashboard, maybe change this to redirect back to edit view not sure.
 def saveEdit(request,model,pk,change,**kwargs):
 
     model = str(model)
@@ -989,7 +1036,8 @@ def saveEdit(request,model,pk,change,**kwargs):
 
 
 
-##
+# Main game view, Shows teams prediction model selector, tables, injuries, and more...
+# takes game pk id as input and return render of predict/edit.html
 def editGame(request,pk,**kwargs):
     context = {}
     user = request.user
@@ -1194,6 +1242,8 @@ def editGame(request,pk,**kwargs):
 
 
 
+
+# Sort spread lines min to max, takes complex spread obj and returns sorted list
 def sortSpreadLines(complexSpread):
     sorted = []
     while len(complexSpread)>0:
@@ -1213,6 +1263,11 @@ def sortSpreadLines(complexSpread):
 
     return sorted
 
+# get score for a game
+# take game pk id and request api
+# if game is final the scores are used to calculate prediction correct or wrong
+# profile stats are then updated to match
+# returns redirect to dashboard
 def getScore(request,pk,**kwargs):
     print('b')
     print('getttttttttttting score')
@@ -1351,7 +1406,7 @@ def getScore(request,pk,**kwargs):
 
 
 
-
+# takes date str, request's api, and returns list of games
 def todaysGames(date):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     eastern = timezone('America/Los_Angeles')
@@ -1379,7 +1434,7 @@ def todaysGames(date):
 
 
 
-
+#Main dashboard game list view.
 class GameListView(ListView, LoginRequiredMixin):
     model = Game
     template_name = 'predict/home.html'
@@ -1481,7 +1536,10 @@ class GameListView(ListView, LoginRequiredMixin):
 
 
 
-
+# Predict all button below todays games
+# takes date and model select, loops over games and predicts them
+# thing to note is no players are removed automatically
+# returns redirect for dashboard
 def predictAll(request,dateSelected,model,**kwargs):
     print(dateSelected)
 
@@ -1495,20 +1553,18 @@ def predictAll(request,dateSelected,model,**kwargs):
         print('asdf')
     return redirect('home-predict')
 
-
+# creates game clicked on from callender
+# takes home visitor team abv, and selected date
+# request api loads teams and player stats
+# returns redirect to game edit view
 def quickcreate(request,home,visitor,date):
     print('testing quick create---------------------')
-
 
 
     csvid = random.randint(1,100000)
     season = '2022'
     labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
     path = 'csv/'+str(request.user)+str(csvid)+'.csv'
-
-
-
-
 
 
 
@@ -1562,9 +1618,10 @@ def quickcreate(request,home,visitor,date):
     #return redirect('home-predict')
 
 
-
+# Gets team data win/loss/streak
+# takes home and visitor abv
+# returns [teamStats[h],teamStats[v]]
 def getTeamData(home,visitor):
-    
     convert = {
         'ATL' :'ATL',
         'BKN':  'BKN',
@@ -1668,6 +1725,9 @@ def getTeamData(home,visitor):
 
     return [teamStats[h],teamStats[v]]
 
+# gets spread data from several books
+# takes home and visitor abv, and date
+# returns ['homeTeamSpread'],'awayTeamSpread',spread]
 def getSpread(home,visitor,date):
     print('date--------',date)
     date = date.replace('-', '')
@@ -1783,12 +1843,12 @@ def getSpread(home,visitor,date):
                 
 
                 '''
-                
 
                 return [r[line]['fanduel']['homeTeamSpread'],r[line]['fanduel']['awayTeamSpread'],spread]
 
 
-
+# Predict future game, this the main web predict function...
+# returns found, gameid, and playerids
 def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,path, season,labels,removed_players):
     print('removed player:',removed_players)
     print(season)
@@ -1891,6 +1951,7 @@ def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,pat
     return found, gameid,playerids
 #------------------------------------------------------------------------#
 
+# write indevidual csv file for game prediction
 def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,path):
     line = str(game)+','+str(spread)+','+str(homeId)
     for stat in homeTeamStats:
@@ -1911,7 +1972,7 @@ def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,b
     csv = open(path,'a')
     csv.write(line+'\n')
     print(line)
-
+# write csv header
 def writeCSVHeader(labels, path,**kwargs):
     header = 'gameid,spread,home_id,home_streak,hgp,hw,hl,visitor_id,visitor_streak,vgp,vw,vl'
     derp = ['home_', 'visitor_']
@@ -1924,6 +1985,9 @@ def writeCSVHeader(labels, path,**kwargs):
     return header
 
 #------------------------------------------------------------------------#
+# get best player by play time
+# takes team list of season averages
+# returns best
 def getBestPlayer(team):
     best = ''
     topMin = 0
@@ -1943,7 +2007,8 @@ def getBestPlayer(team):
 #------------------------------------------------------------------------#
 
 
-#clears data of last game and gets ready for next
+# clears data of last game and gets ready for next
+# dont think this used anymore
 def nextGame(gameid):
     data = {}
     data.update({'gameid' : gameid})
@@ -1955,9 +2020,10 @@ def nextGame(gameid):
     #data.update({'visitor_team_id' : 0})
     return data
 
-
-
 #------------------------------------------------------------------------#
+#request a url
+# used to need proxies due to request getting blocked
+# but nolonger using proxies, just makes request and returns json obj
 def req(url):
     proxy = load_obj('proxy')
     dict = {}
@@ -1971,15 +2037,18 @@ def req(url):
     #time.sleep(.1)
     return r.json()
 #------------------------------------------------------------------------#
+#saves pickle object file
 def save_obj(obj, name):
     with open('updatedObj/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
+#loads pickle object file
 def load_obj(name):
     with open('updatedObj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 #------------------------------------------------------------------------#
-
+# Loads tensorflow model and predicts game
+# Takes model number path of csv file and username
+# returns prediction 
 def predict(modelNum,path,username):
 
     data = pd.read_csv(path)
@@ -2020,7 +2089,7 @@ def predict(modelNum,path,username):
     return(p[0])
 
 
-
+# request for spread api
 def reqSpread(url):
     r = requests.get(url)
     return r.json()
