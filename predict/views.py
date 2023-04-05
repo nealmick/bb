@@ -111,6 +111,8 @@ def clearStats(request):
     obj.update(predictions=0)
     obj.update(loss=0)
     obj.update(gain=0)
+    obj.update(ev_won=0)
+
     obj.update(ev_margin1=0)
     obj.update(ev_margin2=0)
     obj.update(ev_margin3=0)
