@@ -41,59 +41,94 @@ class Game(models.Model):
         ('UTA', 'Utah Jazz'),
         ('WAS', 'Washington Wizards'),
         )
+    #home team abv
     home = models.CharField(max_length=3, choices=CHOICES)
+    #team color
     homecolor = models.CharField(max_length=10)
+    #visitor team abv
     visitor = models.CharField(max_length=3, choices=CHOICES)
+    #team html color code
     visitorcolor = models.CharField(max_length=10)
+
+    # game date
     gamedate = models.CharField(max_length=10, default=timezone.now().strftime('%Y-%m-%d'))
+    
+    #user author of game
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    #time game was created
     date_posted = models.DateTimeField(default=timezone.now)
+
+    #old and not used used to be 0 or 1
     prediction = models.DecimalField(null=True, blank=True, max_digits=4, decimal_places=3)
+
+    #game api id for balldonelie.io
     gameid = models.CharField(null=True, blank=True, max_length=10)
+
+    #actual game scores
     home_score = models.CharField(default='0',null=True, blank=True, max_length=3)
     visitor_score = models.CharField(default='0',null=True, blank=True, max_length=3)
+
+    #game is final and no time left in last period.
     finished = models.BooleanField(default=False)
+    
+    #point spreads displayed at top and used for predictions
     home_spread = models.CharField(null=True, blank=True, max_length=10)
     visitor_spread = models.CharField(null=True, blank=True, max_length=10)
     dk_home_spread = models.CharField(null=True, blank=True, max_length=10)
     dk_visitor_spread = models.CharField(null=True, blank=True, max_length=10)
 
+
+    #game winner 0 for visitor 1 for home
     winner = models.IntegerField(null=True, blank=True, default=0)
+
+    #id used to match game instance to csv file
     csvid = models.CharField(null=True, blank=True, max_length=10)
+
+    #predicted scores
     home_score_prediction = models.CharField(null=True, blank=True, max_length=10)
     visitor_score_prediction = models.CharField(null=True, blank=True, max_length=10)
+
+    #pmscore for plus minus score or home predicted score minus visitor predicted score
     pmscore = models.FloatField(null=True, blank=True, default=0)
+    
+    #team data games won/loss
     home_games_won = models.CharField(null=True, blank=True, max_length=10)
     home_games_loss = models.CharField(null=True, blank=True, max_length=10)
     visitor_games_won = models.CharField(null=True, blank=True, max_length=10)
     visitor_games_loss = models.CharField(null=True, blank=True, max_length=10)
 
+    #streak data
     visitor_streak = models.CharField(null=True, blank=True, max_length=10)
     home_streak = models.CharField(null=True, blank=True, max_length=10)
     
-
+    #margin is greater then x and won
     ev_won = models.CharField(null=True, blank=True, max_length=10)
     ev_margin1 = models.CharField(null=True, blank=True, max_length=10)
     ev_margin2 = models.CharField(null=True, blank=True, max_length=10)
     ev_margin3 = models.CharField(null=True, blank=True, max_length=10)
-    margin = models.CharField(null=True, blank=True, max_length=10)
 
+    #margin abs(pmscore-spread)
+    margin = models.CharField(null=True, blank=True, max_length=10)
+    #home injury data
     homeInjury = models.CharField(null=True, blank=True, max_length=1000)
     homeInjuryComplex = models.CharField(null=True, blank=True, max_length=10000)
+    #visitor injury data
     visitorInjury = models.CharField(null=True, blank=True, max_length=1000)
     visitorInjuryComplex = models.CharField(null=True, blank=True, max_length=10000)
-
+    #dump of player id removed from game
     removed_players = models.CharField(null=True, blank=True, max_length=1000)
-
+    #0 visitor 1 home team predict win with fanduel spread
     spread_prediction = models.CharField(null=True, blank=True, max_length=10)
     
-
+    #t/f marked bet
     bet = models.BooleanField(default=False)
-
+    #int model number 0-2
     model = models.CharField(default='0', max_length=10)
-
+    #dump of complex spread data used in table at bottom of game
     complexSpread = models.CharField(null=True, blank=True, max_length=10000)
 
+    #player Ids
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)
     p2 = models.CharField(null=True, blank=True, max_length=10)
@@ -118,12 +153,7 @@ class Game(models.Model):
         return str(self.author)
 
     def get_absolute_url(self):
-        print('asdff----------',self.csvid)
-        #return reverse('edit-predict', args={'csvid': self.csvid,'change':'c'})
         
         return reverse('edit-predict', kwargs={'pk': self.pk})
         
 
-
-
-        #return reverse('edit-predict')
