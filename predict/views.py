@@ -165,79 +165,59 @@ def updateSpread(request, pk):
 # calculates time series data, and can be filtered for teams
 def betsList(request,team=None, days=30):
     context = {}
-    #filter by author => bet true => game finished
     g = Game.objects.filter(author=request.user)
     g = g.filter(bet=True)
     g = g.filter(finished=True)
-    #filter for team
+    print(team)
     if team != 'all' and team is not None:
         print('filtering for team',team)
         context['filter'] = team
         g = g.filter(Q(home=team) | Q(visitor=team))
     else:
         context['filter'] = 'all'
-    #order games by gameid, close enough to by date.....
     g = g.order_by('-gameid')
-    #set initial values
     count = 0
-    total= -100
-    min = -100
-    max = 0
+    total= 0
+    
     history = []
     last = 0
-    historyTotal = -100
 
 
-    # Create time series history data from games
-    #iterate days ago from int days to 0 days ago
+    historyTotal = 0
+
     for day in range(days,0,-1):
-        #append current day total
         history.append(historyTotal)
+        print(day)
         foo = datetime.now() - timedelta(days=day)
-        #iterate over games
+        print(foo)
         for game in g:
-            #convert game date
             d = datetime.strptime(game.gamedate, '%Y-%m-%d')
-            #game is on current history day?
             if foo.strftime('%Y-%m-%d') == d.strftime('%Y-%m-%d'):
                 if game.ev_won == '1':
-                    #game is correct against spread
-                    historyTotal+=190.1
+                    historyTotal+=90.1
                 else:
-                    #game is wrong against spread
                     historyTotal-=100
-
-    #calculate bet totals
-    #get current date
     foo = datetime.now()
     c = 0
     cut = 0
-    #iterate games
     for game in g:
-        c+=1#counter
-        #get game date
+        c+=1
         d = datetime.strptime(game.gamedate, '%Y-%m-%d')
-        # calculate distance from todays date
         d = str(foo - d).split(' ')[0]
-        #is date past int days ago, if so stop counting
         if int(d) >= days:
             cut = c
             break
+        
         if game.ev_won == '1':
             count+=1
-            total+=190.1#game won
+            total+=90.1
         else:
-            total-=100#game lost
-        #is less then or greater then min or max.
-        if total < min:
-            min=total
-        if total > max:
-            max=total
-    #set length of qs using cut int
+            total-=100
+
     if c>1:
         g = g[0:c-1]
+    print(len(g),c)
     h = json.dumps(history)
-    #context data for render
     context['history'] = h
     context['numBets'] = len(g)
     context['correct'] = count
@@ -246,8 +226,8 @@ def betsList(request,team=None, days=30):
     context['totalWon'] = count*190
     context['totalProfit'] = count*190-len(g)*100
     context['total'] = total
-    context['maxSpent'] = min
-    context['maxWon'] = round(max)
+    context['maxSpent'] = round(min(history))
+    context['maxWon'] = round(max(history))
     try:
         context['p'] = round(count/len(g)*100)
     except ZeroDivisionError:
@@ -256,6 +236,7 @@ def betsList(request,team=None, days=30):
     context['abv'] = ABV
     context['days'] = days
     return render(request,'predict/bets.html',context)
+
 
 
 #Sets game bet true/false
