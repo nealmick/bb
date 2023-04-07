@@ -10,24 +10,29 @@ import datetime
 
 
 def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr):
+    #path to train and test datasets
     path = "csv/train.csv"
     test_path = "csv/test.csv"
+    
     current_time = str(time.time())
-
+    #read train data
     data = pd.read_csv(path)
-
+    #extract target data
     homeScore = data['home_score'].values
     visitorScore = data['visitor_score'].values
+    #drop values
     data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
 
-
+    #convert data to values
     data = data.values
+    #convert to float
     data = data.astype(float)
 
+    #split train test not really used
     x_train, x_test, y_train, y_test = train_test_split(data, np.column_stack((homeScore, visitorScore)), test_size=0.0001)
 
-    #x_train = tf.keras.utils.normalize(x_train, axis=1)
-    #x_test = tf.keras.utils.normalize(x_test, axis=1)
+
+    #define model
     if kr =='true':
 
 
@@ -46,6 +51,7 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
             tf.keras.layers.Dense(2, activation='linear'),
 
         ])
+    #early stopping
     if rmw =='true':
         EarlyStopping = tf.keras.callbacks.EarlyStopping(
             monitor='val_loss',
@@ -57,30 +63,34 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
             restore_best_weights=False,
             patience=4, verbose=0, mode='auto')
 
+    #tensorboard log dir
     log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    #tensorboard callback
     TensorBoard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-    #checkpoint = ModelCheckpoint(filepath='./checkpoints/my_checkpoint',save_best_only=True)
-    #creating and training model then saving
+
+    #compile model
     model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['accuracy'])
+    #train model
     if es =='true':
         model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard,EarlyStopping],shuffle=False)
     else:
         model.fit(x_train, y_train, epochs=epochs, validation_split=0.1, batch_size=size ,callbacks=[TensorBoard],shuffle=False)
-
+    #save weights
     model.save_weights('./userModels/'+username.username+'/'+str(modelNum)+'/checkpoints/my_checkpoint')
 
 
 
-    ##testinged model
+    #read test games
     data = pd.read_csv(test_path)
     homeTestScore = data['home_score'].values
     visitorTestScore = data['visitor_score'].values
     spread = data['spread'].values
     data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
 
-
+    #prepare test data
     data = data.values
     data = data.astype(float)
+    #evaluate model
     def print_prediction(model,data):
         p = model.predict(data)
         c = 0#count correct winners
