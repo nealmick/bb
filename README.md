@@ -1,11 +1,7 @@
 # Basket Ball!
 
+A web app designed to consolidate and manage NBA data for machine learning analysis. Monitor player stats, injuries, and generate in-depth game reports while training TensorFlow predictive models. Access historical data from 19,000+ games spanning two decades, seamlessly integrated with a Django web app. Enjoy a responsive and intuitive user interface showcasing predictions, graphs, and game schedules.
 
-Developed with Python utilizing the TensorFlow library, the model is trained on over 19,000 games from the past 2 decades. The purpose of the project is to analyze and predict game outcomes, giving valuable insights to sports organizations and teams. The model is integrated with a Django web app, which provides prediction statistics, graphs, and today's games, displayed in a responsive and intuitive user interface.
-
-
-
-# Under Development
 
 
 #### Django apps:
