@@ -3,21 +3,7 @@
 A web app designed to consolidate and manage NBA data for machine learning analysis. Monitor player stats, injuries, and generate in-depth game reports while training TensorFlow predictive models. Access historical data from 19,000+ games spanning two decades, seamlessly integrated with a Django web app. Enjoy a responsive and intuitive user interface showcasing predictions, graphs, and game schedules.
 
 
-
-#### Django apps:
-1. bb - main django app
-2. etc - code for index page
-3. predict - logic for all predictons
-4. users - handles all the users
-
-
-#### other files:
-1. checkpoints - stores trained weights
-2. CSV - stores individual csv files for each prediction made
-3. OBJ - stores pickle object data files for quick loading player stats
-
-Libraries used include Tensorflow, Numpy, Django, and Pickle.
-# Live: https://nbadata.cloud/
+# https://nbadata.cloud/
 
 
 
@@ -73,5 +59,19 @@ Note: Tensorboard is not always live.
 
 # FAQ:  https://nbadata.cloud/predict/faq/
 
+
+#### Django apps:
+1. bb - main django app
+2. etc - code for index page
+3. predict - logic for all predictons
+4. users - handles all the users
+
+
+#### other files:
+1. checkpoints - stores trained weights
+2. CSV - stores individual csv files for each prediction made
+3. OBJ - stores pickle object data files for quick loading player stats
+
+Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
 
