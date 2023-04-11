@@ -1450,6 +1450,14 @@ def getScore(request,pk,**kwargs):
 
 
 # takes date str, request's api, and returns list of games
+
+
+from dateutil.parser import parse
+from zoneinfo import ZoneInfo
+#replace with this import if on older python version
+#from backports.zoneinfo import ZoneInfo
+
+# takes date str, request's api, and returns list of games
 def todaysGames(date):
     url = 'https://www.balldontlie.io/api/v1/games?dates[]='
     eastern = timezone('America/Los_Angeles')
@@ -1468,13 +1476,18 @@ def todaysGames(date):
         vfn = r['data'][game]['visitor_team']['full_name']
         vscore = str(r['data'][game]['visitor_team_score'])
         status = r['data'][game]['status']
-
+        print(status)
+        old=False
+        if status != 'Final':
+            try:
+                status = datetime.strptime(str(status), '%Y-%m-%dT%H:%M:%S%z').astimezone(ZoneInfo("US/Eastern")).strftime('%I:%M %p')
+            except ValueError:
+                print('something went wrong')
         foo = {'habv':habv,'hfn':hfn,'hscore':hscore,'vabv':vabv,'vfn':vfn,'vscore':vscore,'status':status,'date':date}
         games.append(foo)
     if len(games)==0:#set no games today
         games.append('No Games Today')
     return games
-
 
 
 #Main dashboard game list view.
