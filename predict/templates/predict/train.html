@@ -314,6 +314,12 @@
 <div class="col-lg-12" style="padding-left:0px;padding-right:0px">
     <div style="margin-top:10px;"class="content-section">
 
+            <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+              <canvas id="history-chart"></canvas>
+            </div>
+    
+
+
         <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
             <canvas id="barChart"></canvas>
           </div>
@@ -499,6 +505,12 @@
 
 {{ eval.evMargin3|json_script:"evMargin3" }}
 {{ eval.evMargin3wrong|json_script:"evMargin3wrong" }}
+
+
+
+{{ results.gameSeries1|json_script:"gameSeries1" }}
+{{ results.gameSeries2|json_script:"gameSeries2" }}
+{{ results.gameSeries3|json_script:"gameSeries3" }}
 
 
 

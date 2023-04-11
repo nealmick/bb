@@ -21,9 +21,70 @@ const ev_margin3 = JSON.parse(document.getElementById('evMargin3').textContent);
 const ev_margin3_count = JSON.parse(document.getElementById('evMargin3wrong').textContent);
 
 
+let gameSeries1 = JSON.parse(document.getElementById('gameSeries1').textContent);
+gameSeries1= gameSeries1.toString().split(',')
+
+let gameSeries2 = JSON.parse(document.getElementById('gameSeries2').textContent);
+gameSeries2= gameSeries2.toString().split(',')
+
+let gameSeries3 = JSON.parse(document.getElementById('gameSeries3').textContent);
+gameSeries3= gameSeries3.toString().split(',')
+
+console.log(gameSeries1)
+
+let l = []
+for(i=0;i<gameSeries1.length;i+=1){
+  l.push(i)
+}
+const data = {
+  labels: l,
+  datasets: [{
+    label: 'Margin 1',
+    data: gameSeries1,
+    fill: true,
+    borderColor: 'rgb(126, 176, 213)',
+    tension: .1
+  },{
+    label: 'Margin 2',
+    data: gameSeries2,
+    fill: true,
+    borderColor: 'rgb(178, 224, 97)',
+    tension: .1
+  },{
+    label: 'Margin 3',
+    data: gameSeries3,
+    fill: true,
+    borderColor: 'rgb(189, 126, 190)',
+    tension: .1
+}]
+};
 
 
 
+const config = {
+  type: 'line',
+  data: data,
+  options: {
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+          display: false
+        }
+      },
+      layout: {
+        padding: {
+            // Any unspecified dimensions are assumed to be 0                     
+            top: 5,
+            bottom: 5,
+            left: 5,
+            right: 5,
+        }
+    }
+    }
+};
+
+
+const historyChart = new Chart(document.getElementById('history-chart'),config);
 
 //["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"]
 

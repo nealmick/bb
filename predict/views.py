@@ -730,7 +730,7 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     save_obj(modelSettings,str(username.username)+'ModelSettings'+model)
 
     context['showresults'] = True
-    context['results'] = results[0]
+    context['results'] = results[1]
     context['layer1Count']=layer1Count
     context['layer1Activation']=layer1Activation
     context['layer2Count']=layer2Count
@@ -741,9 +741,11 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     context['es']=es
     context['rmw']=rmw
     context['kr']=kr
+    modelSettings = load_obj(str(username.username)+'ModelSettings'+model)
     eval = modelSettings['eval']
     context['eval'] = eval
     context['results'] = modelSettings['results']
+
     #render training page
     return render(request,'predict/train.html',context)
 
