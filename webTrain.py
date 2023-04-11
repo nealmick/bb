@@ -129,8 +129,12 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
         evMargin1Min = -1
         evMargin1Max = 0
         evMargin1Current = 0
-
+        gameSeries1 = []
+        gameSeries2 = []
+        gameSeries3 = []
+        SeriesStepCounter = 0
         for i in range(len(p)):
+            SeriesStepCounter+=1
             correct = False#if prediction is correct winner
             spreadCorrect = False#if spread is correct winner
             pmscore = round(homeTestScore[i]-visitorTestScore[i]) #plus minus score
@@ -259,7 +263,11 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
             
 
 
-
+            if SeriesStepCounter == 5:
+                gameSeries1.append(evMargin1Current)
+                gameSeries2.append(evMargin2Current)
+                gameSeries3.append(evMargin3Current)
+                SeriesStepCounter = 0
 
             print('spread:',spreadCorrect,spread[i], 'prediction: ',correct,round(p[i][0]),round(p[i][1]),'=',round(p[i][0]-p[i][1]),' actual:' ,homeTestScore[i],visitorTestScore[i],'=',pmscore)
 
@@ -326,7 +334,9 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
         res['evMargin4Total'] = round((evMargin4Count * 100))
         res['evMargin4Profit'] = round((evMargin4 * 190.91)-(evMargin4Count*100))
         
-
+        res['gameSeries1'] = gameSeries1
+        res['gameSeries2'] = gameSeries2
+        res['gameSeries3'] = gameSeries3
 
 
 
