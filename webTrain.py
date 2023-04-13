@@ -10,8 +10,9 @@ import datetime
 
 
 def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr):
-    #path to train and test datasets
+    #path to train dataset
     path = "csv/train.csv"
+    #path to test dataset
     test_path = "csv/test.csv"
     
     current_time = str(time.time())
