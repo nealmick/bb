@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Message,Profile
 from predict.models import Game
 from django.contrib.auth.models import User
-# Create your views here.
+
+#view other users public profiles, with there predictions
 def publicProfile(request,u):
     context = {}
     print(u)
@@ -20,11 +21,13 @@ def publicProfile(request,u):
 
     return render(request,'users/publicProfile.html',context)
 
-
-
+#Create a new message objeect
 def newMessage(request, m):
     Message.objects.create(author=request.user,content=m)
     return redirect('stats-view')
+
+#render cummunity view, no longer really used
+#merged with profile view on live site
 def community(request):
     qs = Message.objects.order_by('id')[:100]
     context = {'qs':qs}
@@ -33,7 +36,8 @@ def community(request):
 
 
     return render(request,'users/community.html',context)
-
+    
+#register a user, recieve form or render page
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -45,7 +49,7 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request,'users/register.html',{'form':form})
-
+#User profile page, can update user settings, and export data.
 @login_required
 def profile(request):
     if request.method == 'POST':
