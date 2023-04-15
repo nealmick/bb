@@ -14,14 +14,17 @@ def main():
     seasonAverages = load_obj('2022SeasonAverages')
     #avg = getSeaonAverage('61',season,labels)
     #print(avg)
+    #iterate team in teams
     for team in playerIdByTeamID:
+        #iterate player in teams
         for playerid in playerIdByTeamID[team]:
-
+            #get current team
             teamid = getCurrentTeam(playerid,season)
+            #add player to roster
             roster[str(teamid)].append(playerid)
             print(roster)
+            #save roster
             save_obj(roster,'roster')
-
 
 def getSeaonAverage(playerId,season,labels):
     url = 'https://www.balldontlie.io/api/v1/season_averages?season='+season
