@@ -1,3 +1,4 @@
+#this script requests tank01 rapid nba api for spread data.
 import requests
 def getSpread(home,visitor):
     
