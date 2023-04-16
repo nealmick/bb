@@ -2127,7 +2127,7 @@ def predict(modelNum,path,username):
     data = pd.read_csv(path)
     #drop a bunch of values
     #currently dropping team data hgp hw hl and streaks
-    data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+    data.drop(['gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
 
     #data.drop(['home_streak'], axis=1, inplace=True)
     #data.drop(['visitor_streak'], axis=1, inplace=True)
