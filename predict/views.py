@@ -1314,8 +1314,7 @@ def sortSpreadLines(complexSpread):
 # profile stats are then updated to match
 # returns redirect to dashboard
 def getScore(request,pk,**kwargs):
-    print('b')
-    print('getttttttttttting score')
+
     url = 'https://www.balldontlie.io/api/v1/games/'
     user= request.user
     g = Game.objects.filter(pk=pk).values('gameid')
@@ -1447,7 +1446,12 @@ def getScore(request,pk,**kwargs):
     #x = redirect("home-predict")
     #return HttpResponsePermanentRedirect(reverse('home-predict') + "?page="+str(page_num))
     #redirect back home, there is a bug where it always redirects to page 1 even if your on page 5....
-    return redirect('home-predict')
+    try:
+        r = kwargs['redirect']
+        return redirect('edit-predict',pk)
+
+    except KeyError:
+        return redirect('home-predict')
 
 
 
@@ -1632,6 +1636,7 @@ def quickcreate(request,home,visitor,date):
 
     #get spread
     spread = getSpread(home,visitor,date)
+    print(spread)
     home_spread = spread[0]
     visitor_spread = spread[1]
     try:
@@ -1882,7 +1887,6 @@ def getSpread(home,visitor,date):
         print(teams)
         if teams[0] == convert[home] or teams[1] == convert[home]:
             if teams[0] == convert[visitor] or teams[1] == convert[visitor]:
-                print('spread------------')
 
                 for book in books:
 
@@ -1894,6 +1898,7 @@ def getSpread(home,visitor,date):
                         spread[book]['awayTeamMLOdds']=r[line][book]['awayTeamMLOdds']
                         spread[book]['totalUnder']=r[line][book]['totalUnder']
                         spread[book]['totalOver']=r[line][book]['totalOver']
+
                     except KeyError:
                         spread[book]['homeTeamSpread']=0
                         spread[book]['awayTeamSpread']=0
@@ -2122,7 +2127,8 @@ def predict(modelNum,path,username):
     data = pd.read_csv(path)
     #drop a bunch of values
     #currently dropping team data hgp hw hl and streaks
-    data.drop(['gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+    data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+
     #data.drop(['home_streak'], axis=1, inplace=True)
     #data.drop(['visitor_streak'], axis=1, inplace=True)
 

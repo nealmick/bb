@@ -39,6 +39,7 @@ urlpatterns = [
     path('all/', views.predictAll , name='predict-all'),
     path('all/<str:dateSelected>/<int:model>', views.predictAll , name='predict-all'),
     path('#<int:pk>', views.getScore , name='get-score'),
+    path('#<int:pk>/<str:redirect>', views.getScore , name='get-score-edit'),
     path('stats/', views.statsView , name='stats-view'),
     path('train/<str:model>', views.trainView , name='train-view'),
     path('makedataset', views.makeDataSet , name='make-dataset'),
