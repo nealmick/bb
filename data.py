@@ -67,22 +67,24 @@ def main(labels,seasons,**kwargs):
             #update streaks based on winner
             if g['home_score'] > g['visitor_score']:
                 if streaks[(g['home_id'])] < 0:
-                    streaks[g['home_id']] = 0
+                    streaks[g['home_id']] = 1
                 else:
                     streaks[g['home_id']] += 1
                 if streaks[g['visitor_id']] > 0:
-                    streaks[g['visitor_id']] = 0
+                    streaks[g['visitor_id']] = -1
                 else:
                     streaks[g['visitor_id']] -= 1
+                    
             if g['home_score'] < g['visitor_score']:
-                if streaks[g['home_id']] < 0:
-                    streaks[g['home_id']] = 0
+                if streaks[g['home_id']] > 0:
+                    streaks[g['home_id']] = -1
                 else:
                     streaks[g['home_id']] -= 1
-                if streaks[g['visitor_id']] > 0:
-                    streaks[g['visitor_id']] = 0
-                else:
+                if streaks[g['visitor_id']] < 0:
                     streaks[g['visitor_id']] += 1
+                else:
+                    streaks[g['visitor_id']] = 1
+
 
             #check no spread, and spread winner
             if g['spread'] == '':
