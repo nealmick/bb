@@ -8,11 +8,11 @@ import datetime
 
 
 
-
-def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr):
-    #path to train dataset
+def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr,streaks,wl,gp,ps,players,ast,blk,reb,fg3,fg,ft,pf,pts,stl,turnover):
+    labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+    print('players-------------',players)
+    #path to train and test datasets
     path = "csv/train.csv"
-    #path to test dataset
     test_path = "csv/test.csv"
     
     current_time = str(time.time())
@@ -22,7 +22,62 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
     homeScore = data['home_score'].values
     visitorScore = data['visitor_score'].values
     #drop values
-    data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+    #,'home_streak','visitor_streak'
+    #data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+    d = ['home_score', 'visitor_score', 'gameid','home_id','visitor_id']
+    if streaks != 'true':
+        d=d+['home_streak','visitor_streak']
+    if wl != 'true':
+        d=d+['hw','hl','vw','vl']
+    if gp != 'true':
+        d=d+['hgp','vgp']
+    if ps != 'true':
+        d.append('spread')
+    for currentPlayer in range(int(players),7):
+        derp = ['home_', 'visitor_']
+        for foo in derp:#home vistor
+                for label in labels:
+                    stat = foo+str(currentPlayer)+'_'+label#make lables
+                    d.append(stat)
+
+    features = ['min']
+    if ast == 'true':
+        features.append('ast')
+    if blk == 'true':
+        features.append('blk')
+    if reb == 'true':
+        features.append('reb')
+        features.append('dreb')
+        features.append('oreb')
+    if fg3 == 'true':
+        features.append('fg3_pct')
+        features.append('fg3m')
+        features.append('fg3a')
+    if fg == 'true':
+        features.append('fga')
+        features.append('fgm')
+    if ft == 'true':
+        features.append('fta')
+        features.append('ftm')
+    if pf == 'true':
+        features.append('pf')
+    if pts == 'true':
+        features.append('pts')
+    if stl == 'true':
+        features.append('stl')
+    if turnover == 'true':
+        features.append('turnover')
+    
+
+    for currentPlayer in range(0,int(players)):
+        derp = ['home_', 'visitor_']
+        for foo in derp:#home vistor
+                for label in labels:
+                    if label not in features:
+                        stat = foo+str(currentPlayer)+'_'+label#make labels
+                        d.append(stat)
+    print(d)
+    data.drop(d, axis=1, inplace=True)
 
     #convert data to values
     data = data.values
@@ -86,7 +141,8 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
     homeTestScore = data['home_score'].values
     visitorTestScore = data['visitor_score'].values
     spread = data['spread'].values
-    data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+    #data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
+    data.drop(d, axis=1, inplace=True)
 
     #prepare test data
     data = data.values
