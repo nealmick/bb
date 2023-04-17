@@ -657,10 +657,45 @@ def trainView(request,model):
             context['es']=modelSettings['es']
             context['rmw']=modelSettings['rmw']
             context['kr']=modelSettings['kr']
+            context['streaks']=modelSettings['streaks']
+            context['wl']=modelSettings['wl']
+            context['gp']=modelSettings['gp']
+            context['ps']=modelSettings['ps']
+            context['players']=modelSettings['players']
+
+                        
+            context['ast']=modelSettings['ast']
+            context['blk']=modelSettings['blk']
+            context['reb']=modelSettings['reb']
+            context['fg3']=modelSettings['fg3']
+            context['fg']=modelSettings['fg']
+            context['ft']=modelSettings['ft']
+            context['pf']=modelSettings['pf']
+            context['pts']=modelSettings['pts']
+            context['stl']=modelSettings['stl']
+            context['turnover']=modelSettings['turnover']
+            
         except KeyError:
             context['es']='true'
             context['rmw']='true'
             context['kr']='true'
+            context['wl']='true'
+            context['streaks']='true'
+
+            context['gp']='true'
+            context['ps']='true'
+            context['players']=7
+            context['ast']='true'
+            context['blk']='true'
+            context['reb']='true'
+            context['fg3']='true'
+            context['fg']='true'
+            context['ft']='true'
+            context['pf']='true'
+            context['pts']='true'
+            context['stl']='true'
+            context['turnover']='true'
+
     except FileNotFoundError:
         #load defaults if no saved settings
         modelSettings = load_obj('DefaultModelSettings')
@@ -684,10 +719,46 @@ def trainView(request,model):
             context['es']=modelSettings['es']
             context['rmw']=modelSettings['rmw']
             context['kr']=modelSettings['kr']
+
+            context['streaks']=modelSettings['streaks']
+            context['wl']=modelSettings['wl']
+            context['gp']=modelSettings['gp']
+            context['ps']=modelSettings['ps']
+            context['players']=modelSettings['players']
+            
+            context['ast']=modelSettings['ast']
+            context['blk']=modelSettings['blk']
+            context['reb']=modelSettings['reb']
+            
+            context['fg3']=modelSettings['fg3']
+            context['fg']=modelSettings['fg']
+            context['ft']=modelSettings['ft']
+            context['pf']=modelSettings['pf']
+            context['pts']=modelSettings['pts']
+            context['stl']=modelSettings['stl']
+            context['turnover']=modelSettings['turnover']
+            
         except KeyError:
             context['es']='true'
             context['rmw']='true'
             context['kr']='true'
+            context['streaks']='true'
+            context['wl']='true'
+            context['gp']='true'
+            context['ps']='true'
+            context['players']=7
+            
+            context['ast']='true'
+            context['blk']='true'
+            context['reb']='true'
+            context['fg3']='true'
+            context['fg']='true'
+            context['ft']='true'
+            context['pf']='true'
+            context['pts']='true'
+            context['stl']='true'
+            context['turnover']='true'
+            
     #render training page
     return render(request,'predict/train.html',context)
 
@@ -704,7 +775,8 @@ def makeDataSet(request,seasons,numgames):
 # trains a model, takes input for all the sliders and settings
 # calls webappTrain from webTrain.py
 @login_required
-def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,es,rmw,kr):
+def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,es,rmw,kr,streaks,wl,gp,ps,players,ast,blk,reb,fg3,fg,ft,pf,pts,stl,turnover):
+
     username = request.user#set username of request
     context = {}
     context['model'] = model
@@ -721,8 +793,27 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     modelSettings['kr']=kr
     modelSettings['es']=es
     modelSettings['rmw']=rmw
+
+    modelSettings['streaks']=streaks
+    modelSettings['wl']=wl
+    modelSettings['gp']=gp
+    modelSettings['ps']=ps
+    modelSettings['players']=players
+
+    modelSettings['ast']=ast
+    modelSettings['reb']=reb
+    modelSettings['blk']=blk
+    modelSettings['fg3']=fg3
+    modelSettings['fg']=fg
+    modelSettings['ft']=ft
+    modelSettings['pf']=pf
+    modelSettings['pts']=pts
+    modelSettings['stl']=stl
+    modelSettings['turnover']=turnover
+
+
     #call web train
-    results = webTrain.webappTrain(model,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr)
+    results = webTrain.webappTrain(model,epochs,size,layer1Count,layer1Activation,layer2Count,layer2Activation,optimizer,username,es,rmw,kr,streaks,wl,gp,ps,players,ast,blk,reb,fg3,fg,ft,pf,pts,stl,turnover)
     #set results and eval
     modelSettings['results']=results[1]
     modelSettings['eval']=results[0]
@@ -741,11 +832,26 @@ def trainModel(request,model,epochs,batchSize,layer1Count,layer1Activation,layer
     context['es']=es
     context['rmw']=rmw
     context['kr']=kr
-    modelSettings = load_obj(str(username.username)+'ModelSettings'+model)
+    context['streaks']=streaks
+    context['wl']=wl
+    context['gp']=gp
+    context['ps']=ps
+    context['players']=players
+    context['ast']=ast
+    context['blk']=reb
+    context['fg3']=fg3
+    context['fg']=fg
+    context['ft']=ft
+    context['pf']=pf
+    context['pts']=pts
+    context['stl']=stl
+    context['turnover']=turnover
+
+    context = load_obj(str(username.username)+'ModelSettings'+model)
     eval = modelSettings['eval']
     context['eval'] = eval
     context['results'] = modelSettings['results']
-
+    context['model'] = model
     #render training page
     return render(request,'predict/train.html',context)
 
@@ -2125,12 +2231,67 @@ def load_obj(name):
 def predict(modelNum,path,username):
     #read csv file and cread pandas df
     data = pd.read_csv(path)
+    #load model settings
+    try:
+        modelSettings = load_obj(str(username.username)+'ModelSettings'+modelNum)
+    except FileNotFoundError:
+        modelSettings = load_obj('DefaultModelSettings')
     #drop a bunch of values
-    #currently dropping team data hgp hw hl and streaks
-    data.drop(['gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
 
-    #data.drop(['home_streak'], axis=1, inplace=True)
-    #data.drop(['visitor_streak'], axis=1, inplace=True)
+    d = ['gameid','home_id','visitor_id']
+    if modelSettings['streaks'] != 'true':
+        d=d+['home_streak','visitor_streak']
+    if modelSettings['wl'] != 'true':
+        d=d+['hw','hl','vw','vl']
+    if modelSettings['gp'] != 'true':
+        d=d+['hgp','vgp']
+    if modelSettings['ps'] != 'true':
+        d.append('spread')
+    labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+    for currentPlayer in range(int(modelSettings['players']),7):
+        derp = ['home_', 'visitor_']
+        for foo in derp:#home vistor
+                for label in labels:
+                    stat = foo+str(currentPlayer)+'_'+label#make lables
+                    d.append(stat)
+
+    features = ['min']
+    if modelSettings['ast'] == 'true':
+        features.append('ast')
+    if modelSettings['blk'] == 'true':
+        features.append('blk')
+    if modelSettings['reb'] == 'true':
+        features.append('reb')
+        features.append('dreb')
+        features.append('oreb')
+    if modelSettings['fg3'] == 'true':
+        features.append('fg3_pct')
+        features.append('fg3m')
+        features.append('fg3a')
+    if modelSettings['fg'] == 'true':
+        features.append('fga')
+        features.append('fgm')
+    if modelSettings['ft'] == 'true':
+        features.append('fta')
+        features.append('ftm')
+    if modelSettings['pf'] == 'true':
+        features.append('pf')
+    if modelSettings['pts'] == 'true':
+        features.append('pts')
+    if modelSettings['stl'] == 'true':
+        features.append('stl')
+    if modelSettings['turnover'] == 'true':
+        features.append('turnover')
+    
+
+    for currentPlayer in range(0,int(modelSettings['players'])):
+        derp = ['home_', 'visitor_']
+        for foo in derp:#home vistor
+                for label in labels:
+                    if label not in features:
+                        stat = foo+str(currentPlayer)+'_'+label#make labels
+                        d.append(stat)
+    data.drop(d, axis=1, inplace=True)
 
     #convert data to values
     data = data.values
@@ -2141,11 +2302,6 @@ def predict(modelNum,path,username):
     #x_train = tf.keras.utils.normalize(x_train, axis=1)
     #x_test = tf.keras.utils.normalize(x_test, axis=1)
 
-    #load model settings
-    try:
-        modelSettings = load_obj(str(username.username)+'ModelSettings'+modelNum)
-    except FileNotFoundError:
-        modelSettings = load_obj('DefaultModelSettings')
 
     #define squential model
     model = tf.keras.Sequential([

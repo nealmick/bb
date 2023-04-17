@@ -44,7 +44,7 @@ urlpatterns = [
     path('train/<str:model>', views.trainView , name='train-view'),
     path('makedataset', views.makeDataSet , name='make-dataset'),
     path('makedataset/<str:seasons>/<int:numgames>', views.makeDataSet , name='make-dataset'),
-    path('trainmodel/<str:model>/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>/<str:es>/<str:rmw>/<str:kr>', views.trainModel , name='train-model'),
+    path('trainmodel/<str:model>/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>/<str:es>/<str:rmw>/<str:kr>/<str:streaks>/<str:wl>/<str:gp>/<str:ps>/<str:players>/<str:ast>/<str:blk>/<str:reb>/<str:fg3>/<str:fg>/<str:ft>/<str:pf>/<str:pts>/<str:stl>/<str:turnover>', views.trainModel , name='train-model'),
     path('resetmodel/<str:model>', views.resetModel , name='reset-model'),
     path('faq/', views.faq , name='faq'),
 

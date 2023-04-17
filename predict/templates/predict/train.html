@@ -217,10 +217,183 @@
 
     </div>
 
-{% if showresults %}
 <div class="col-lg-6">
     <div style="margin-top:10px;height:725px"class="content-section">
+        <h2>Data Features</h2>
+
+
+        <div class="row" style="margin-bottom:0px;">
+            <div class="col-6">
+                <div class="form-check">
+                    {% if streaks == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="streaks" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="streaks">
+                    {% endif  %}
+                    <label class="form-check-label" for="streaks">
+                        Win/Loss Streaks
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if wl == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="wl" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="wl">
+
+                    {% endif %}
+                    <label class="form-check-label" for="wl">
+                        Win/Loss Record
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if ast == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="ast" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="ast">
+                    {% endif %}
+    
+                    <label class="form-check-label" for="ast">
+                        Assists
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if blk == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="blk" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="blk">
+
+                    {% endif %}
+                    <label class="form-check-label" for="blk">
+                        Blocks
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if reb == 'true' %}
+
+                    <input class="form-check-input" type="checkbox" value="" id="reb" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="reb">
+                    {% endif %}
+                    <label class="form-check-label" for="reb">
+                        Rebounds
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if fg3 == 'true' %}
+
+                    <input class="form-check-input" type="checkbox" value="" id="fg3" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="fg3">
+
+                    {% endif %}
+                    <label class="form-check-label" for="fg3">
+                        Field Goal Three
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if fg == 'true' %}
+                    
+                    <input class="form-check-input" type="checkbox" value="" id="fg" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="fg">
+                    {% endif %}
+
+                    <label class="form-check-label" for="fg">
+                        Field Goal
+                    </label>
+                </div>
+                
+
+            </div>            
+            <div class="col-6">
+                <div class="form-check" style="padding-top:3px">
+                    {% if gp == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="gp" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="gp" >
+                    {% endif %}
+                    <label class="form-check-label" for="gp">
+                        Games Played
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if ps == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="ps" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="ps">
+                    {% endif %}
+                    <label class="form-check-label" for="ps">
+                        Point Spread
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if ft == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="ft" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="ft" >
+                    {% endif %}
+                    <label class="form-check-label" for="ft">
+                        Free Throw
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if pf == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="pf" checked>
+                    {% else  %}
+                    <input class="form-check-input" type="checkbox" value="" id="pf">
+                    {% endif %}
+                    <label class="form-check-label" for="pf">
+                        Personal Foul
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if pts == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="pts" checked>
+                    {% else  %}
+                    <input class="form-check-input" type="checkbox" value="" id="pts">
+                    {% endif %}
+
+                    <label class="form-check-label" for="pts">
+                        Points
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if stl == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="stl" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="stl">
+                    {% endif %}
+                    <label class="form-check-label" for="stl">
+                        Steals
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if turnover == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="turnover" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="turnover">
+                    {% endif %}
+
+                    <label class="form-check-label" for="turnover">
+                        Turnovers
+                    </label>
+                </div>
+
+                
+            </div>  
+             
+            </div>         
+            <label data-toggle="tooltip" data-placement="bottom" title="Number of players input for each team.">Players Per Team: <p style="display:inline"id="players-display">{{players}}</p></label>
+            <input min="3" max="7" type="range" id="players" value="{{players}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+    
         
+
         <h2>Evaluation </h2>
         <p>Win/Loss: {{ results.wl }}%</p>
         <p>Spread Win/Loss: {{ results.swl }}%</p>
@@ -304,7 +477,6 @@
 
     </div>
 </div>
-{% endif %}
 </div>
 
 
@@ -422,7 +594,10 @@
 </div>
 
 <script>
-    
+    document.getElementById("players").addEventListener("input", () => {
+        document.getElementById("players-display").innerHTML = document.getElementById("players").value;
+    });
+
     document.getElementById("epochs-input").addEventListener("input", () => {
         document.getElementById("epochs-display").innerHTML = document.getElementById("epochs-input").value;
     });
@@ -458,14 +633,35 @@
         rmw = document.getElementById("rmw").checked
         kr = document.getElementById("kr").checked
 
+        streaks = document.getElementById("streaks").checked
+        wl = document.getElementById("wl").checked
+        gp = document.getElementById("gp").checked
+        ps = document.getElementById("ps").checked
+
         optimizer = document.getElementById("optimizer").value
         optimizers = ['adam','adamax','RMSprop','adagrad','nadam']
         activations = ['relu','LeakyReLU','swish','elu','gelu','selu']
         document.getElementById("loading-div").style.opacity = 1
         
         model = document.getElementById("model-slot").value
-        
-        window.location.href = "{% url 'home-predict' %}"+'trainmodel/'+model+'/'+ epochs+'/'+batchSize +'/'+layer1Count+'/'+activations[layer1Activation]+'/'+layer2Count+'/'+activations[layer2Activation]+'/'+optimizers[optimizer]+'/'+es+'/'+rmw+'/'+kr
+        players = document.getElementById("players").value
+
+        ast = document.getElementById("ast").checked
+        blk = document.getElementById("blk").checked
+        reb = document.getElementById("reb").checked
+        fg3 = document.getElementById("fg3").checked
+        fg = document.getElementById("fg").checked
+        ft = document.getElementById("ft").checked
+        pf = document.getElementById("pf").checked
+        pts = document.getElementById("pts").checked
+        stl = document.getElementById("stl").checked
+        turnover = document.getElementById("turnover").checked
+
+
+
+
+        window.location.href = "{% url 'home-predict' %}"+'trainmodel/'+model+'/'+ epochs+'/'+batchSize +'/'+layer1Count+'/'+activations[layer1Activation]+'/'+layer2Count+'/'+activations[layer2Activation]+'/'+optimizers[optimizer]+'/'+es+'/'+rmw+'/'+kr+'/'+streaks+'/'+wl+'/'+gp+'/'+ps+'/'+players+
+        '/'+ast+'/'+blk+'/'+reb+'/'+fg3+'/'+fg+'/'+ft+'/'+pf+'/'+pts+'/'+stl+'/'+turnover
 
     }
 </script>
