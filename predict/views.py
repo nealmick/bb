@@ -2239,58 +2239,61 @@ def predict(modelNum,path,username):
     #drop a bunch of values
 
     d = ['gameid','home_id','visitor_id']
-    if modelSettings['streaks'] != 'true':
-        d=d+['home_streak','visitor_streak']
-    if modelSettings['wl'] != 'true':
-        d=d+['hw','hl','vw','vl']
-    if modelSettings['gp'] != 'true':
-        d=d+['hgp','vgp']
-    if modelSettings['ps'] != 'true':
-        d.append('spread')
-    labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
-    for currentPlayer in range(int(modelSettings['players']),7):
-        derp = ['home_', 'visitor_']
-        for foo in derp:#home vistor
-                for label in labels:
-                    stat = foo+str(currentPlayer)+'_'+label#make lables
-                    d.append(stat)
-
-    features = ['min']
-    if modelSettings['ast'] == 'true':
-        features.append('ast')
-    if modelSettings['blk'] == 'true':
-        features.append('blk')
-    if modelSettings['reb'] == 'true':
-        features.append('reb')
-        features.append('dreb')
-        features.append('oreb')
-    if modelSettings['fg3'] == 'true':
-        features.append('fg3_pct')
-        features.append('fg3m')
-        features.append('fg3a')
-    if modelSettings['fg'] == 'true':
-        features.append('fga')
-        features.append('fgm')
-    if modelSettings['ft'] == 'true':
-        features.append('fta')
-        features.append('ftm')
-    if modelSettings['pf'] == 'true':
-        features.append('pf')
-    if modelSettings['pts'] == 'true':
-        features.append('pts')
-    if modelSettings['stl'] == 'true':
-        features.append('stl')
-    if modelSettings['turnover'] == 'true':
-        features.append('turnover')
-    
-
-    for currentPlayer in range(0,int(modelSettings['players'])):
-        derp = ['home_', 'visitor_']
-        for foo in derp:#home vistor
-                for label in labels:
-                    if label not in features:
-                        stat = foo+str(currentPlayer)+'_'+label#make labels
+    try:
+        if modelSettings['streaks'] != 'true':
+            d=d+['home_streak','visitor_streak']
+        if modelSettings['wl'] != 'true':
+            d=d+['hw','hl','vw','vl']
+        if modelSettings['gp'] != 'true':
+            d=d+['hgp','vgp']
+        if modelSettings['ps'] != 'true':
+            d.append('spread')
+        labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']
+        for currentPlayer in range(int(modelSettings['players']),7):
+            derp = ['home_', 'visitor_']
+            for foo in derp:#home vistor
+                    for label in labels:
+                        stat = foo+str(currentPlayer)+'_'+label#make lables
                         d.append(stat)
+
+        features = ['min']
+        if modelSettings['ast'] == 'true':
+            features.append('ast')
+        if modelSettings['blk'] == 'true':
+            features.append('blk')
+        if modelSettings['reb'] == 'true':
+            features.append('reb')
+            features.append('dreb')
+            features.append('oreb')
+        if modelSettings['fg3'] == 'true':
+            features.append('fg3_pct')
+            features.append('fg3m')
+            features.append('fg3a')
+        if modelSettings['fg'] == 'true':
+            features.append('fga')
+            features.append('fgm')
+        if modelSettings['ft'] == 'true':
+            features.append('fta')
+            features.append('ftm')
+        if modelSettings['pf'] == 'true':
+            features.append('pf')
+        if modelSettings['pts'] == 'true':
+            features.append('pts')
+        if modelSettings['stl'] == 'true':
+            features.append('stl')
+        if modelSettings['turnover'] == 'true':
+            features.append('turnover')
+        
+
+        for currentPlayer in range(0,int(modelSettings['players'])):
+            derp = ['home_', 'visitor_']
+            for foo in derp:#home vistor
+                    for label in labels:
+                        if label not in features:
+                            stat = foo+str(currentPlayer)+'_'+label#make labels
+                            d.append(stat)
+    except KeyError:
+        d = ['gameid','home_id','visitor_id','home_streak','visitor_streak','hgp','hw','hl','vgp','vw','vl']
     data.drop(d, axis=1, inplace=True)
 
     #convert data to values
