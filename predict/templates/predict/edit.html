@@ -425,6 +425,521 @@
           {% endif %}
       <br>
       <br>
+    </div>
+
+    {% if history_display %}
+    <div id="game-info" class="row center col-md-10" style="">
+
+        <div class="col-3"style="padding:0">
+          <center>
+            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+          </center>
+
+        </div>
+        <div class="col-6"style="padding:0">
+          <center>
+            <h2 style="margin-top:25px">{{hh_score}}-{{home}} vs {{hh_op_abv}}-{{hh_op_score}}</h2>
+            <p> {{ home }} previous game, {{hh_gameid}}, {{hh_date}} </p>
+            <input id="hh-btn" style="margin-bottom:7px" onclick="hh()" type="button" class="btn btn-grey" value="Show Stats">
+
+          </center>
+
+          
+        </div>
+        <div class="col-3"style="padding:0">
+          <center>
+            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ hh_op_abv }}.webp">
+          </center>
+
+
+          
+        </div>
+      </div>
+
+
+      <div id="hh-table" style="display:none">
+        <table align="center" style="width:100%">
+          <tr>
+            <td style="width:15%"><center>{{home}} Players</center></td>
+            {% for label in labels %}
+            <td style="width:200px"><center>{{label}}</center></td>
+
+              {% endfor %}
+
+          </tr>
+          {% for player in hh_players%}
+          <tr>
+            <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                {{player.name}}
+            </center></td>
+            <td>
+              <center>
+                {{player.ast}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.blk}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.dreb}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fg3_pct|floatformat:2}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fg3a}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fg3m}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fga}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fgm}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fta}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.ftm}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.oreb}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.pf}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.pts}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.reb}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.stl}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.turnover}}
+              </center>
+            </td>
+
+            <td>
+              <center>
+                {{player.min}}
+              </center>
+            </td>
+          </tr>
+          {% endfor %}
+          
+          </table>
+          <br>
+          <table align="center" style="width:100%">
+            <tr>
+              <td style="width:15%"><center>{{hh_op_abv}} Players</center></td>
+              {% for label in labels %}
+              <td style="width:200px"><center>{{label}}</center></td>
+  
+                {% endfor %}
+  
+            </tr>
+            {% for player in hh_op_player%}
+            <tr>
+              <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                {{player.name}}
+            </center></td>
+              <td>
+                <center>
+                  {{player.ast}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.blk}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.dreb}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fg3_pct|floatformat:2}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fg3a}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fg3m}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fga}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fgm}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fta}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.ftm}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.oreb}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.pf}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.pts}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.reb}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.stl}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.turnover}}
+                </center>
+              </td>
+  
+              <td>
+                <center>
+                  {{player.min}}
+                </center>
+              </td>
+            </tr>
+            {% endfor %}
+            
+            </table>
+      </div>
+
+
+      <br>
+      <br>
+      <div id="game-info" class="row center col-md-10" style="">
+
+        <div class="col-3"style="padding:0">
+          <center>
+            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+          </center>
+
+        </div>
+        <div class="col-6"style="padding:0">
+
+          <center>
+            <h2 style="margin-top:25px">{{vh_score}}-{{visitor}} vs {{vh_op_abv}}-{{vh_op_score}}</h2>
+            <p>{{ visitor }} previous game,  {{vh_gameid}}, {{vh_date}}</p>
+            <input id="vh-btn" style="margin-bottom:7px" onclick="vh()" type="button" class="btn btn-grey" value="Show Stats">
+
+          </center>
+        </div>
+        <div class="col-3"style="padding:0">
+          <center>
+            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ vh_op_abv }}.webp">
+          </center>
+ 
+          
+        </div>
+      </div>
+
+
+
+      <div id="vh-table" style="display:none">
+        <table align="center" style="width:100%">
+          <tr>
+            <td style="width: 15% !important;"><center>{{visitor}} Players</center></td>
+            {% for label in labels %}
+            <td style="width:200px"><center>{{label}}</center></td>
+
+              {% endfor %}
+
+          </tr>
+          {% for player in vh_players%}
+          <tr>
+            <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+              {{player.name}}
+          </center></td>
+            <td>
+              <center>
+                {{player.ast}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.blk}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.dreb}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fg3_pct|floatformat:2}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fg3a}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fg3m}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fga}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fgm}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.fta}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.ftm}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.oreb}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.pf}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.pts}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.reb}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.stl}}
+              </center>
+            </td>
+            <td>
+              <center>
+                {{player.turnover}}
+              </center>
+            </td>
+
+            <td>
+              <center>
+                {{player.min}}
+              </center>
+            </td>
+          </tr>
+          {% endfor %}
+          
+          </table>
+          <br>
+
+          <table align="center" style="width:100%">
+            <tr>
+              <td style="width: 15% !important;"><center>{{vh_op_abv}} Player</center></td>
+              {% for label in labels %}
+              <td style="width:200px"><center>{{label}}</center></td>
+  
+                {% endfor %}
+  
+            </tr>
+            {% for player in vh_op_player%}
+            <tr>
+              <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                {{player.name}}
+            </center></td>
+              <td>
+                <center>
+                  {{player.ast}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.blk}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.dreb}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fg3_pct|floatformat:2}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fg3a}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fg3m}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fga}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fgm}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.fta}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.ftm}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.oreb}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.pf}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.pts}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.reb}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.stl}}
+                </center>
+              </td>
+              <td>
+                <center>
+                  {{player.turnover}}
+                </center>
+              </td>
+  
+              <td>
+                <center>
+                  {{player.min}}
+                </center>
+              </td>
+            </tr>
+            {% endfor %}
+            
+            </table>
+      </div>
+      {% endif %}
+
+      <script>
+        function hh() {
+          var x = document.getElementById("hh-table");
+          var hh_btn = document.getElementById("hh-btn");
+          if (x.style.display === "none") {
+            hh_btn.value = "Hide Stats"
+            x.style.display = "block";
+          } else {
+            hh_btn.value = "Show Stats"
+            x.style.display = "none";
+          }
+        }
+        function vh() {
+          var x = document.getElementById("vh-table");
+          var hh_btn = document.getElementById("vh-btn");
+          if (x.style.display === "none") {
+            hh_btn.value = "Hide Stats"
+            x.style.display = "block";
+          } else {
+            hh_btn.value = "Show Stats"
+            x.style.display = "none";
+          }
+        }
+      </script>
+      <br>
+      <br>
 
           <div style="margin-left:10x">
             <a style='margin-left:3px' class="btn btn-grey-secondary"href="{%url 'update-spread' pk %}">Update Odds</a>

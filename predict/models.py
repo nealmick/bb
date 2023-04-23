@@ -128,6 +128,15 @@ class Game(models.Model):
     #dump of complex spread data used in table at bottom of game
     complexSpread = models.CharField(null=True, blank=True, max_length=10000)
 
+
+    #home last game
+    home_last_game = models.CharField(null=True, blank=True, max_length=15)
+    home_history = models.CharField(null=True, blank=True, max_length=100000000)
+
+    #visitor last game
+    visitor_last_game = models.CharField(null=True, blank=True, max_length=15)
+    visitor_history = models.CharField(null=True, blank=True, max_length=100000000)
+
     #player Ids
     p0 = models.CharField(null=True, blank=True, max_length=10)
     p1 = models.CharField(null=True, blank=True, max_length=10)

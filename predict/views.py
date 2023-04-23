@@ -985,7 +985,7 @@ def removePlayer(request,pk,player):
     homeTeamInjuryComplex = json.dumps(homeTeamInjuryComplex)
     visitorTeamInjuryComplex = json.dumps(visitorTeamInjuryComplex)
     #get future game
-    found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
+    found, gameid, playerids,asd,dsa,das,foobar = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
 
     #set simple injury data
     homeInjury = ''
@@ -1380,12 +1380,94 @@ def editGame(request,pk,**kwargs):
         context['complexSpread'] = sortSpreadLines(complexSpread) 
         
         context['complexSpreadDisplay'] = True
-
+    context['history_display'] = True
     #set is your game
     if request.user == u:
         context['isAuthor'] = True
     else:
         context['isAuthor'] = False
+        
+    teamAbvById = load_obj('teamAbvById')
+    context['home_history_id'] = g.values('home_last_game')[0]['home_last_game']
+    context['visitor_history_id'] = g.values('visitor_last_game')[0]['visitor_last_game']
+    try:
+        hh = json.loads(g.values('home_history')[0]['home_history'])
+
+    except TypeError:
+        context['history_display'] = False
+
+        return render(request, 'predict/edit.html',context)
+    
+
+    obj = load_obj('2019PlayerNamesByID')
+    for player in hh[0]:
+        print('player: ',player)
+        id = player['id']
+        player.pop('teamid')
+        try:
+            try:
+                player['name']=obj[str(id)]
+            except KeyError:
+                player['name']=obj[int(id)]
+        except KeyError:
+            player['name']=id
+    for player in hh[1]:
+        print('player: ',player)
+        id = player['id']
+        player.pop('teamid')
+        try:
+            try:
+                player['name']=obj[str(id)]
+            except KeyError:
+                player['name']=obj[int(id)]
+        except KeyError:
+            player['name']=id
+
+
+    context['hh_players'] = hh[0]
+    context['hh_op_player'] = hh[1]
+    context['hh_score'] = hh[2]
+    context['hh_op_score'] = hh[3]
+    context['hh_gameid'] = hh[4]
+    context['hh_op_abv'] = teamAbvById[int(hh[5])]
+    context['hh_date'] = hh[6][:10]
+
+    vh = json.loads(g.values('visitor_history')[0]['visitor_history'])
+    context['vh_players'] = vh[0]
+    for player in vh[0]:
+        print('player: ',player)
+        id = player['id']
+        player.pop('teamid')
+        try:
+            try:
+                player['name']=obj[str(id)]
+            except KeyError:
+                player['name']=obj[int(id)]
+        except KeyError:
+            player['name']=id
+    for player in vh[1]:
+        print('player: ',player)
+        id = player['id']
+        player.pop('teamid')
+        try:
+            try:
+                player['name']=obj[str(id)]
+            except KeyError:
+                player['name']=obj[int(id)]
+        except KeyError:
+            player['name']=id
+
+    context['vh_op_player'] = vh[1]
+    context['vh_score'] = vh[2]
+    context['vh_op_score'] = vh[3]
+    context['vh_gameid'] = vh[4]
+    context['vh_op_abv'] = teamAbvById[int(vh[5])]
+    context['vh_date'] = vh[6][:10]
+
+    print(hh)
+    #context['home_history'] = 
+
+
 
     #print(players)
     #render main game page.
@@ -1765,7 +1847,7 @@ def quickcreate(request,home,visitor,date):
     visitorTeamInjuryComplex = json.dumps(visitorTeamInjuryComplex)
     removed_players = []
     #create future game
-    found, gameid, playerids = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
+    found, gameid, playerids, hLastGame,vLastGame,home_history,visitor_history = futureGame(home_spread,homeTeamStats,visitorTeamStats,date,home,visitor,path,season,labels,removed_players)
     #set simple injury data
     homeInjury = ''
     for player in homeTeamInjury:
@@ -1786,7 +1868,8 @@ def quickcreate(request,home,visitor,date):
         gameid=gameid,home_spread=home_spread,visitor_spread=visitor_spread,dk_home_spread=home_spread,dk_visitor_spread=visitor_spread,
         home_games_won=homeTeamStats[1],home_games_loss=homeTeamStats[2],
         visitor_games_won=visitorTeamStats[1],visitor_games_loss=visitorTeamStats[2],home_streak=home_streak,visitor_streak=visitor_streak,
-        homeInjury=homeInjury, visitorInjury=visitorInjury,homeInjuryComplex=homeTeamInjuryComplex,visitorInjuryComplex=visitorTeamInjuryComplex,complexSpread=complexSpread)
+        homeInjury=homeInjury, visitorInjury=visitorInjury,homeInjuryComplex=homeTeamInjuryComplex,visitorInjuryComplex=visitorTeamInjuryComplex,complexSpread=complexSpread,home_last_game=hLastGame,visitor_last_game=vLastGame,
+        home_history=home_history,visitor_history=visitor_history)
     #redirect to game view
     return redirect('edit-predict',obj.pk)
     #return redirect('home-predict')
@@ -2057,6 +2140,7 @@ def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,pat
             data.update({'home_team_score' : response['data'][game]['home_team_score']})
             data.update({'visitor_team_score' : response['data'][game]['home_team_score']})
             
+
             #load team player rosters and season averages
             playerIdByTeamID = load_obj('2022PlayerIdByTeamID')
             seasonAverages = load_obj('2022SeasonAverages')
@@ -2118,20 +2202,166 @@ def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,pat
                 visitorTeam.pop(b)
                 visitorPlayers.pop(b)
 
+
+
+
+
+
+
+
+            hlastID = getLastGame(homeTeamID,date)
+            vlastID = getLastGame(visitorTeamID,date)
+            print(hlastID,vlastID,'----------+++-------')
+
+            hurl = 'https://www.balldontlie.io/api/v1/stats?game_ids[]='+str(hlastID)
+            hLastGame = req(hurl)
+            vurl = 'https://www.balldontlie.io/api/v1/stats?game_ids[]='+str(vlastID)
+            vLastGame = req(vurl)
+
+
+
+            home_history = formLastGame(hLastGame,homeTeamID)
+            visitor_history = formLastGame(vLastGame,visitorTeamID)
+
+
+
             #print best players
             print('visitor team:',len(bestV),bestVisitorIds) 
             print('home team:',len(bestH),bestHomeIds) 
             #write csv header
             writeCSVHeader(labels, path)
             #write game input data to csv
-            writeCSV(spread,homeTeamStats,visitorTeamStats,gameid,homeTeamID,visitorTeamID,bestH,bestV,path)
+            writeCSV(spread,homeTeamStats,visitorTeamStats,gameid,homeTeamID,visitorTeamID,bestH,bestV,path,home_history,visitor_history)
             #return all the players ids we used to make game
             playerids = bestHomeIds+bestVisitorIds
-    return found, gameid,playerids
+    return found,gameid,playerids,hlastID,vlastID,json.dumps(home_history),json.dumps(visitor_history)
 #------------------------------------------------------------------------#
 
+
+
+
+
+
+
+
+def formLastGame(data,team):
+    print('forming last game data')
+    if data is None or len(data)<1:
+        print('no ata=---------=========------------==========')
+        return ''
+    if int(data['data'][0]['game']['home_team_id']) == int(team):
+        history_id = data['data'][0]['game']['home_team_id']
+        opponent_id = data['data'][0]['game']['visitor_team_id']
+        history_score = data['data'][0]['game']['home_team_score']
+        opponent_score = data['data'][0]['game']['visitor_team_score']
+    else:
+        opponent_id = data['data'][0]['game']['home_team_id']
+        history_id = data['data'][0]['game']['visitor_team_id']
+        opponent_score = data['data'][0]['game']['home_team_score']
+        history_score = data['data'][0]['game']['visitor_team_score']
+    game_date = data['data'][0]['game']['date']
+    gameid = data['data'][0]['game']['id']
+
+    opponent_players = []
+    history_players = []
+    
+    for player in  data['data']:
+        p = {}
+        p['id'] = player['player']['id']
+        p['teamid'] = player['team']['id']
+        print(player)
+        for label in labels:
+            if player['min'] is None:
+                continue
+            if label == 'min':
+                min = player['min']
+                min = min.split(':')[0]
+                player['min']=min
+            if player[label] is None:
+                p[label] = 0
+                continue
+            p[label] = player[label]
+        if player['min'] is None:
+            print('min is none------------')
+            continue
+        if p['teamid'] == history_id:
+            history_players.append(p)
+        if p['teamid'] == opponent_id:
+            opponent_players.append(p)
+
+    best_history_players = []
+    best_opponent_players = []
+
+    for i in range(0,5):
+        best = historyBestPlayer(history_players)
+        if best == '':
+            break
+        best_player = history_players.pop(int(best))
+        best_history_players.append(best_player)
+
+
+    for i in range(0,5):
+        best = historyBestPlayer(opponent_players)
+        if best == '':
+            break
+        best_player = opponent_players.pop(int(best))
+        best_opponent_players.append(best_player)
+
+    
+    
+    print('--------------------------------------------')
+    return[best_history_players,best_opponent_players,history_score,opponent_score,gameid,opponent_id,game_date]
+
+
+def historyBestPlayer(players):
+    #print('players len ----------',len(players))
+    best = ''
+    topMin = 0
+    for player in range(len(players)):
+        min = players[player]['min']
+        min = min.split(':')[0]
+        #print(min,topMin)
+        if min == '':
+            continue
+        if int(min) > int(topMin):
+            best = player
+            topMin = min
+    return best
+
+
+
+
+def getLastGame(teamid,date):
+    format = '%Y-%m-%d'
+  
+    # convert from string format to datetime format
+    inputDate = datetime.strptime(date, format)
+    
+    today = inputDate-timedelta(days=60)
+    start = today.strftime("%Y/%m/%d")
+    today = inputDate-timedelta(days=1)
+    end = today.strftime("%Y/%m/%d")
+    url = 'https://www.balldontlie.io/api/v1/games?start_date='+start+'&end_date='+end+'&&team_ids[]='+teamid+'&per_page=100'
+    url = 'https://www.balldontlie.io/api/v1/games?start_date='+start+'&end_date='+end+'&&team_ids[]='+teamid+'&per_page=100'
+
+    r = req(url)
+    r = r['data']
+    print(type(r))
+    r.reverse()
+    lastID = None
+    for game in r:
+        print(game['status'],game['id'],game['date'],game['home_team_score'],game['visitor_team_score'],game['status'])
+        print(game['home_team_score'] != 0)
+        print(game['visitor_team_score'] != 0)
+        if int(game['home_team_score']) != 0 and int(game['visitor_team_score']) != 0:
+            lastID=game['id']
+        break
+    return lastID
+
+
+
 # write indevidual csv file for game prediction
-def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,path):
+def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,bestV,path,home_history,visitor_history):
     line = str(game)+','+str(spread)+','+str(homeId)
     for stat in homeTeamStats:#win/loss/streak
         line+=','+str(stat)
@@ -2144,6 +2374,31 @@ def writeCSV(spread,homeTeamStats,visitorTeamStats,game,homeId,visitorId,bestH,b
     for player in range(len(bestV)):#best players
         for stat in range(len(bestV[player])):
             line += ','+str(bestV[player][stat])
+
+
+    line += ','+str(home_history[2])
+    line += ','+str(home_history[3])
+    line += ','+str(home_history[4])
+    print(home_history[2],home_history[3],'--=-=-==-=-==-=-=--==-')
+    for player in home_history[0]:
+            for label in labels:
+                line += ','+str(player[label])
+    for player in home_history[1]:
+            for label in labels:
+                line += ','+str(player[label])
+
+    line += ','+str(visitor_history[2])
+    line += ','+str(visitor_history[3])
+    line += ','+str(visitor_history[4])
+    print(visitor_history[2],visitor_history[3],'--=-=-==-=-==-=-=--==-')
+
+    for player in visitor_history[0]:
+            for label in labels:
+                line += ','+str(player[label])
+    for player in visitor_history[1]:
+            for label in labels:
+                line += ','+str(player[label])
+
 
 
 
@@ -2159,6 +2414,22 @@ def writeCSVHeader(labels, path,**kwargs):
         for i in range(0,playersPerTeam):#0-6
             for label in labels:
                 header+=','+foo+str(i)+'_'+label#make lables
+
+
+    header+=',home_history_score,home_opponent_history_score,home_history_gameid'
+    derp = ['home_history_', 'home_opponent_history_']
+    for foo in derp:#iterate home/visitor
+        for i in range(0,5):#iterate players
+            for label in labels:#iterate stat labels
+                header+=','+foo+str(i)+'_'+label
+    header+=',visitor_history_score,visitor_opponent_history_score,visitor_history_gameid'
+    derp = ['visitor_history_', 'visitor_opponent_history_']
+    for foo in derp:#iterate home/visitor
+        for i in range(0,5):#iterate players
+            for label in labels:#iterate stat labels
+                header+=','+foo+str(i)+'_'+label
+
+
     #write header
     csv = open(path,'w')
     csv.write(header+'\n')
@@ -2238,7 +2509,7 @@ def predict(modelNum,path,username):
         modelSettings = load_obj('DefaultModelSettings')
     #drop a bunch of values
 
-    d = ['gameid','home_id','visitor_id']
+    d = ['gameid','home_id','visitor_id','home_history_gameid','visitor_history_gameid']
     try:
         if modelSettings['streaks'] != 'true':
             d=d+['home_streak','visitor_streak']
@@ -2262,11 +2533,11 @@ def predict(modelNum,path,username):
         if modelSettings['blk'] == 'true':
             features.append('blk')
         if modelSettings['reb'] == 'true':
-            features.append('reb')
+            #features.append('reb')
             features.append('dreb')
             features.append('oreb')
         if modelSettings['fg3'] == 'true':
-            features.append('fg3_pct')
+            #features.append('fg3_pct')
             features.append('fg3m')
             features.append('fg3a')
         if modelSettings['fg'] == 'true':
