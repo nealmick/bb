@@ -2,7 +2,7 @@ import requests, json, time, operator, pickle, random
 import pandas as pd
 from datetime import datetime,timezone
 #seasons scanned for data
-seasons = ['2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009']
+seasons = ['2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011']#,'2010','2009']
 #reverse seasons so we start at older season
 seasons.reverse()
 #player data stat labels
@@ -17,8 +17,12 @@ def main(labels,seasons,**kwargs):
     #counters for number of error games thrown out.
     pc =0
     numnotfound = 0
+
     #iterate over seasons
     for s in range(len(seasons)):
+        lastGame = {}
+        for num in range(1,31):
+            lastGame[int(num)] = None
         #set current season
         season=seasons[s]
         #seasonCSV=seasonsCSV[s]
@@ -52,7 +56,39 @@ def main(labels,seasons,**kwargs):
             g=games[game]
             print(game,g['spread'], g['winner'],g['date'],g['home_id'],g['home_score'],g['visitor_id'],g['visitor_score'])
             print('spread:',g['spread'],' vscore-hscore:',g['visitor_score']-g['home_score'])
-            print()
+            hLastGame = None
+            vLastGame = None
+
+            
+            if lastGame[g['home_id']] != None and lastGame[g['visitor_id']] != None:
+                print('found last game v:', lastGame[g['visitor_id']],' h:',lastGame[g['home_id']])
+                for _game in games:
+                    if _game == lastGame[g['visitor_id']]:
+                        vLastGame = games[_game]
+                    if _game == lastGame[g['home_id']]:
+                        hLastGame = games[_game]
+                if hLastGame is None or vLastGame is None:
+                    print('error ------------++++--------++++-------')
+                    continue
+                home_history = formLastGame(hLastGame,g['home_id'])
+                visitor_history = formLastGame(vLastGame,g['visitor_id'])
+                try:
+                    for player in range(len(home_history[1])):
+                            print(home_history[0][player])
+                            print(home_history[1][player])
+                            print(visitor_history[0][player])
+                            print(visitor_history[1][player])
+                    print('home history score: ',home_history[2],home_history[3])
+                    print('visitor history score: ',visitor_history[2],visitor_history[3])
+                except IndexError:
+                    continue
+
+
+            else:
+                lastGame[g['home_id']] = game
+                lastGame[g['visitor_id']] = game
+                continue
+
             #no spread skip game.
             if g['spread'] == 0 or g['spread']== '':
                 continue
@@ -174,14 +210,95 @@ def main(labels,seasons,**kwargs):
                 visitorTeam.pop(b)
             foo+=1
             #write game to csv
-            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,beforeStreaks)
+            writeCSV(game,g['spread'],g['home_score'],g['visitor_score'],g['home_id'],g['visitor_id'],homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,beforeStreaks,home_history,visitor_history)
 
 
-def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks):
+def formLastGame(data,team):
+    print('forming last game data')
+    print(team)
+    if data is None:
+        print('no data=---------=========------------==========')
+
+    if data['data'][0]['game']['home_team_id'] == team:
+        history_id = data['data'][0]['game']['home_team_id']
+        opponent_id = data['data'][0]['game']['visitor_team_id']
+        history_score = data['data'][0]['game']['home_team_score']
+        opponent_score = data['data'][0]['game']['visitor_team_score']
+    else:
+        opponent_id = data['data'][0]['game']['home_team_id']
+        history_id = data['data'][0]['game']['visitor_team_id']
+        opponent_score = data['data'][0]['game']['home_team_score']
+        history_score = data['data'][0]['game']['visitor_team_score']
+    gameid = data['data'][0]['game']['id']
+
+    opponent_players = []
+    history_players = []
+    
+    for player in  data['data']:
+        p = {}
+        p['id'] = player['id']
+        p['teamid'] = player['team']['id']
+        print(player)
+        for label in labels:
+            if player['min'] is None:
+                continue
+            if label == 'min':
+                min = player['min']
+                min = min.split(':')[0]
+                player['min']=min
+            p[label] = player[label]
+        if player['min'] is None:
+            print('min is none------------')
+            continue
+        if p['teamid'] == history_id:
+            history_players.append(p)
+        if p['teamid'] == opponent_id:
+            opponent_players.append(p)
+
+    best_history_players = []
+    best_opponent_players = []
+
+    for i in range(0,5):
+        best = historyBestPlayer(history_players)
+        if best == '':
+            break
+        best_player = history_players.pop(int(best))
+        best_history_players.append(best_player)
+
+
+    for i in range(0,5):
+        best = historyBestPlayer(opponent_players)
+        if best == '':
+            break
+        best_player = opponent_players.pop(int(best))
+        best_opponent_players.append(best_player)
+
+    
+    
+    print('--------------------------------------------')
+    return[best_history_players,best_opponent_players,history_score,opponent_score,gameid]
+
+
+def historyBestPlayer(players):
+    #print('players len ----------',len(players))
+    best = ''
+    topMin = 0
+    for player in range(len(players)):
+        min = players[player]['min']
+        min = min.split(':')[0]
+        #print(min,topMin)
+        if min == '':
+            continue
+        if int(min) > int(topMin):
+            best = player
+            topMin = min
+    return best
+
+
+def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,visitorTeamStats,bestH,bestV,path,season,foo,streaks,home_history,visitor_history):
     #form csv line
     line = str(homeScore)+','+str(visitorScore)+','+str(game)+','+str(spread)+','+str(homeId)+','+str(streaks[int(homeId)])
     for stat in homeTeamStats:
-
         line+=','+str(stat)
     line += ','+str(visitorId)+','+str(streaks[int(visitorId)])
     for stat in visitorTeamStats:
@@ -192,10 +309,35 @@ def writeCSV(game,spread, homeScore,visitorScore,homeId,visitorId,homeTeamStats,
     for player in range(len(bestV)):
         for stat in range(len(bestV[player])):
             line += ','+str(bestV[player][stat])
-    
 
+    line += ','+str(home_history[2])
+    line += ','+str(home_history[3])
+    line += ','+str(home_history[4])
+    print(home_history[2],home_history[3],'--=-=-==-=-==-=-=--==-')
+    for player in home_history[0]:
+            for label in labels:
+                line += ','+str(player[label])
+    for player in home_history[1]:
+            for label in labels:
+                line += ','+str(player[label])
+
+    line += ','+str(visitor_history[2])
+    line += ','+str(visitor_history[3])
+    line += ','+str(visitor_history[4])
+    print(visitor_history[2],visitor_history[3],'--=-=-==-=-==-=-=--==-')
+
+    for player in visitor_history[0]:
+            for label in labels:
+                line += ','+str(player[label])
+    for player in visitor_history[1]:
+            for label in labels:
+                line += ','+str(player[label])
+
+
+    if len(visitor_history[0])<=4 or len(visitor_history[1])<=4 or len(home_history[0])<=4 or len(home_history[1]) <=4:
+        return
     #use 2022 games as test for evaluation
-    if season == '2022':
+    if season == '2022' or season == '2021':
         if foo > 1:#sets split of test/train on final season.....
             csv = open('csv/test.csv','a')
             csv.write(line+'\n')
@@ -214,6 +356,20 @@ def writeCSVHeader(labels, path,**kwargs):
         for i in range(0,playersPerTeam):#iterate players
             for label in labels:#iterate stat labels
                 header+=','+foo+str(i)+'_'+label
+
+    header+=',home_history_score,home_opponent_history_score,home_history_gameid'
+    derp = ['home_history_', 'home_opponent_history_']
+    for foo in derp:#iterate home/visitor
+        for i in range(0,5):#iterate players
+            for label in labels:#iterate stat labels
+                header+=','+foo+str(i)+'_'+label
+    header+=',visitor_history_score,visitor_opponent_history_score,visitor_history_gameid'
+    derp = ['visitor_history_', 'visitor_opponent_history_']
+    for foo in derp:#iterate home/visitor
+        for i in range(0,5):#iterate players
+            for label in labels:#iterate stat labels
+                header+=','+foo+str(i)+'_'+label
+
     csv = open(path,'w')#write train
     csv.write(header+'\n')
     csv = open('csv/test.csv','w')#write test

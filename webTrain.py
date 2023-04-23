@@ -21,10 +21,13 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
     #extract target data
     homeScore = data['home_score'].values
     visitorScore = data['visitor_score'].values
+    home_id = data['home_id'].values
+    visitor_id = data['visitor_id'].values
+    
     #drop values
     #,'home_streak','visitor_streak'
     #data.drop(['home_score', 'visitor_score', 'gameid','home_id','visitor_id','hgp','hw','hl','vgp','vw','vl'], axis=1, inplace=True)
-    d = ['home_score', 'visitor_score', 'gameid','home_id','visitor_id']
+    d = ['home_score', 'visitor_score', 'gameid','home_id','visitor_id','home_history_gameid','visitor_history_gameid']
     if streaks != 'true':
         d=d+['home_streak','visitor_streak']
     if wl != 'true':
@@ -46,11 +49,11 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
     if blk == 'true':
         features.append('blk')
     if reb == 'true':
-        features.append('reb')
+        #features.append('reb')
         features.append('dreb')
         features.append('oreb')
     if fg3 == 'true':
-        features.append('fg3_pct')
+        #features.append('fg3_pct')
         features.append('fg3m')
         features.append('fg3a')
     if fg == 'true':
@@ -81,6 +84,8 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
 
     #convert data to values
     data = data.values
+
+
     #convert to float
     data = data.astype(float)
 
@@ -320,7 +325,7 @@ def webappTrain(modelNum,epochs,size,layer1Count,layer1Activation,layer2Count,la
             
 
 
-            if SeriesStepCounter == 5:
+            if SeriesStepCounter >= len(p)/100 :
                 gameSeries1.append(evMargin1Current)
                 gameSeries2.append(evMargin2Current)
                 gameSeries3.append(evMargin3Current)
