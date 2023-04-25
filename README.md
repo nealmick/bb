@@ -12,7 +12,6 @@ A web app designed to consolidate and manage NBA data for machine learning analy
 <img src="https://i.imgur.com/LY7u9xB.png" width="600" height="300" />
 <img src="https://i.imgur.com/bisms9b.png" width="600" height="350" />
 <img src="https://i.imgur.com/H4ClI69.png" width="600" height="300" />
-<img src="https://i.imgur.com/gd7ARVi.png" width="600" height="400" />
 
 # Install:
 
@@ -59,6 +58,8 @@ Note: Tensorboard is not always live.
 <img src="https://i.imgur.com/Zu3YQrU.png" width="800" height="300" />
 
 # FAQ:  https://nbadata.cloud/predict/faq/
+
+<img src="https://i.imgur.com/gd7ARVi.png" width="800" height="500" />
 
 
 #### Django apps:
