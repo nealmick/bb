@@ -438,9 +438,9 @@
         </div>
         <div class="col-6"style="padding:0">
           <center>
-            <h2 style="margin-top:25px">{{hh_score}}-{{home}} vs {{hh_op_abv}}-{{hh_op_score}}</h2>
-            <p> {{ home }} previous game, {{hh_gameid}}, {{hh_date}} </p>
-            <input id="hh-btn" style="margin-bottom:7px" onclick="hh()" type="button" class="btn btn-grey" value="Show Stats">
+            <h2 style="margin-top:25px">{{home}}'s last game</h2>
+            <h2 style="">{{hh_score}}-{{hh_op_score}}</h2>
+            <p class="text-muted">{{hh_gameid}} {{hh_date}} </p>
 
           </center>
 
@@ -457,7 +457,11 @@
       </div>
 
 
-      <div id="hh-table" style="display:none">
+      <div id="hh-table" style="">
+        <center>
+
+        </center>
+
         <table align="center" style="width:100%">
           <tr>
             <td style="width:15%"><center>{{home}} Players</center></td>
@@ -683,9 +687,9 @@
         <div class="col-6"style="padding:0">
 
           <center>
-            <h2 style="margin-top:25px">{{vh_score}}-{{visitor}} vs {{vh_op_abv}}-{{vh_op_score}}</h2>
-            <p>{{ visitor }} previous game,  {{vh_gameid}}, {{vh_date}}</p>
-            <input id="vh-btn" style="margin-bottom:7px" onclick="vh()" type="button" class="btn btn-grey" value="Show Stats">
+            <h2 style="margin-top:25px">{{visitor}}'s last game</h2>
+            <h2 style="">{{vh_score}}-{{vh_op_score}}</h2>
+            <p class="text-muted">{{vh_gameid}}, {{vh_date}}</p>
 
           </center>
         </div>
@@ -700,7 +704,10 @@
 
 
 
-      <div id="vh-table" style="display:none">
+      <div id="vh-table" style="">
+        <center>
+        </center>
+
         <table align="center" style="width:100%">
           <tr>
             <td style="width: 15% !important;"><center>{{visitor}} Players</center></td>
