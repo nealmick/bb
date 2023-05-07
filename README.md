@@ -47,7 +47,6 @@ tensorboard --logdir logs/fit
 http://localhost:6006/
 
 
-
 ```
 
 # TensorBoard:  http://nbadata.cloud:6006/
