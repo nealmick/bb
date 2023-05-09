@@ -2449,7 +2449,7 @@ def getBestPlayer(team):
         min = team[player][-1]#set current player min
         min = min.split(':')[0]#convert to minute value from 20:32 to 20
         #print(min,topMin)
-        if int(min) > int(topMin):#is this player better then top players
+        if int(min) >= int(topMin):#is this player better then top players
             best = player#set new best
             topMin = min#set new best minute value
     return best#return best
