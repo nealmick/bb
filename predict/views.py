@@ -2323,7 +2323,7 @@ def historyBestPlayer(players):
         #print(min,topMin)
         if min == '':
             continue
-        if int(min) > int(topMin):
+        if int(min) >= int(topMin):
             best = player
             topMin = min
     return best
