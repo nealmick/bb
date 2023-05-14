@@ -2355,7 +2355,7 @@ def getLastGame(teamid,date):
         print(game['visitor_team_score'] != 0)
         if int(game['home_team_score']) != 0 and int(game['visitor_team_score']) != 0:
             lastID=game['id']
-        break
+            break
     return lastID
 
 
