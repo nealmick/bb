@@ -2,27 +2,43 @@
 
 {% extends "predict/base.html"%}
 {% load crispy_forms_tags %}
-
+{% load static%}
 {% block content%}
 
 
 
 
-<div style="margin-top: 20vh;z-index: 100;width:100%;color:#F8F8F8;
+
+
+
+<div style="margin-top: 12vh;z-index: 100;width:100%;color:#F8F8F8;
 ">
-<center>
-    <div style="padding:10px;">
-    
-    <p id=""style="font-size: 65px;margin-bottom: 2px">NBA Data.Cloud</p>
 
-    </div>
-    
-    <p id=""style=""><a style="position: relative;"  href="{% url 'login'%}"class="btn btn-grey">Login <i class="fas fa-sign-in-alt"></i></a>
-    <a style="position: relative;"  href='https://github.com/nealmick/bb'class="btn btn-grey-secondary"target="_blank">GitHub <i class="fab fa-github"></i></a></p>
-</center>
+        <div class="row" style="height:75vh">
+
+            <div class="col-lg-6">
+                    <u> <h1 style="margin-top:18vh;font-size:72px;color:#F8F8F8">NBA Data Cloud</h1></u>
+                    <h5 style="margin-top:0px;font-size:32px;color:#F8F8F8">Machine Learning Sports Analytics</h5>
+                    <a style="position: relative;width:100px;" href="/login/" class="btn btn-grey" > Login <i class="fas fa-sign-in-alt"> </i></a>
+
+                    <a style="position: relative;width:100px;" target="_blank" href="https://github.com/nealmick/bb" class="btn btn-grey-secondary"> Github <i class="fab fa-github"></i> </a>
+            </div>
+            <div class="col-lg-6" style="margin-top:10vh;">
+                <center>
+                    <img class="resp"style="margin-left:0;height:300px"src="{% static 'predict/tf.png'%}">
+
+                    <img class="resp"style="height:350px;"src="{% static 'predict/nba-logo.png'%}">
+        
+            
+                </center>
+            </div>
+
+
+        </div>
+
+
+
 </div>
-
-
 
 
 
