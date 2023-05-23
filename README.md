@@ -56,7 +56,7 @@ Note: Tensorboard is not always live.
 <img src="https://i.imgur.com/Ha6OHxn.png" width="800" height="300" />
 <img src="https://i.imgur.com/Zu3YQrU.png" width="800" height="300" />
 
-# System Architecture 
+# System Architecture:
 <img src="https://i.imgur.com/gd7ARVi.png" width="800" height="500" />
 
 
