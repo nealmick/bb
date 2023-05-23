@@ -21,7 +21,6 @@
     <title>Predictions!</title>
 
   </head>
-  <div class="background3"style="top:0;position: fixed;"></div>
   <body class="">
       <header class="site-header">
         <nav class="navbar navbar-expand-md navbar-dark bg-steel">
@@ -86,4 +85,12 @@
   $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
   });
+  var r = document.querySelector(':root');
+  function myFunction_set() {
+    var randomNumber = Math.floor(Math.random() * 60) + 1;
+
+  // Set the value of variable --blue to another value (in this case "lightblue")
+    r.style.setProperty('--rotation', randomNumber+'deg');
+  }
+  myFunction_set()
 </script>
