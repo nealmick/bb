@@ -56,8 +56,7 @@ Note: Tensorboard is not always live.
 <img src="https://i.imgur.com/Ha6OHxn.png" width="800" height="300" />
 <img src="https://i.imgur.com/Zu3YQrU.png" width="800" height="300" />
 
-# FAQ:  https://nbadata.cloud/predict/faq/
-
+# System Architecture 
 <img src="https://i.imgur.com/gd7ARVi.png" width="800" height="500" />
 
 
@@ -74,5 +73,7 @@ Note: Tensorboard is not always live.
 3. OBJ - stores pickle object data files for quick loading player stats
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
+
+# FAQ:  https://nbadata.cloud/predict/faq/
 
 
