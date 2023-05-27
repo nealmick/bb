@@ -61,7 +61,7 @@ Note: Tensorboard is not always live.
 
 # Feature Correlation:
 <img src="https://i.imgur.com/xJMmvZR.png" width="800" height="400" />
-<img src="https://i.imgur.com/m1xfYkb.png" width="600" height="400" />
+<img src="https://i.imgur.com/m1xfYkb.png" width="800" height="600" />
 
 #### Django apps:
 1. bb - main django app
