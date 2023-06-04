@@ -76,5 +76,3 @@ Note: Tensorboard is not always live.
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
 # FAQ:  https://nbadata.cloud/predict/faq/
-
-
