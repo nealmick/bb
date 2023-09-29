@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ['206.189.233.93','oofgang.xyz','www.oofgang.xyz','nealmick.com'
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_bootstrap4',
     'crispy_forms',
     'etc.apps.EtcConfig',####users
     'users.apps.UsersConfig',####users
@@ -131,7 +132,8 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
-CRIPSPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 LOGIN_REDIRECT_URL = 'home-predict'
 LOGIN_URL = 'login'
 
