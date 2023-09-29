@@ -1,7 +1,7 @@
 # http://nbadata.cloud/
 # :basketball: Basket Ball!
 
-A web app designed to consolidate and manage NBA data for machine learning analysis. Monitor player stats, injuries, and generate in-depth game reports while training TensorFlow predictive models. Access historical data from 19,000+ games spanning two decades, seamlessly integrated with a Django web app. Enjoy a responsive and intuitive user interface showcasing predictions, graphs, and game schedules.
+A web app designed to consolidate and manage NBA data for machine learning analysis. Monitor player stats, injuries, and generate in-depth game reports while training TensorFlow predictive models. Access historical data from 19,000+ games spanning two decades, seamlessly integrated with a Django web app. Enjoy a responsive and intuitive user interface showcasing predictions, graphs, game schedules, injury reports, vegas odds, and more.
 
 
 
