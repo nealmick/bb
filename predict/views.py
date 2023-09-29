@@ -2337,7 +2337,7 @@ def getLastGame(teamid,date):
     # convert from string format to datetime format
     inputDate = datetime.strptime(date, format)
     
-    today = inputDate-timedelta(days=60)
+    today = inputDate-timedelta(days=360)
     start = today.strftime("%Y/%m/%d")
     today = inputDate-timedelta(days=1)
     end = today.strftime("%Y/%m/%d")
