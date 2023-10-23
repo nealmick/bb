@@ -69,6 +69,4 @@ def load_obj(name):
     with open('updatedObj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 
-
-
 main()

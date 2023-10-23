@@ -3,7 +3,7 @@ import requests, json, time, operator, pickle, random
 
 
 url = 'https://www.balldontlie.io/api/v1/'
-#seasons = ['2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007','2006','2005']
+seasons = ['2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007','2006','2005']
 seasons.reverse()
 labels = ['ast','blk','dreb','fg3_pct','fg3a','fg3m','fga','fgm','fta','ftm','oreb','pf','pts','reb','stl', 'turnover', 'min']#added min
 createPlayersByTeam = False
