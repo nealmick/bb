@@ -6,6 +6,8 @@ urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
 
 
+    path('retrain/<int:pk>', views.retrainModel, name='retrain-model'),
+
     path('clearstats/', views.clearStats, name='clear-stats'),
     path('cleargames/', views.clearGames, name='clear-games'),
 
@@ -47,5 +49,8 @@ urlpatterns = [
     path('trainmodel/<str:model>/<int:epochs>/<int:batchSize>/<int:layer1Count>/<str:layer1Activation>/<int:layer2Count>/<str:layer2Activation>/<str:optimizer>/<str:es>/<str:rmw>/<str:kr>/<str:streaks>/<str:wl>/<str:gp>/<str:ps>/<str:players>/<str:ast>/<str:blk>/<str:reb>/<str:fg3>/<str:fg>/<str:ft>/<str:pf>/<str:pts>/<str:stl>/<str:turnover>', views.trainModel , name='train-model'),
     path('resetmodel/<str:model>', views.resetModel , name='reset-model'),
     path('faq/', views.faq , name='faq'),
+
+
+
 
 ]

@@ -959,7 +959,14 @@
           {% else %}
           <a style='margin-left:3px'class="btn btn-grey-secondary"href="{%url 'bet' pk %}">Bet False</a>
           {% endif %}
-            {% endif %}
+          {% if finished %}
+          {% if customModel %}
+          <a style='margin-left:3px'class="btn btn-grey-secondary"href="{%url 'retrain-model' pk %}">ReTrain</a>
+
+          {% endif %}
+          {% endif %}
+          {% endif %}
+
             <p class="text-muted"style="margin-left:3px;white-space: pre-line;margin-bottom:2px;margin-top:3px">Model: {{model}} &nbsp&nbsp&nbsp Removed Players: {{removed_players}} &nbsp&nbsp&nbsp User: {{author}}    &nbsp&nbsp&nbsp csvid: {{csvid}}    &nbsp&nbsp&nbsp  GameID: {{gameid}}   &nbsp&nbsp&nbsp  created: {{date_posted}} </p>
             </div>
         </div>

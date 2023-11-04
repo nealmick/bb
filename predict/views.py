@@ -103,6 +103,18 @@ TEAMCOLORS = {
 }
 
 
+import retrain
+
+#retain model on game
+def retrainModel(request,pk):
+    print('retraining model on game id: ', pk)
+    g = Game.objects.filter(pk=pk).first()
+    path = 'csv/'+request.user.username+str(g.csvid)+'.csv'
+    r = retrain.retrain_model(g.model,path,request.user.username,g.home_score,g.visitor_score)
+
+    return redirect('edit-predict',pk)
+
+
 #clear user's profile stats in order to reset account...
 def clearStats(request):
     #dont clear stats for demo user
@@ -1369,7 +1381,15 @@ def editGame(request,pk,**kwargs):
     context['g'] = g
     context['model']=g.values('model')[0]['model']
     context['bet']=g.values('bet')[0]['bet']
+    try:
+        modelSettings = load_obj(str(request.user.username)+'ModelSettings'+g.values('model')[0]['model'])
+        context['customModel']=True
+        
+    except FileNotFoundError:
+        context['customModel']=False
     
+    
+
     #set complex spread
     if g.values('complexSpread')[0]['complexSpread'] is not None:
         foo = json.loads(g.values('complexSpread')[0]['complexSpread'])
