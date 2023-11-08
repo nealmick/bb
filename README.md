@@ -49,7 +49,7 @@ http://localhost:6006/
 
 ```
 
-# TensorBoard:  https://nbadata.cloud/tensorboard/?darkMode=true
+# TensorBoard:  nbadata.cloud/tensorboard/
 Note: Tensorboard is not always live.
 <img src="https://i.imgur.com/P8hmfxM.png" width="800" height="300" />
 <img src="https://i.imgur.com/Ha6OHxn.png" width="800" height="300" />
