@@ -37,103 +37,71 @@ The platform acts as a Tensorflow wrapper that empowers you to train, and refine
   
 
 ```bash
-
-  
   
 
 git  clone  https://github.com/nealmick/bb
 
-  
-
 cd  bb
-
-  
-  
 
 ## install requirements
 
-  
 
 python3  -m  venv  env
 
   
-
 source  env/bin/activate
-
   
 
 pip  install  -r  requirements.txt
 
-  
-  
 
 ## make database
-
   
 
 python3  manage.py  makemigrations  predict  users
 
-  
 
 python3  manage.py  migrate
 
-  
 
 ## Create your user
 
-  
 
 python3  manage.py  createsuperuser
 
   
-  
-
 ## start server
-
   
 
 python3  manage.py  runserver
 
-  
-  
 
 ## admin url
 
-  
 
 http://localhost:8000/admin
 
-  
-  
 
 ## webapp url
 
-  
 
 http://localhost:8000/
-
-  
   
 
 ## review your model training logs with TensorBoard:
 
-  
 
 ## start tensorboard server:
 
-  
 
 tensorboard  --logdir  logs/fit
 
-  
 
 ## TensorBoard URL
 
-  
 
 http://localhost:6006/
 
-  
 
 ```
 
