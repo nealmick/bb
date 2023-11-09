@@ -6,8 +6,6 @@ urlpatterns = [
     #path('', GameListView.as_view(), name='home-predict'),
 
 
-    path('retrain/<int:pk>', views.retrainModel, name='retrain-model'),
-
     path('clearstats/', views.clearStats, name='clear-stats'),
     path('cleargames/', views.clearGames, name='clear-games'),
 
