@@ -451,4 +451,3 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
   
 
 # [About Project](https://nbadata.cloud/predict/faq/)
-](https://github.com/nealmick/bb#for-each-margin-level-the-following-statistics-are-captured)
