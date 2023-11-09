@@ -103,17 +103,6 @@ TEAMCOLORS = {
 }
 
 
-import retrain
-
-#retain model on game
-def retrainModel(request,pk):
-    print('retraining model on game id: ', pk)
-    g = Game.objects.filter(pk=pk).first()
-    path = 'csv/'+request.user.username+str(g.csvid)+'.csv'
-    r = retrain.retrain_model(g.model,path,request.user.username,g.home_score,g.visitor_score)
-
-    return redirect('edit-predict',pk)
-
 
 #clear user's profile stats in order to reset account...
 def clearStats(request):
