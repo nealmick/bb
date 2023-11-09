@@ -34,8 +34,6 @@ The platform acts as a Tensorflow wrapper that empowers you to train, and refine
   
 
 ```bash
-  
-
 git  clone  https://github.com/nealmick/bb
 
 cd  bb
