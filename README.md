@@ -387,8 +387,6 @@ For more technical details on the machine learning aspects such as activation fu
 
   
 
-  
-
 #### other files:
 
   
@@ -403,16 +401,9 @@ For more technical details on the machine learning aspects such as activation fu
 
 3. OBJ - stores pickle object data files for quick loading player stats
 
-  
 
-  
 
 Libraries used include Tensorflow, Numpy, Django, and Pickle.
-
-  
-
-  
-  
 
   
 
