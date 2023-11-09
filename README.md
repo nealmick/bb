@@ -1,4 +1,4 @@
-
+[
   
   
 
@@ -207,91 +207,91 @@ This nuanced approach ensures that not only are the long-term trends captured th
 
   
 
-##### Field Goal Three (FG3M & FG3A)
+ Field Goal Three (FG3M & FG3A)
 
 Includes both the three-point attempts and the successful three-point shots, offering insights into a team's long-range shooting ability, both in volume and accuracy.
 
   
 
-##### Field Goal (FGM & FGA)
+ Field Goal (FGM & FGA)
 
 Consists of field goals made (FGM) and field goals attempted (FGA), providing insight into a team's overall shooting performance and offensive effectiveness from all areas of the court.
 
   
 
-##### Assists (AST)
+ Assists (AST)
 
 Represents the total number of assists a player averages per game. Assists are a strong indicator of a team's offensive flow and the ability of players to create scoring opportunities for each other.
 
   
 
-##### Blocks (BLK)
+ Blocks (BLK)
 
 Indicates the average number of shots a player blocks per game. This stat is a measure of a player's defensive impact and the team's ability to prevent scoring by the opposition.
 
   
 
-##### Rebounds (DREB & OREB)
+ Rebounds (DREB & OREB)
 
 Covers two separate statistics: defensive rebounds (DREB) and offensive rebounds (OREB). Together, they paint a picture of how well a team controls the ball after a missed shot, which is crucial for both defense and second-chance points.
 
   
 
-##### Free Throw (FTM & FTA)
+ Free Throw (FTM & FTA)
 
 Comprises free throws made (FTM) and free throws attempted (FTA), which can be critical in close games and also serve as a proxy for a team's ability to draw fouls.
 
   
 
-##### Personal Foul (PF)
+ Personal Foul (PF)
 
 The average number of fouls a player commits per game. While aggressive play can lead to turnovers and disrupted plays, it can also result in fouls that give away free points and lead to players getting into foul trouble.
 
   
 
-##### Points (PTS)
+ Points (PTS)
 
 The average number of points a player scores per game. This is the most direct measure of offensive output and a key component in predicting game scores.
 
   
 
-##### Steals (STL)
+ Steals (STL)
 
 The average number of times a player steals the ball from the opponent. Steals can lead to fast-break opportunities and are an indicator of a team's defensive aggressiveness.
 
   
 
-##### Turnovers (TO)
+ Turnovers (TO)
 
 Represents how often a player loses possession of the ball to the opposing team. Keeping turnovers low is essential for maintaining offensive efficiency.
 
   
 
-##### Games Played
+ Games Played
 
 Represents the experience stage of the season.
 
   
 
-##### Point Spread
+ Point Spread
 
 The expected margin of victory according to vegas.
 
   
 
-#####  Players Per Team
+  Players Per Team
 
 Adjusting the number of players per team considered in the dataset allows for focusing on the core lineup or a broader set of players, which may change the model's focus from star players to overall team performance.
 
   
 
-#####  Win/Loss Streaks
+  Win/Loss Streaks
 
 Consecutive wins or losses a team has had.
 
   
 
-##### Win/Loss Record
+ Win/Loss Record
 
 Overall performance of the team throughout the season.
 
@@ -486,3 +486,4 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
   
 
 # [About Project](https://nbadata.cloud/predict/faq/)
+](https://github.com/nealmick/bb#for-each-margin-level-the-following-statistics-are-captured)
