@@ -111,26 +111,16 @@ def retrain_model(modelNum,path,username,home_score,visitor_score):
     #x_train = tf.keras.utils.normalize(x_train, axis=1)
     #x_test = tf.keras.utils.normalize(x_test, axis=1)
 
-
-    #define squential model
-
-    #compile model
-    model.compile(optimizer=modelSettings['optimizer'], loss='mean_squared_error', metrics=['accuracy'])
-  # After dropping columns and normalizing if needed
-    x_train = data
-    home_score = float(home_score)
-    visitor_score = float(visitor_score)
-
     # Create y_train with the home_score and visitor_score
     y_train = np.array([[home_score, visitor_score]])
 
     # Since we're not normalizing in this snippet, if you have normalization in your workflow, apply it to x_train here
 
     # Fit the model on this single game data
-    model.fit(x_train, y_train, epochs=1, batch_size=1, shuffle=False)
+    #model.fit(x_train, y_train, epochs=1, batch_size=1, shuffle=False)
 
     # Save the new weights
-    model.save_weights('./userModels/'+username+'/'+str(modelNum)+'/checkpoints/my_checkpoint')
+    #model.save_weights('./userModels/'+username+'/'+str(modelNum)+'/checkpoints/my_checkpoint')
 
     return 'Model retrained on the new game data, the update model weights hae also been saved.'
 
