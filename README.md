@@ -1,6 +1,3 @@
-[
-  
-  
 
 # :basketball: [NBA Data Cloud!](https://nbadata.cloud/)
 
