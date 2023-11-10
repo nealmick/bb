@@ -363,6 +363,48 @@ For more technical details on the machine learning aspects such as activation fu
   
   
   
+## Game Page Documentation
+
+
+#### Overview
+
+The Game Edit Page is designed to give users the ability to analyze and modify player stats before finalizing game predictions. The predictive model provides estimated scores for both the home and visiting teams, presented as linear float values (decimals) for precision.
+
+#### Functionalities
+
+-   **Strength Bar:**  Displays the plus-minus score, calculated by subtracting visitor predicted score from home predicted score.
+-   **Margin:**  calculated as the distance between the predicted plus-minus score and the point spread.
+-   **Team Statistics:**  Shows win/loss record, streaks, and other team-based stats below the predictions.
+-   **Data Points and Model Inputs:**  All game stats are displayed, although custom models are able to use a subset of the full game data. The subset of data features can be selected during training. Which features a model uses can not be changed after training. The data features set for any model can be viewed on the model training page.
+-   **Editable Model Inputs:**  The top 7 players for each team can be removed and there season averages can be edited on a game by game basis.
+-   **Remove Players:**  Removing players must be done before editing stats. When you remove a player the next best player will be added to the game to fill there spot. Effectively the game is recreated without the removed players in the background.
+-   **Edit Stats:**  The top 7 players season averages can be edited by clicking a stat in the table, change it and press enter. when your done editing the game and ready for the model to make the prediction, your changes will be written to the dataset before computing the result.
+-   **Injury Report:**  Below the editable input table, shows player injury status provided by espn. Injured players are not automatically removed. you must make the final decision to remove the player.
+-   **Vegas Odds:**  Below the injury table, there is a odds table displaying vegas odds from various book keepers.
+-   **Last Game Stats:**  Below the vegas odds table there are 2 more tables showing the previous game for both the home and visitor teams. The Last game table's are not editable and are currently input for every model (non-optional).
+
+#### Editing Predictions
+
+Before making a prediction, users can adjust player availability and expected performance. Hover over a player's name to remove them due to injury. Edit player season averages if you expect their performance to deviate from the norm.
+
+#### Last Game Stats
+
+Currently the last game for both the home and visitor teams are used as model input features. Each previous game contains the top 5 players stats from the featured team and there opponent, along with the game score. The last game's are input for every model. There is currently no option to edit or remove players from the last game. Models currently cannot be trained without last game data. Last game data is used for all models and is not editable.
+
+#### Making Predictions
+
+With all adjustments made, users can proceed to make a prediction. The model calculates the outcome with the new parameters.
+
+#### Controls
+
+-   **Update Odds:**  This feature refreshes the data in the vegas odds table.
+-   **Get Score:**  Updates the actual game score. Marks game as finished and triggers the game to be counted on the profile stats.
+-   **Bet:**  Marks game as a bet true or false which can be used to track activity from the profile game bets page  [here](https://nbadata.cloud/predict/bets/).
+-   **ReTrain:**  Only available after a game is final and if a custom model was used (the default model cannot be retrained). This feature allows the model to be trained on the result of a specific game.
+  
+#### Navigation and Usage
+
+The interface is designed to be intuitive, with interactive elements for an easy and informative user experience.
   
   
   
