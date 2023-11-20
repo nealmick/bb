@@ -1,6 +1,20 @@
 # :basketball: [NBA Data Cloud!](https://nbadata.cloud/)  
 
-The platform acts as a Tensorflow wrapper that empowers you to train, and refine machine learning models with ease. Utilize our extensive historical datasets and live game statistics to develop models that can analyze patterns, forecast game outcomes, and provide a statistical edge.
+Some key points about our NBA analytical modeling project, emphasizing what this tool can and cannot do.
+
+Project Complexity and Effort Required:
+This tool is not designed for quick wins or easy money. Beating Vegas odds is a complex task, and our tool reflects this complexity. It's evolved from a simple concept to a sophisticated system with multiple layers and features. This is not a typical user-friendly consumer product; it's a data and statistical modeling system, requiring a deep understanding of its intricacies.
+
+Data and Models:
+Our project is divided into two main components: data and models.
+* Data: We pride ourselves on having one of the most comprehensive datasets available. However, it's important to note that our system does not guarantee model accuracy. External factors and user options add to the complexity.
+* Models: Initially, the goal was to develop a model that could consistently beat Vegas lines. Over time, we've shifted focus to enhancing model development and evaluation tools. This includes our model training dashboard, model slots, data feature settings, and RLHF retraining. As opposed to a single model.
+
+Capabilities and Limitations:
+Our tool is arguably one of the best publicly available machine learning tools for NBA analysis. However, it's not a simple "one-click money printer." The models do outperform random chance significantly, but understanding and using them effectively is crucial.
+
+Do not go into this thinking its an easy way to make money.  Success with this tool is highly unlikely if you lack a thorough understanding of how to use it effectively.
+
 
 
 <img  src="https://i.imgur.com/KIzXqh6.png"  width="600"  height="400"  />
