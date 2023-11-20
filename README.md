@@ -1,7 +1,5 @@
 # :basketball: [NBA Data Cloud!](https://nbadata.cloud/)  
 
-#### Some key points about our NBA analytical modeling project, emphasizing what this tool can and cannot do.
-
 # Project Complexity and Effort Required:
 This tool is not designed for quick wins or easy money. Beating Vegas odds is a complex task, and our tool reflects this complexity. It's evolved from a simple concept to a sophisticated system with multiple layers and features. This is not a typical user-friendly consumer product; it's a data and statistical modeling system, requiring a deep understanding of its intricacies.
 
