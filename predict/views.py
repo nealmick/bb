@@ -2340,33 +2340,47 @@ def historyBestPlayer(players):
 
 
 
-def getLastGame(teamid,date):
+
+def getLastGame(teamid, date):
     format = '%Y-%m-%d'
-  
-    # convert from string format to datetime format
+    datetime_format = '%Y-%m-%dT%H:%M:%S.%fZ'  # Format for parsing game dates
+
+    # Convert from string format to datetime format
     inputDate = datetime.strptime(date, format)
     
-    today = inputDate-timedelta(days=360)
-    start = today.strftime("%Y/%m/%d")
-    today = inputDate-timedelta(days=1)
-    end = today.strftime("%Y/%m/%d")
-    url = 'https://www.balldontlie.io/api/v1/games?start_date='+start+'&end_date='+end+'&&team_ids[]='+teamid+'&per_page=100'
-    url = 'https://www.balldontlie.io/api/v1/games?start_date='+start+'&end_date='+end+'&&team_ids[]='+teamid+'&per_page=100'
+    today = inputDate - timedelta(days=360)
+    start = today.strftime("%Y-%m-%d")
+    today = inputDate - timedelta(days=1)
+    end = today.strftime("%Y-%m-%d")
+    url = f'https://www.balldontlie.io/api/v1/games?start_date={start}&end_date={end}&team_ids[]={teamid}&per_page=100'
 
-    r = req(url)
-    r = r['data']
-    print(type(r))
-    r.reverse()
-    lastID = None
-    for game in r:
-        print(game['status'],game['id'],game['date'],game['home_team_score'],game['visitor_team_score'],game['status'])
-        print(game['home_team_score'] != 0)
-        print(game['visitor_team_score'] != 0)
-        if int(game['home_team_score']) != 0 and int(game['visitor_team_score']) != 0:
-            lastID=game['id']
-            break
+    r = req(url)  # Using your original request function
+    games = r['data']
+    games.reverse()
+
+    closest_game_1 = None
+    closest_game_2 = None
+    closest_diff_1 = timedelta.max
+    closest_diff_2 = timedelta.max
+
+    for game in games:
+        # Skip games without scores
+        if int(game['home_team_score']) == 0 or int(game['visitor_team_score']) == 0:
+            continue
+
+        game_date = datetime.strptime(game['date'], datetime_format)
+        diff = abs(inputDate - game_date)
+
+        if diff < closest_diff_1:
+            closest_game_2, closest_diff_2 = closest_game_1, closest_diff_1
+            closest_game_1, closest_diff_1 = game, diff
+        elif diff < closest_diff_2:
+            closest_game_2, closest_diff_2 = game, diff
+
+    lastID = closest_game_1['id'] if closest_game_1 else None
+    lastID2 = closest_game_2['id'] if closest_game_2 else None
+
     return lastID
-
 
 
 # write indevidual csv file for game prediction
