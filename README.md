@@ -107,19 +107,6 @@ http://localhost:6006/
 
   
 
-# Feature Correlation:
-
-  
-
-<img  src="https://i.imgur.com/xJMmvZR.png"  width="800"  height="400"  />
-
-  
-
-<img  src="https://i.imgur.com/m1xfYkb.png"  width="800"  height="600"  />
-
-  
-  
-  
   
   
   
@@ -233,6 +220,17 @@ Consecutive wins or losses a team has had.
 
 Overall performance of the team throughout the season.
 
+
+
+  
+# Feature Correlation:
+
+<img  src="https://i.imgur.com/xJMmvZR.png"  width="800"  height="400"  />
+
+<img  src="https://i.imgur.com/m1xfYkb.png"  width="800"  height="600"  />
+
+  
+  
   
   
   
