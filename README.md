@@ -1,3 +1,9 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Issues][issues-shield]][issues-url]
+[![Stargazers][stars-shield]][stars-url]
+
+
+
 # :basketball: [NBA Data Cloud!](https://nbadata.cloud/)  
 
 # Project Complexity and Effort Required:
@@ -462,3 +468,12 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
   
 
 # [About Project](https://nbadata.cloud/predict/faq/)
+
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/day-mon/sports-betting-ai.svg?style=for-the-badge
+[contributors-url]: https://github.com/nealmick/bb/graphs/contributors
+[issues-shield]: https://img.shields.io/github/issues/day-mon/sports-betting-ai.svg?style=for-the-badge
+[issues-url]: https://github.com/nealmick/bb/issues
+[stars-shield]: https://img.shields.io/github/stars/day-mon/sports-betting-ai.svg?style=for-the-badge
+[stars-url]: https://github.com/nealmick/bb/stargazers
