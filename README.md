@@ -29,7 +29,7 @@ Install limitations:
 * No RLHF retraining or continuous training, as-well as retrain strengths.
 * Limited to single game history, live server is able to capture more momentum data.
 * Arbitrage is currently only available on live server.
-* New features are not generally available in this repo, and are only supported on the live server. 
+* New features are not generally available in this repo, and are only supported on the live server initially. 
 
 
 
