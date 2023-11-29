@@ -9,7 +9,7 @@ Beating Vegas odds is a complex task, and our tool reflects this complexity. It'
 # Data and Models:
 The project is divided into two main components: data and models.
 * Data: We pride ourselves on having one of the most comprehensive datasets available.  Overall we capture short term high frequency momentum data as-well as long term seasonal averages.  This approach creates holistic information at all frequencies, and allows us to map game scores to input data efficiently.   
-* Models: The platform includes our model training dashboard, model slots, data feature settings, and RLHF retraining. it's important to note that our system does not guarantee model accuracy.  Our models generally do outperform random chance significantly, but understanding and using them effectively is crucial.
+* Models: The platform includes our model training dashboard, model slots, data feature settings, and RLHF retraining. it's important to note that our system does not guarantee model accuracy.  Our models generally do outperform random chance, but understanding and using them effectively is crucial.
 
 
 <img  src="https://i.imgur.com/KIzXqh6.png"  width="600"  height="400"  />
