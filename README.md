@@ -27,9 +27,9 @@ The project is divided into two main components: data and models.
 # Install:
 #### note: There are certain features that are not supported on local installs.  
 Install limitations:
-No RLHF retraining or continous training, aswell as retrain strengths.
-Limited to single game history, live server is able to capture more momentum data.
-Arbitrage is currently only available on live server.
+* No RLHF retraining or continous training, aswell as retrain strengths.
+* Limited to single game history, live server is able to capture more momentum data.
+* Arbitrage is currently only available on live server.
 New features are not generally available in this repo, and are only supported on the live server. 
 
 
