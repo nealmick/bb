@@ -2222,9 +2222,9 @@ def futureGame(spread,homeTeamStats,visitorTeamStats,date,homeAbv,visitorAbv,pat
             vlastID = getLastGame(visitorTeamID,date)
             print(hlastID,vlastID,'----------+++-------')
 
-            hurl = 'https://www.balldontlie.io/api/v1/stats?game_ids[]='+str(hlastID)
+            hurl = 'https://www.balldontlie.io/api/v1/stats?game_ids[]='+str(hlastID)+'&per_page=100'
             hLastGame = req(hurl)
-            vurl = 'https://www.balldontlie.io/api/v1/stats?game_ids[]='+str(vlastID)
+            vurl = 'https://www.balldontlie.io/api/v1/stats?game_ids[]='+str(vlastID)+'&per_page=100'
             vLastGame = req(vurl)
 
 
