@@ -7,31 +7,19 @@
 # :basketball: [NBA Data Cloud!](https://nbadata.cloud/)  
 
 # Project Complexity and Effort Required:
-This tool is not designed for quick wins or easy money. Beating Vegas odds is a complex task, and our tool reflects this complexity. It's evolved from a simple concept to a sophisticated system with multiple layers and features. This is not a typical user-friendly consumer product; it's a data and statistical modeling system, requiring a deep understanding of its intricacies.
+Beating Vegas odds is a complex task, and our tool reflects this complexity. It's evolved from a simple concept to a sophisticated system with multiple layers and features. This is not a typical user-friendly consumer product; it's a data and statistical modeling system, requiring a deep understanding of its intricacies.
 
 #### Data and Models:
-Our project is divided into two main components: data and models.
-* Data: We pride ourselves on having one of the most comprehensive datasets available. However, it's important to note that our system does not guarantee model accuracy. External factors and user options add to the complexity.
-* Models: Initially, the goal was to develop a model that could consistently beat Vegas lines. Over time, we've shifted focus to enhancing model development and evaluation tools. This includes our model training dashboard, model slots, data feature settings, and RLHF retraining. As opposed to a single model.
-
-#### Capabilities and Limitations:
-Our tool is arguably one of the best publicly available machine learning tools for NBA analysis. However, it's not a simple "one-click money printer." The models do outperform random chance significantly, but understanding and using them effectively is crucial.
-
-Do not go into this thinking its an easy way to make money.  Success with this tool is highly unlikely if you lack a thorough understanding of how to use it effectively.
-
+The project is divided into two main components: data and models.
+* Data: We pride ourselves on having one of the most comprehensive datasets available.  Overall we capture short term high frequency momentum data aswell as long term seasonal averages.  This approach creates wholeistic information at all frequencies, and allows us to map game scores to input data efficiently.   
+* Models: The platform includes our model training dashboard, model slots, data feature settings, and RLHF retraining. it's important to note that our system does not guarantee model accuracy.  Our models generally do outperform random chance significantly, but understanding and using them effectively is crucial.
 
 
 <img  src="https://i.imgur.com/KIzXqh6.png"  width="600"  height="400"  />
 
-  
-
 <img  src="https://i.imgur.com/LY7u9xB.png"  width="600"  height="300"  />
 
-  
-
 <img  src="https://i.imgur.com/bisms9b.png"  width="600"  height="350"  />
-
-  
 
 <img  src="https://i.imgur.com/H4ClI69.png"  width="600"  height="300"  />
 
@@ -40,10 +28,14 @@ Do not go into this thinking its an easy way to make money.  Success with this t
   
 
 # Install:
+#### note: There are certain features that are not supported on local installs.  
+Install limitations:
+No RLHF retraining or continous training, aswell as retrain strengths.
+Limited to single game history, live server is able to capture more momentum data.
+Arbitrage is currently only available on live server.
+New features are not generally available in this repo, and are only supported on the live server. 
 
-  
 
-  
 
 ```bash
 git  clone  https://github.com/nealmick/bb
