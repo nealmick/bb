@@ -469,11 +469,9 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
 # [About Project](https://nbadata.cloud/predict/faq/)
 
-
-
-[contributors-shield]: https://img.shields.io/github/contributors/day-mon/sports-betting-ai.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/nealmick/bb.svg?style=for-the-badge
 [contributors-url]: https://github.com/nealmick/bb/graphs/contributors
-[issues-shield]: https://img.shields.io/github/issues/day-mon/sports-betting-ai.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/nealmick/bb.svg?style=for-the-badge
 [issues-url]: https://github.com/nealmick/bb/issues
-[stars-shield]: https://img.shields.io/github/stars/day-mon/sports-betting-ai.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/nealmick/bb.svg?style=for-the-badge
 [stars-url]: https://github.com/nealmick/bb/stargazers
