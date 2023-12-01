@@ -391,10 +391,11 @@ The Game Edit Page is designed to give users the ability to analyze and modify p
 #### Editing Predictions
 
 Before making a prediction, users can adjust player availability and expected performance. Hover over a player's name to remove them due to injury. Edit player season averages if you expect their performance to deviate from the norm.
-![Screen Shot 2023-12-01 at 2 38 18 PM](https://github.com/nealmick/bb/assets/33704976/139ac0e0-a0c9-4b6b-9b6b-79a2618c0cb0)
+<img  src="https://github.com/nealmick/bb/assets/33704976/139ac0e0-a0c9-4b6b-9b6b-79a2618c0cb0"  width="600"  height="400"  />
+
 
 #### Remove players
-![Screen Shot 2023-12-01 at 2 40 37 PM](https://github.com/nealmick/bb/assets/33704976/90f05963-3770-4790-87a7-ae6d510d00f4)
+<img  src="https://github.com/nealmick/bb/assets/33704976/90f05963-3770-4790-87a7-ae6d510d00f4"  width="600"  height="400"  />
 
 
 #### Last Game Stats
