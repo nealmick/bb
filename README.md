@@ -394,7 +394,6 @@ Before making a prediction, users can adjust player availability and expected pe
 ![Screen Shot 2023-12-01 at 2 38 18 PM](https://github.com/nealmick/bb/assets/33704976/139ac0e0-a0c9-4b6b-9b6b-79a2618c0cb0)
 
 #### Remove players
-Simply click the player name before inputs are locked.
 ![Screen Shot 2023-12-01 at 2 40 37 PM](https://github.com/nealmick/bb/assets/33704976/90f05963-3770-4790-87a7-ae6d510d00f4)
 
 
