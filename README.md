@@ -412,14 +412,33 @@ With all adjustments made, users can proceed to make a prediction. The model cal
 -   **Get Score:**  Updates the actual game score. Marks game as finished and triggers the game to be counted on the profile stats.
 -   **Bet:**  Marks game as a bet true or false which can be used to track activity from the profile game bets page  [here](https://nbadata.cloud/predict/bets/).
 -   **ReTrain:**  Only available after a game is final and if a custom model was used (the default model cannot be retrained). This feature allows the model to be trained on the result of a specific game.
+
+
+  
+
+#### Profit Calculation Explained
+The Concept of Unlimited Bankroll: Our model simulates profit calculation with an unlimited bankroll. This method, known as 'paper trading,' involves hypothetical transactions to gauge potential profitability without financial risk.
+Calculation Mechanics: Profit is computed by simulating continuous betting (either +190 or -100) without reinvesting winnings. This gives a clear picture of the model's performance over time.
+Breaking Even: A vital benchmark in our model is achieving a margin accuracy of over 52.5%. Mathematically, this translates to breaking even (52.5% win rate x $190 win payout = $9975) when betting with an almost $10,000 bankroll.
+
+#### The Role of Leverage
+Leverage Basics: Leverage in betting means using borrowed capital (in our model, theoretical funds) to increase the potential return of an investment. It amplifies both gains and losses.
+Non-Leveraged vs. Leveraged Scenarios:
+Without Leverage: With a 53.5% win rate, a $100 bet yields a modest profit. For example, 53.5% * $190 equals a return of $10,165.
+With Leverage: By applying 10x leverage, each bet increases to $1,000. The math changes to 53.5% * $1,900, resulting in a much larger return of $101,650, scaling the profit from $165 to $1,650.
+Illustrating Leverage Impact: This stark difference showcases how a small edge, when leveraged, can lead to significant gains. But, it’s crucial to understand the associated risks.
+
+#### Understanding Risk and Variance
+The Impact of Variance: Variance in betting refers to the ups and downs in short-term outcomes. It's a measure of the unpredictability of results.
+Risks of a Losing Streak: Especially with leverage, a losing streak can exponentially increase losses. This risk highlights the importance of a well-thought-out betting strategy.
+Risk Assessment: Calculating the risk involves understanding the probability of different outcomes and preparing for potential losing streaks.
+Leverage Management: Deciding how much leverage to apply is a critical decision. Over-leveraging can lead to substantial losses, particularly during periods of high variance.
   
 #### Navigation and Usage
 
 The interface is designed to be intuitive, with interactive elements for an easy and informative user experience.
-  
-  
-  
 
+  
 #### Django apps:
 
   
