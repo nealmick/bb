@@ -1,4 +1,4 @@
-# :basketball: [NBA Data Cloud!](https://nbadata.cloud/)  
+# :basketball: [NBAData.Cloud!](https://nbadata.cloud/)  
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
@@ -26,60 +26,7 @@ Please be advised NBA Data Cloud is provided as an analytical tool and should be
 
   
 # Install:
-#### note: There are certain features that are not supported on local installs.  
-Install limitations:
-* No RLHF retraining or continuous training, as-well as retrain strengths.
-* Limited to single game history, live server is able to capture more momentum data.
-* Arbitrage is currently only available on live server.
-* New features are not generally available in this repo, and are only supported on the live server initially. 
-
-
-
-
-```bash
-git  clone  https://github.com/nealmick/bb
-cd  bb
-
-## install requirements
-
-python3  -m  venv  env
-source  env/bin/activate
-pip  install  -r  requirements.txt
-
-
-## make database
-python3  manage.py  makemigrations  predict  users
-python3  manage.py  migrate
-
-
-## Create your user
-python3  manage.py  createsuperuser
-  
-## start server
-python3  manage.py  runserver
-
-
-## admin url
-http://localhost:8000/admin
-
-
-## webapp url
-http://localhost:8000/
-  
-
-## review your model training logs with TensorBoard:
-## start tensorboard server:
-tensorboard  --logdir  logs/fit
-
-## TensorBoard URL
-http://localhost:6006/
-
-
-```
-
-  
-
-  
+#### https://github.com/nealmick/bb/discussions/47
 
 # [Tensorboard Server](https://nbadata.cloud/tensorboard/)
 
