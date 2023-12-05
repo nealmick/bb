@@ -29,13 +29,6 @@ Please be advised NBA Data Cloud is provided as an analytical tool and should be
 
   
 
-  
-
-# Data Feature Settings
-
-  
-
-Understanding the data features and how they can be configured is crucial for optimizing model performance and relevance. Here's a breakdown of each feature and its role:
 
   
 
@@ -62,11 +55,6 @@ This nuanced approach ensures that not only are the long-term trends captured th
   
 
 
-  
-
-Note: The settings provided here are tailored for NBA data and are designed to balance the bias-variance tradeoff, ensuring the model can generalize well from training data to unseen data.
-
-  
   
   
 
@@ -273,7 +261,11 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
 # Definitions:
 
+
+
+  
 #### Data;
+  Understanding the data features and how they can be configured is crucial for optimizing model performance and relevance. Here's a breakdown of each feature and its role:
 
  Field Goal Three (FG3M & FG3A)
 
@@ -362,10 +354,11 @@ Consecutive wins or losses a team has had.
  Win/Loss Record
 
 Overall performance of the team throughout the season.
-
+]
 #### Models
+The settings provided here are tailored for NBA data and are designed to balance the bias-variance tradeoff, ensuring the model can generalize well from training data to unseen data.
 
-#### Epochs
+ Epochs
 
 The number of epochs represents the number of complete passes through the entire training dataset. The more epochs, the more the model has a chance to learn and adjust its weights, but too many can lead to overfitting.
 
