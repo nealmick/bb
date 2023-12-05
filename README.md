@@ -26,7 +26,7 @@ Please be advised NBA Data Cloud is provided as an analytical tool and should be
 
   
 # Install:
-#### https://github.com/nealmick/bb/discussions/47
+# https://github.com/nealmick/bb/discussions/47
 
 # [Tensorboard Server](https://nbadata.cloud/tensorboard/)
 
