@@ -205,10 +205,8 @@ Leverage Management: Deciding how much leverage to apply is a critical decision.
 
 # Definitions:
 
-
-
   
-#### Data;
+#### Data
   Understanding the data features and how they can be configured is crucial for optimizing model performance and relevance. Here's a breakdown of each feature and its role:
 
  Field Goal Three (FG3M & FG3A)
@@ -298,8 +296,10 @@ Consecutive wins or losses a team has had.
  Win/Loss Record
 
 Overall performance of the team throughout the season.
-]
+
+
 #### Models
+
 The settings provided here are tailored for NBA data and are designed to balance the bias-variance tradeoff, ensuring the model can generalize well from training data to unseen data.
 
  Epochs
