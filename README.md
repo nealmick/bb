@@ -202,62 +202,6 @@ Leverage Management: Deciding how much leverage to apply is a critical decision.
 # [Tensorboard Server](https://nbadata.cloud/tensorboard/)
 
   
-#### Navigation and Usage
-
-The interface is designed to be intuitive, with interactive elements for an easy and informative user experience.
-
-  
-#### Django apps:
-
-  
-
-1. bb - main django app
-
-  
-
-2. etc - code for index page
-
-  
-
-3. predict - logic for all predictons
-
-  
-
-4. users - handles all the users
-
-  
-
-#### other files:
-
-  
-
-1. checkpoints - stores trained weights
-
-  
-
-2. CSV - stores individual csv files for each prediction made
-
-  
-
-3. OBJ - stores pickle object data files for quick loading player stats
-
-
-
-Libraries used include Tensorflow, Numpy, Django, and Pickle.
-
-  
-
-# [About Project](https://nbadata.cloud/predict/faq/)
-
-[contributors-shield]: https://img.shields.io/github/contributors/nealmick/bb.svg?style=for-the-badge
-[contributors-url]: https://github.com/nealmick/bb/graphs/contributors
-[issues-shield]: https://img.shields.io/github/issues/nealmick/bb.svg?style=for-the-badge
-[issues-url]: https://github.com/nealmick/bb/issues
-[stars-shield]: https://img.shields.io/github/stars/nealmick/bb.svg?style=for-the-badge
-[stars-url]: https://github.com/nealmick/bb/stargazers
-
-
-
 
 # Definitions:
 
@@ -405,4 +349,62 @@ Regularization techniques like L1 and L2 regularization are used to prevent over
 If enabled, this feature will restore model weights from the epoch with the best value of the monitored metric at the end of training, ensuring you keep the most optimal version of the model.
 
   
+
+
+
+#### Navigation and Usage
+
+The interface is designed to be intuitive, with interactive elements for an easy and informative user experience.
+
+  
+#### Django apps:
+
+  
+
+1. bb - main django app
+
+  
+
+2. etc - code for index page
+
+  
+
+3. predict - logic for all predictons
+
+  
+
+4. users - handles all the users
+
+  
+
+#### other files:
+
+  
+
+1. checkpoints - stores trained weights
+
+  
+
+2. CSV - stores individual csv files for each prediction made
+
+  
+
+3. OBJ - stores pickle object data files for quick loading player stats
+
+
+
+Libraries used include Tensorflow, Numpy, Django, and Pickle.
+
+  
+
+# [About Project](https://nbadata.cloud/predict/faq/)
+
+[contributors-shield]: https://img.shields.io/github/contributors/nealmick/bb.svg?style=for-the-badge
+[contributors-url]: https://github.com/nealmick/bb/graphs/contributors
+[issues-shield]: https://img.shields.io/github/issues/nealmick/bb.svg?style=for-the-badge
+[issues-url]: https://github.com/nealmick/bb/issues
+[stars-shield]: https://img.shields.io/github/stars/nealmick/bb.svg?style=for-the-badge
+[stars-url]: https://github.com/nealmick/bb/stargazers
+
+
 
