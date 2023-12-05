@@ -1,4 +1,4 @@
-# 🏀 [NBAData.Cloud](https://nbadata.cloud/)  
+# 🏀 [https://NBAData.Cloud](https://nbadata.cloud/)  
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
