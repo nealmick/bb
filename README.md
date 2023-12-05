@@ -43,100 +43,8 @@ Understanding the data features and how they can be configured is crucial for op
 
 Our datasets encompass over 20,000 game's, each with over 500 data points. By standard, our platform ingests the season averages of the top seven players from each team based on playing time. Additionally, to capture the momentum and form of the teams, we include a detailed breakdown of the previous game's statistics for the top five players from both the featured team and their opponents, as well as the final score of that game.
 
-  
 
 This nuanced approach ensures that not only are the long-term trends captured through seasonal averages, but also the immediate past performance, which might give insights into the current state of the teams and players.
-
-  
-
- Field Goal Three (FG3M & FG3A)
-
-Includes both the three-point attempts and the successful three-point shots, offering insights into a team's long-range shooting ability, both in volume and accuracy.
-
-  
-
- Field Goal (FGM & FGA)
-
-Consists of field goals made (FGM) and field goals attempted (FGA), providing insight into a team's overall shooting performance and offensive effectiveness from all areas of the court.
-
-  
-
- Assists (AST)
-
-Represents the total number of assists a player averages per game. Assists are a strong indicator of a team's offensive flow and the ability of players to create scoring opportunities for each other.
-
-  
-
- Blocks (BLK)
-
-Indicates the average number of shots a player blocks per game. This stat is a measure of a player's defensive impact and the team's ability to prevent scoring by the opposition.
-
-  
-
- Rebounds (DREB & OREB)
-
-Covers two separate statistics: defensive rebounds (DREB) and offensive rebounds (OREB). Together, they paint a picture of how well a team controls the ball after a missed shot, which is crucial for both defense and second-chance points.
-
-  
-
- Free Throw (FTM & FTA)
-
-Comprises free throws made (FTM) and free throws attempted (FTA), which can be critical in close games and also serve as a proxy for a team's ability to draw fouls.
-
-  
-
- Personal Foul (PF)
-
-The average number of fouls a player commits per game. While aggressive play can lead to turnovers and disrupted plays, it can also result in fouls that give away free points and lead to players getting into foul trouble.
-
-  
-
- Points (PTS)
-
-The average number of points a player scores per game. This is the most direct measure of offensive output and a key component in predicting game scores.
-
-  
-
- Steals (STL)
-
-The average number of times a player steals the ball from the opponent. Steals can lead to fast-break opportunities and are an indicator of a team's defensive aggressiveness.
-
-  
-
- Turnovers (TO)
-
-Represents how often a player loses possession of the ball to the opposing team. Keeping turnovers low is essential for maintaining offensive efficiency.
-
-  
-
- Games Played
-
-Represents the experience stage of the season.
-
-  
-
- Point Spread
-
-The expected margin of victory according to vegas.
-
-  
-
-  Players Per Team
-
-Adjusting the number of players per team considered in the dataset allows for focusing on the core lineup or a broader set of players, which may change the model's focus from star players to overall team performance.
-
-  
-
-  Win/Loss Streaks
-
-Consecutive wins or losses a team has had.
-
-  
-
- Win/Loss Record
-
-Overall performance of the team throughout the season.
-
 
 
   
@@ -152,64 +60,7 @@ Overall performance of the team throughout the season.
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
 
-# Model Training Settings
-
-  
-
-#### Epochs
-
-The number of epochs represents the number of complete passes through the entire training dataset. The more epochs, the more the model has a chance to learn and adjust its weights, but too many can lead to overfitting.
-
-  
-
-#### Batch Size
-
-Batch size determines the number of samples that will be propagated through the network at one time. A larger batch size provides a more accurate estimate of the gradient, but it also requires more memory and may take longer to process.
-
-  
-
-#### Layers and Neurons
-
-Each layer in a neural network attempts to learn different features about the data. The 'Layer Count' refers to the number of neurons in a layer. More neurons can capture more complex relationships but can also lead to overfitting and increased computational load.
-
-  
-
-#### Activation Functions
-
-Activation functions like ReLU (Rectified Linear Unit) introduce non-linear properties to the network, allowing it to learn more complex data patterns. More info here
-
-  
-
-#### Optimizer
-
-The optimizer is an algorithm or method used to change the attributes of the neural network, such as weights and learning rate, to reduce the losses. Optimizers like Adam combine the advantages of two other extensions of stochastic gradient descent. More info here
-
-  
-
-#### Early Stopping
-
-This technique prevents overfitting by terminating the training process if the model performance stops improving on a validation dataset.
-
-  
-
-#### Kernel Regularizer
-
-Regularization techniques like L1 and L2 regularization are used to prevent overfitting by penalizing the weights of the neurons.
-
-  
-
-#### Restore Best Weights
-
-If enabled, this feature will restore model weights from the epoch with the best value of the monitored metric at the end of training, ensuring you keep the most optimal version of the model.
 
   
 
@@ -416,3 +267,149 @@ Libraries used include Tensorflow, Numpy, Django, and Pickle.
 [issues-url]: https://github.com/nealmick/bb/issues
 [stars-shield]: https://img.shields.io/github/stars/nealmick/bb.svg?style=for-the-badge
 [stars-url]: https://github.com/nealmick/bb/stargazers
+
+
+
+
+# Definitions:
+
+#### Data;
+
+ Field Goal Three (FG3M & FG3A)
+
+Includes both the three-point attempts and the successful three-point shots, offering insights into a team's long-range shooting ability, both in volume and accuracy.
+
+  
+
+ Field Goal (FGM & FGA)
+
+Consists of field goals made (FGM) and field goals attempted (FGA), providing insight into a team's overall shooting performance and offensive effectiveness from all areas of the court.
+
+  
+
+ Assists (AST)
+
+Represents the total number of assists a player averages per game. Assists are a strong indicator of a team's offensive flow and the ability of players to create scoring opportunities for each other.
+
+  
+
+ Blocks (BLK)
+
+Indicates the average number of shots a player blocks per game. This stat is a measure of a player's defensive impact and the team's ability to prevent scoring by the opposition.
+
+  
+
+ Rebounds (DREB & OREB)
+
+Covers two separate statistics: defensive rebounds (DREB) and offensive rebounds (OREB). Together, they paint a picture of how well a team controls the ball after a missed shot, which is crucial for both defense and second-chance points.
+
+  
+
+ Free Throw (FTM & FTA)
+
+Comprises free throws made (FTM) and free throws attempted (FTA), which can be critical in close games and also serve as a proxy for a team's ability to draw fouls.
+
+  
+
+ Personal Foul (PF)
+
+The average number of fouls a player commits per game. While aggressive play can lead to turnovers and disrupted plays, it can also result in fouls that give away free points and lead to players getting into foul trouble.
+
+  
+
+ Points (PTS)
+
+The average number of points a player scores per game. This is the most direct measure of offensive output and a key component in predicting game scores.
+
+  
+
+ Steals (STL)
+
+The average number of times a player steals the ball from the opponent. Steals can lead to fast-break opportunities and are an indicator of a team's defensive aggressiveness.
+
+  
+
+ Turnovers (TO)
+
+Represents how often a player loses possession of the ball to the opposing team. Keeping turnovers low is essential for maintaining offensive efficiency.
+
+  
+
+ Games Played
+
+Represents the experience stage of the season.
+
+  
+
+ Point Spread
+
+The expected margin of victory according to vegas.
+
+  
+
+  Players Per Team
+
+Adjusting the number of players per team considered in the dataset allows for focusing on the core lineup or a broader set of players, which may change the model's focus from star players to overall team performance.
+
+  
+
+  Win/Loss Streaks
+
+Consecutive wins or losses a team has had.
+
+  
+
+ Win/Loss Record
+
+Overall performance of the team throughout the season.
+
+#### Models
+
+#### Epochs
+
+The number of epochs represents the number of complete passes through the entire training dataset. The more epochs, the more the model has a chance to learn and adjust its weights, but too many can lead to overfitting.
+
+  
+
+ Batch Size
+
+Batch size determines the number of samples that will be propagated through the network at one time. A larger batch size provides a more accurate estimate of the gradient, but it also requires more memory and may take longer to process.
+
+  
+
+ Layers and Neurons
+
+Each layer in a neural network attempts to learn different features about the data. The 'Layer Count' refers to the number of neurons in a layer. More neurons can capture more complex relationships but can also lead to overfitting and increased computational load.
+
+  
+
+ Activation Functions
+
+Activation functions like ReLU (Rectified Linear Unit) introduce non-linear properties to the network, allowing it to learn more complex data patterns. More info here
+
+  
+
+ Optimizer
+
+The optimizer is an algorithm or method used to change the attributes of the neural network, such as weights and learning rate, to reduce the losses. Optimizers like Adam combine the advantages of two other extensions of stochastic gradient descent. More info here
+
+  
+
+ Early Stopping
+
+This technique prevents overfitting by terminating the training process if the model performance stops improving on a validation dataset.
+
+  
+
+ Kernel Regularizer
+
+Regularization techniques like L1 and L2 regularization are used to prevent overfitting by penalizing the weights of the neurons.
+
+  
+
+ Restore Best Weights
+
+If enabled, this feature will restore model weights from the epoch with the best value of the monitored metric at the end of training, ensuring you keep the most optimal version of the model.
+
+  
+
