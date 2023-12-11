@@ -175,15 +175,6 @@ Risk Assessment: Calculating the risk involves understanding the probability of 
 Leverage Management: Deciding how much leverage to apply is a critical decision. Over-leveraging can lead to substantial losses, particularly during periods of high variance.
 
 
-<img  src="https://i.imgur.com/KIzXqh6.png"  width="600"  height="400"  />
-
-<img  src="https://i.imgur.com/LY7u9xB.png"  width="600"  height="300"  />
-
-<img  src="https://i.imgur.com/bisms9b.png"  width="600"  height="350"  />
-
-<img  src="https://i.imgur.com/H4ClI69.png"  width="600"  height="300"  />
-
-  
 
 # [Tensorboard Server](https://nbadata.cloud/tensorboard/)
 
@@ -341,45 +332,6 @@ If enabled, this feature will restore model weights from the epoch with the best
 #### Navigation and Usage
 
 The interface is designed to be intuitive, with interactive elements for an easy and informative user experience.
-
-  
-#### Django apps:
-
-  
-
-1. bb - main django app
-
-  
-
-2. etc - code for index page
-
-  
-
-3. predict - logic for all predictons
-
-  
-
-4. users - handles all the users
-
-  
-
-#### other files:
-
-  
-
-1. checkpoints - stores trained weights
-
-  
-
-2. CSV - stores individual csv files for each prediction made
-
-  
-
-3. OBJ - stores pickle object data files for quick loading player stats
-
-
-
-Libraries used include Tensorflow, Numpy, Django, and Pickle.
 
   
 
