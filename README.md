@@ -1,5 +1,5 @@
 # 🏀 [FireBet.ai](https://firebet.ai)  
-##  [this project is now closed source](https://github.com/nealmick/bb/discussions/48)  
+##  [this project is closed source](https://github.com/nealmick/bb/discussions/48)  
 
 
 Beating Vegas odds is a complex task, and our tool reflects this complexity. It's evolved from a simple concept to a sophisticated system with multiple layers and features. This is not a typical user-friendly consumer product; it's a data and statistical modeling system, requiring a deep understanding of its intricacies.
