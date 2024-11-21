@@ -58,7 +58,6 @@ h : home, v : visitor, w : win, l : loss
 
 ## Setup and Development
 
----
 
 #### Step 1: Clone the Repository
 
