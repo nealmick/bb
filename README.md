@@ -1,7 +1,6 @@
-
 # NBA Machine Learning and Market Analysis Tools 🏀
 
-## Features
+### Features
 - Game prediction model trained on 20,000+ games with 500+ data points per game
 - Pre-game analysis with player stats, injuries, and Vegas odds
 - Custom model training with configurable parameters
@@ -15,12 +14,15 @@
 - Check Vegas odds and injury reports
 - Review last game performance
 - Generate game score predictions
+https://github.com/user-attachments/assets/a481faa3-9859-4a18-bbce-7d8ddfcbd7dd
 
 ### Model Training
 - Configure layers, neurons, batch size
 - Set activation functions and optimizers 
 - Enable early stopping and regularization
 - Monitor training via Tensorboard
+https://github.com/user-attachments/assets/dfbc7233-5fd7-4198-98d6-8e3f18d51347
+
 
 ### Performance Tracking
 - Win/Loss percentage
