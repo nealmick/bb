@@ -14,6 +14,7 @@
 - Check Vegas odds and injury reports
 - Review last game performance
 - Generate game score predictions
+
 https://github.com/user-attachments/assets/a481faa3-9859-4a18-bbce-7d8ddfcbd7dd
 
 ### Model Training
@@ -21,6 +22,7 @@ https://github.com/user-attachments/assets/a481faa3-9859-4a18-bbce-7d8ddfcbd7dd
 - Set activation functions and optimizers 
 - Enable early stopping and regularization
 - Monitor training via Tensorboard
+
 https://github.com/user-attachments/assets/dfbc7233-5fd7-4198-98d6-8e3f18d51347
 
 
