@@ -50,11 +50,12 @@ Team metrics:
 h : home, v : visitor, w : win, l : loss
 <img  src="https://i.imgur.com/xJMmvZR.png"  width="800"  height="400"  />
 
+---
 
+# Live Server:
+## [FireBet.ai](https://FireBet.ai)  
 
-## Live Server:
-### [FireBet.ai](https://FireBet.ai)  
-
+---
 
 
 ## Setup and Development
@@ -66,7 +67,7 @@ h : home, v : visitor, w : win, l : loss
 To begin, you need to clone the repository to your local machine. Open your terminal and run the following command:
 
 ```bash
-git clone https://github.com/nealmick/bb
+git clone https://github.com/nealmick/Sports-Betting-ML-Tools-NBA
 ```
 
 ---
@@ -105,7 +106,7 @@ http://localhost:8000/login/
 
 ## Contributing
 
-Open issues and pull requests welcome at [GitHub repository](https://github.com/nealmick/bb/)
+Open issues and pull requests welcome at [GitHub repository](https://github.com/nealmick/Sports-Betting-ML-Tools-NBA)
 
 
 ## Author/contact:
