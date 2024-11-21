@@ -50,12 +50,10 @@ Team metrics:
 h : home, v : visitor, w : win, l : loss
 <img  src="https://i.imgur.com/xJMmvZR.png"  width="800"  height="400"  />
 
----
 
 # Live Server:
 ## [FireBet.ai](https://FireBet.ai)  
 
----
 
 
 ## Setup and Development
