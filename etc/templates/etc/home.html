@@ -1,0 +1,627 @@
+
+
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+{% block content%}
+
+<link rel="shortcut icon" type="image/ico" href="{% static 'predict/flame-logo.png'%}"/>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<div style="margin-top: 12vh;z-index: 100;width:100%;color:#F8F8F8;">
+<script>
+    AOS.init();
+</script>
+
+
+<style>
+.scale-up:hover{
+    transform:scale(1.015);
+}
+
+</style>
+
+</div>
+
+
+
+<div style="margin-top: 1vh;z-index: 100;width:100%;color:#F8F8F8;">
+  
+    
+
+<style>
+@media screen and (max-width: 1200px) {
+    .section-header{
+        font-size: 42px !important;
+    }
+    .brand-header{
+        display:none !important;
+    }
+    .screen-hide{
+        display: none;
+    }
+}
+@media screen and (max-width: 994px) {
+    #hero-text{
+        font-size: 60px !important;
+    }
+    .shop-img{
+        margin-left:0px !important;
+        margin-right:0px !important;
+        width: 100% !important;
+    }
+    .section-header{
+        font-size: 32px !important;
+    }
+    .brand-header{
+        display:none !important;
+    }
+}
+
+.shadow-effect {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 12px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+
+
+
+</style>
+
+
+<div style="margin-top: 1vh;z-index: 100;width:100%;color:#F8F8F8;
+">
+
+        <div class="row" style="height:78vh">
+
+            <div class="col-lg-6" >
+                    <u><h1 id="hero-text" style="margin-top:15vh;font-size:105px;color:#F8F8F8;margin-bottom:0px">FireBet.ai</h1></u>
+                    <h1 style="font-size:27px;color:#F8F8F8;margin-bottom:10px">Machine Learning Sports Analytics</h1>                    
+                    <a style="position: relative;width:110px;" href="/login/" class="btn btn-grey">  Login <i class="fas fa-sign-in-alt"> </i></a>
+                    <a style="position: relative;width:110px;" href="/predict/faq" class="btn btn-grey-secondary" > About <i class="fas fa-question-circle"></i></a>
+            </div>
+            <div class="col-lg-6" style="margin-top:7vh;">
+                <center>
+                    
+                    <img id="hero1" class="resp"style="border:none !important;margin-left:0;height:300px"src="{% static 'predict/tf.png'%}">
+
+                    <img id="hero1" class="resp"style="border:none !important;height:350px;"src="{% static 'predict/nba-logo.png'%}">
+        
+            
+                </center>
+            </div>
+
+
+        </div>
+
+
+<div id="about"  style="position:absolute;margin-bottom: 0px;"></div>
+
+
+
+
+
+
+<div class="row" style="margin-bottom:125px">
+
+    <div class="col-lg-6 order-lg-1 order-2 style="margin-top:10px;" >
+        <a href="/login/">
+
+            <img data-aos="" class="resp  scale-up"style="width:100%;border-radius:10px;"src="{% static 'predict/game.png'%}">
+        </a>
+        
+    </div>
+
+    <div class="col-lg-6 order-lg-2 order-1" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8; margin-bottom:0px; font-size: 55px; ">AI Models</h1>
+        <p style="color:#F8F8F8; margin-bottom:0px; font-size: 22px; ">
+            Transform your bets using AI to spot patterns and help you gain an edge over vegas odds.
+        </p>
+    </div>
+    
+</div>
+
+
+
+
+
+
+
+<div id="trainmodel" class="row" style="margin-bottom:150px">
+        <div class="col-lg-5 " style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+
+            <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;text-align: right;">FireBet</h3>
+
+            <h1 class="section-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 60px;text-align: right;">TensorFlow</h1>
+            <p style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;text-align: right;">
+                Train custom TensorFlow models with our AI training dashboard.  Fine-tune model parameter settings, optimizers, activation functions, data features, and more.
+                 
+            </p>
+            <a style="margin-top:5px;position: relative;width:100px;align-self: flex-end;" href="/login/" class="btn btn-grey-secondary">  Login <i class="fas fa-sign-in-alt"> </i></a>
+
+    
+    </div>
+
+    <div class="col-lg-7 " style="margin-top:15px;padding-right:0px" >
+        <a href="/login/">
+
+        <img data-aos="" class="resp  scale-up"style="width:47.5%;border-radius:10px;margin:5px;"src="{% static 'predict/train.png'%}">
+        </a>
+        <a href="/login/">
+
+        <img data-aos="" class="resp  scale-up"style="width:47.5%;border-radius:10px;margin:5px;"src="{% static 'predict/data.png'%}">
+
+        </a>
+
+    </div>
+</div>
+
+
+<div class="row" style="margin-bottom:150px">
+    <div class="col-lg-7 order-lg-1 order-2" style="margin-top:15px">
+        <a href="/predict/arb">
+
+        <img data-aos="" class="resp  scale-up"style="width: 100%;border-radius:10px;opacity:1 !important"src="{% static 'predict/arb.png'%}">
+
+        </a>
+    </div>
+    <div class="col-lg-5 order-lg-2 order-1" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 68px; ">Arbitrage</h1>
+        <p style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">
+                Hedge all outcomes and become a profitable sports better with our arbitrage market analysis tool.
+            </p>
+            <a style="margin-top:5px;position: relative;width:100px;" href="/login/" class="btn btn-grey-secondary">  Sign Up <i class="fas fa-sign-in-alt"> </i></a>
+        
+        
+    </div>
+
+</div>
+
+
+
+
+<div class="row" style="margin-bottom:150px">
+    <div class="col-lg-6" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;text-align: right;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8; margin-bottom:0px; font-size: 56px; text-align: right;">Odds Comparison</h1>
+        <p style="color:#F8F8F8; margin-bottom:0px; font-size: 22px; text-align: right;">
+            Visualize price movement over time and capitalize on mispriced events with our Odds Comparison tool.
+
+
+        </p>
+        <a href="/predict/faq" class="btn btn-grey-secondary" style="margin-top:5px;align-self: flex-end; width: 100px;">About <i class="fas fa-question-circle"></i></a>
+
+    </div>
+    <div class="col-lg-6" style="margin-top:15px" >
+        <a href="/login/">
+
+            <img data-aos="" class="resp  scale-up"style="width: 100%;border-radius:10px;opacity:.86"src="{% static 'predict/odds-comp.png'%}">
+        </a>
+        
+    </div>
+</div>
+
+
+
+<div class="row" style="">
+    <div class="col-lg-6 order-lg-1 order-2" style="margin-top:15px;margin-bottom:150px">
+        <a href="/login/">
+
+        <img data-aos="" class="resp  scale-up"style="width: 100%;border-radius:10px;opacity:.83 !important"src="{% static 'predict/ev.png'%}">
+
+        </a>
+    </div>
+    <div class="col-lg-6 order-lg-2 order-1" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 55px;">Value Bets</h1>
+        <p style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">
+                  FireBet offers positive expected value events from over 150 bookies. Our market consensus tools make it simple to find underpriced odds and bookie mistakes.
+    
+        </p>
+            <a style="margin-top:5px;position: relative;width:100px;" href="/login/" class="btn btn-grey-secondary screen-hide">  Login <i class="fas fa-sign-in-alt"> </i></a>
+        
+        
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row" style="margin-bottom:150px;display:none">
+    <div class="col-lg-6" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;text-align: right;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8; margin-bottom:0px; font-size: 65px; text-align: right;">Evaluation</h1>
+        <p style="color:#F8F8F8; margin-bottom:0px; font-size: 22px; text-align: right;">
+            
+        Models are evaluated using test data to measure performance and financial efficacy, comparing accuracy and projected profits with Vegas lines.
+        </p>
+        <a href="/predict/faq" class="btn btn-grey-secondary" style="margin-top:5px;align-self: flex-end; width: 100px;">About <i class="fas fa-question-circle"></i></a>
+
+    </div>
+    <div class="col-lg-6" style="margin-top:15px" >
+        <a href="/login/">
+
+            <img data-aos="" class="resp  scale-up" style="width: 100%;border-radius:10px;"src="{% static 'predict/eval.png'%}">
+        </a>
+        
+    </div>
+</div>
+
+
+<div class="row" style="margin-bottom:125px">
+    <div class="col-lg-6" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;text-align: right;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8; margin-bottom:0px; font-size: 55px; text-align: right;">Injury Report</h1>
+        <p style="color:#F8F8F8; margin-bottom:0px; font-size: 22px; text-align: right;">
+             Never miss a player injury. Our doctors' reports provide the most up-to-date injury status.
+        </p>
+        <a href="/predict/faq" class="btn btn-grey-secondary" style="margin-top:5px;align-self: flex-end; width: 100px;">About <i class="fas fa-question-circle"></i></a>
+
+    </div>
+    <div class="col-lg-6" style="margin-top:15px" >
+        <a href="/login/">
+
+            <img data-aos="" class="resp  scale-up"style="width: 100%;border-radius:10px;opacity:.9"src="{% static 'predict/injury.png'%}">
+        </a>
+        
+    </div>
+</div>
+
+
+
+<div class="row" style="">
+    <div class="col-lg-6 order-lg-1 order-2" style="margin-top:15px;margin-bottom:150px">
+        <a href="/login/">
+
+        <img data-aos="" class="resp  scale-up"style="width: 100%;border-radius:10px;opacity:.83 !important"src="{% static 'predict/prop-trend.png'%}">
+
+        </a>
+    </div>
+    <div class="col-lg-6 order-lg-2 order-1" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 53px;">Player Trends</h1>
+        <p style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;">
+                
+                Leverage player trend data based on past performance to spot mispriced prop bets effectively.
+        </p>
+            <!--
+            <a style="margin-top:5px;position: relative;width:100px;" href="/login/" class="btn btn-grey screen-hide">  Login <i class="fas fa-sign-in-alt"> </i></a>
+            -->
+        
+    </div>
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+<!--shop and training
+
+
+
+<div class="row" style="margin-top: 125px;">
+
+
+
+<script src="https://js.stripe.com/v3/"></script>   -->
+
+    <div data-aos=""  class="col-lg-6 d-none" style="margin-top:25px;margin-left:auto;margin-right:auto;z-index:100;position:relative;padding:30px">
+        <div  class="content-section "style="padding:5px;height:675px;box-shadow:none !important;border:none !important">
+
+
+      <center>
+            <h2 style="margin-top:15px">Free</h2>
+            <br>
+            <img style="margin-top:15px;margin-bottom:0px;margin-right:5px;width:155px;height:155px;opacity:.9"class="rounded-circle account-img" src="{% static 'predict/test.png'%}">
+            <br>
+            <br>
+        </center>
+            <hr id="margin-display" >
+            <br>
+            <div id="margin-display" class="row" style="white-space:nowrap;">
+                <div class="col-6" style="padding-left:8.5%; white-space:nowrap;">
+                    <p><i class="fa fa-solid fa-check"></i>   Game Dashboard</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Accuracy Metrics</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Injured Players</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Odds Data</p>
+    
+                </div>              
+                 <div class="col-6" style="padding-left:8.5%; white-space:nowrap;">
+                    <p><i class="fa fa-solid fa-check"></i>   Custom Models </p>
+                    <p><i class="fa fa-solid fa-times"></i>   RLHF Retraining</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Predict 50 / day</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Train 15 / day</p>
+    
+                </div>
+    
+
+            </div>
+
+
+
+
+
+        <center>
+          <br>
+            <hr>
+            <p id='margin-display' class="text-muted" style="width:80%"> </p>
+            <br>
+            <a  style="margin-top:15px;"class="btn btn-grey" href="/login">Sign Up</a>
+
+        </center>
+    </div>
+
+
+        
+    </div>
+    <div data-aos=""  class="col-lg-6 d-none" style="margin-top:25px;margin-left:auto;margin-right:auto;z-index:100;position:relative;padding:30px">
+           
+        {% if subscription.status == "active" %}
+            <div class="content-section "style="padding:5px;height:400px;">
+
+            <center>
+                <h5 class="card-title"style='margin-top:20%'>Your Subscription:</h5>
+                <h2>{{ product.name }}</h2>
+                <h5 class="card-text">
+                    {{ product.description }}
+                </h5>
+                <p style="margin-bottom: 0px;">{{start}}</p>
+                <p style="margin-bottom: 0px;">{{end}}</p>
+                <br>
+                <button onclick="window.location.href='{% url 'cancel-sub' %}'" class="btn btn-grey" >Cancel</button>
+
+            </center>
+      {% else %}
+      <div  class="content-section "style="padding:5px;height:675px;box-shadow:none !important;border:none !important;">
+
+
+      <center>
+            <h2 style="margin-top:15px">Basic 10$</h2>
+            <br>
+            <img style="margin-top:15px;margin-bottom:0px;margin-right:5px;width:155px;height:155px"class="rounded-circle account-img" src="{% static 'predict/test.png'%}">
+            <br>
+            <br>
+        </center>
+            <hr id="margin-display" >
+            <br>
+            <div id="margin-display" class="row" style="white-space:nowrap;">
+                <div class="col-6" style="padding-left:8.5%; white-space:nowrap;">
+                    <p><i class="fa fa-solid fa-check"></i>   Game Dashboard</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Accuracy Metrics</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Injured Players</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Odds Data</p>
+    
+                </div>              
+                 <div class="col-6" style="padding-left:8.5%; white-space:nowrap;">
+                    <p><i class="fa fa-solid fa-check"></i>   Custom Models </p>
+                    <p><i class="fa fa-solid fa-check"></i>   RLHF Retraining</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Predict 150 / day</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Train 100 / day</p>
+    
+                </div>
+    
+
+            </div>
+
+
+
+
+
+        <center>
+          <br>
+            <hr>
+            <p id='margin-display' class="text-muted" style="width:80%"> </p>
+            <br>
+            <a  style="margin-top:15px;"class="btn btn-grey" href="{% url 'shop' %}">View Shop</a>
+
+        </center>
+    </div>
+</div>
+
+
+
+      {% endif %}
+
+
+
+    
+</div>
+
+</div>
+
+
+
+
+
+
+<div class="row" id="shop-img" style="margin-top:0px;">
+    <div class="col-lg-5" style="margin-top:25px;display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <h3 class="brand-header" style="color:#F8F8F8;margin-bottom:0px; font-size: 22px;text-align: right;">FireBet</h3>
+
+        <h1 class="section-header" style="color:#F8F8F8; margin-bottom:0px; font-size: 55px; text-align: right;">Subscribe</h1>
+        <p style="color:#F8F8F8; margin-bottom:0px; font-size: 22px; text-align: right;">
+            Beat the bookies with our machine learning and market analysis tools.  
+        </p>
+        <a href="/login" class="btn btn-grey" style="margin-top:5px;align-self: flex-end; width: 100px;">Sign Up <i class="fas fa-sign-in-alt"> </i></a>
+
+    </div>
+    <div class="col-lg-7" style="margin-top:15px;" >
+        <a href="/login/">
+
+            <img data-aos="" class="resp  scale-up shop-img"style="width: 95%;border-radius:10px;opacity:1;"src="{% static 'predict/shop.png'%}">
+        </a>
+        
+    </div>
+</div>
+
+
+
+<div class="row" style="margin-top: 45px;margin-bottom:25px" >
+
+    <div class="col-12">
+            
+    <center>
+    <div class="col-lg-12 content" style="margin-top:50px">
+        <p style="color:#969696">FireBet is an analytical tool and is not responsible for the accuracy or results of our models. Past performance does not guarantee future outcomes. Use your judgment and independently verify information before making decisions.</p>
+
+    </div>
+
+    </center>
+
+        <center>        
+            <p id=""style=""><a style="position: relative;margin-top: 5px;border-color:grey !important;"  href="{% url 'login'%}"class="btn btn-grey-secondary footer-btn">Login <i class="fas fa-sign-in-alt"></i></a>
+                <a style="position: relative;margin-top: 5px;border-color:grey !important"  href='https://nbadata.cloud/tensorboard/?darkMode=true#timeseries&regexInput=.'class="btn btn-grey-secondary footer-btn"target="_blank">TensorBoard <i class="fas fa-chart-line"></i></a>
+                <a style="position: relative;margin-top: 5px;border-color:grey !important"  href="{% url 'faq' %}" class="btn btn-grey-secondary footer-btn">About <i class="far fa-question-circle"></i></a>
+                <a style="position: relative;margin-top: 5px;border-color:grey !important"  href="/shop" class="btn btn-grey-secondary footer-btn">Shop <i class="far fa-money-bill-alt"></i></a>
+                <a style="position: relative;margin-top: 5px;border-color:grey !important"  href="/forum" class="btn btn-grey-secondary footer-btn">Forums <i class="far fa-comment-dots"></i></a>
+                <a style="position: relative;margin-top: 5px;border-color:grey !important"  href="/predict/tos" class="btn btn-grey-secondary footer-btn">Terms <i class="fa-solid fa-scale-balanced"></i></a>
+                
+
+            </p>
+            </center>
+
+
+    
+
+    </div>
+
+</div>
+</div>
+
+<br>
+<br>
+<script>
+
+console.log("Sanity check!");
+
+// Get Stripe publishable key
+fetch("/config/")
+.then((result) => { return result.json(); })
+.then((data) => {
+  // Initialize Stripe.js
+  const stripe = Stripe(data.publicKey);
+
+  // new
+  // Event handler
+  let submitBtn = document.getElementById("submitBtn");
+  if (submitBtn !== null) {
+    submitBtn.addEventListener("click", () => {
+    // Get Checkout Session ID
+    fetch("/create-checkout-session/")
+      .then((result) => { return result.json(); })
+      .then((data) => {
+        console.log(data);
+        // Redirect to Stripe Checkout
+        return stripe.redirectToCheckout({sessionId: data.sessionId})
+      })
+      .then((res) => {
+        console.log(res);
+      });
+    });
+  }
+});
+</script>
+<style>
+.section-header,.brand-header,.btn, h1,h2,p{
+    color:white !important;
+}
+@media screen and (max-width: 1200px) {
+    #hero1,#trainmodel,#hero2{
+        display: None;
+    }
+  .row{
+    width: 100% !important;
+    margin-right:0px;
+    margin-left:0px;
+    }
+
+}
+    .footer-btn{
+    background-color:rgba(0,0,0,.1) !important
+
+    }
+     .footer-btn:hover{
+    background-color:rgba(0,0,0,.2) !important
+
+    }
+    .scale-up{
+          border: 1px solid rgba(198, 198, 198, 0.2);
+
+    }
+</style>
+
+{{ eval.spreadCorrect|json_script:"scorrect" }}
+{{ eval.spreadWrong|json_script:"swrong" }}
+
+
+{{ eval.correct|json_script:"correct" }}
+{{ eval.wrong|json_script:"wrong" }}
+
+{{ eval.evMargin1|json_script:"evMargin1" }}
+{{ eval.evMargin1wrong|json_script:"evMargin1wrong" }}
+
+{{ eval.evMargin2|json_script:"evMargin2" }}
+{{ eval.evMargin2wrong|json_script:"evMargin2wrong" }}
+
+{{ eval.evMargin3|json_script:"evMargin3" }}
+{{ eval.evMargin3wrong|json_script:"evMargin3wrong" }}
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script  src="{% static 'predict/homeStats.js'%}" defer></script>
+<!-- Event snippet for nba-view conversion page -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-11238259273"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-11238259273');
+</script>
+<!-- Event snippet for nba-asdf conversion page -->
+<script>
+  gtag('event', 'conversion', {'send_to': 'AW-11238259273/RHTaCIfS7PwYEMn06O4p'});
+</script>
+
+{% endblock content %}
+
+
+

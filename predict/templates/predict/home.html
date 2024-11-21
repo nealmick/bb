@@ -1,0 +1,686 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+{% if not active %}
+<script>
+    var shopLoad = localStorage.getItem('shopLoad');
+
+    if (shopLoad === null) {
+        // First time visit, set shopLoad to true for future visits
+        localStorage.setItem('shopLoad', true);
+        // Redirect to /autoshop/
+        //window.location.href = '/autoshop/';
+    }
+</script>
+{% endif %}
+<body class="row" style="overflow-x: hidden;">
+
+
+
+
+  <div id="welcomePopup" style="display: none;">
+    <div class="popup-content" style="max-width:600px">
+        
+        <h2>Welcome to FireBet.ai</h2>
+        <p>01-10-24 Update Announcements:</p>
+
+        <ul style="list-style-type: disc; padding-left: 20px;">
+            <li style="list-style-type: disc;">Pricing/limits have been updated and can be viewed in the <a href="https://firebet.ai/shop">shop</a>. </li>
+            <li style="list-style-type: disc;">Check out the new arbitrage features <a href="https://firebet.ai/predict/arb">here</a>. (subscription required)</li>
+        </ul>
+        <br>
+        <!--
+        <a href="https://firebet.ai/shop" target="_blank" class="btn btn-grey">Shop</a>
+        -->
+        <button id="closePopup" class="btn btn-grey-secondary">Close</button>
+    </div>
+</div>
+
+
+
+<!-- Your main content -->
+<div id="mainContent">
+    <!-- Rest of your dashboard content goes here -->
+</div>
+
+
+<style>
+    .blur {
+      filter: blur(5px);
+  }
+  #welcomePopup .welcome-list {
+    padding-left: 20px !important; /* Adds space for bullets */
+}
+
+#welcomePopup .welcome-list li {
+    list-style-type: disc !important; /* Ensures bullets are shown */
+    display: list-item !important; /* Ensures list item display */
+}
+  #welcomePopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+  }
+
+  .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+  }
+ 
+ 
+</style>
+  
+    
+
+<style>
+@media screen and (max-width: 600px) {
+    #team-logo{
+      height: 75px !important;
+
+    }
+
+    
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+
+    // Check if the welcome message has been shown
+    if (!localStorage.getItem('welcomeShown6')) {
+        // Show the popup and apply blur effect
+        //document.getElementById("welcomePopup").style.display = "flex";
+        //document.getElementById("mainContent").classList.add("blur");
+    }
+
+    // Add event listener to the close button
+    document.getElementById("closePopup").addEventListener("click", function() {
+        // Hide the popup and remove blur effect
+        document.getElementById("welcomePopup").style.display = "none";
+        document.getElementById("mainContent").classList.remove("blur");
+
+        // Set local storage item to indicate the message has been shown
+        localStorage.setItem('welcomeShown6', 'true');
+    });
+});
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<br>
+<br>
+
+
+
+    <div class="col-lg-6" style="padding-left:7px;padding-right:7px">
+        <div  id="home-graph-display" class="content-section"style="min-height:225px;">
+        <div class="row">
+
+
+            <div class="col-lg-6" style="margin-top:10px;margin-bottom:10px">
+
+              <div style="margin-left: auto;margin-right: auto;height: 150px; width: 80%; float:left">
+                <canvas id="myChart"></canvas>
+              </div>
+
+
+              
+            </div>
+                  <div class="col-lg-6" style="margin-top:10px;margin-bottom:10px">
+              <div style="margin-left: auto;margin-right: auto;height: 140px; width: 100%; float:left">
+                <canvas id="myChart2"></canvas>
+              </div>
+              </div>
+              <br>
+              <div class="col-lg-6 prof-stat"style="margin-top:10px;margin-bottom:10px">
+              <ul class="list-group"style="margin-left:5%">
+                <li style="width:95%;height:40px;"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Predictions: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ numpred }}</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Correct: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ correct }}</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Percent: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ pc }}%</p></li>
+              </ul>
+              </div>  
+            <div class="col-lg-6 prof-stat" style="margin-top:10px;margin-bottom:10px">
+              <ul class="list-group"style="margin-left:5%">
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Margin 1: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ ev_margin1 }}/{{ev_margin1_count}} {{ev_margin1_pct}}%</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Margin 2: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ ev_margin2 }}/{{ev_margin2_count}} {{ev_margin2_pct}}%</p></li>
+                <li style="width:95%;height:40px"class="list-group-item list-group-item-light"><p style="float: left;position:relative;bottom:5px">Margin 3: </p><p style="position:relative;bottom:5px;text-align: right;float: right;">{{ ev_margin3 }}/{{ev_margin3_count}} {{ev_margin3_pct}}%</p></li>
+
+
+              </ul>
+
+          </div>
+              
+        </div>
+        </div>
+
+
+
+
+
+
+          <div class="content-section"style="height: 438px;overflow-y:scroll;overflow-x:hidden">
+
+            
+
+
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+        
+            <!-- Include Bootstrap DateTimePicker CDN -->
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css"rel="stylesheet">
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
+
+              
+            <input style="height:48px;padding: 3px;padding-left:7px;margin-bottom: 5px;margin-top:10px" class="form-control dateh list-group-item list-group-item-light" type="text" id="Datetimepicker"/>  
+
+    
+        <script>
+    
+            // Below code sets format to the
+            // datetimepicker having id as
+            // datetime
+            $('#Datetimepicker').datetimepicker({
+              defaultDate: '{{dateselector}}',
+              format: 'YYYY-MM-DD',
+   
+            });
+            $('#Datetimepicker').datetimepicker().on('dp.change', function (event) {
+              date = document.getElementById("Datetimepicker").value
+              var url = window.location.href;
+              window.location.href = "{% url 'home-predict' %}date/"+ date
+     
+            });
+  
+            
+        </script>
+
+              <ul class="list-group">
+                {% for matchup in today %}
+                <li id="game" class="list-group-item list-group-item-light" style="padding:10px;min-height: 50px;">
+                  {% if matchup == "No Games Today" %}
+                  <p style="margin: 0px;font-size: 16px">No Games Today</p>
+                  {% else %}
+                 {% if forloop.counter >= 2 and not active%}
+                <a style="color: #333333 !important"href="{% url 'auto-shop' %}">
+
+                    {% if matchup.vscore > 1 %}
+                      <p style="margin: 0px;font-size: 16px">{{matchup.vfn}} {{matchup.vscore}} :  {{matchup.hscore}} {{matchup.hfn}} : {{matchup.status}}</p>
+                    {% else %}
+                    <p style="margin: 0px;font-size: 16px">{{matchup.vfn}}@{{matchup.hfn}} {{matchup.status}} </p>
+                    {% endif %}
+
+                </a>
+                </li>
+                {% else %}
+                  <a style="color: #333333 !important"href="{% url 'quick-create' matchup.habv matchup.vabv matchup.date%}">
+
+    
+                    {% if matchup.vscore > 1 %}
+                      <p style="margin: 0px;font-size: 16px">{{matchup.vfn}} {{matchup.vscore}} :  {{matchup.hscore}} {{matchup.hfn}} : {{matchup.status}}</p>
+                    {% else %}
+                    <p style="margin: 0px;font-size: 16px">{{matchup.vfn}}@{{matchup.hfn}} {{matchup.status}} </p>
+                    {% endif %}
+
+                </a>
+                </li>
+                {% endif %}
+
+                {%endif%}
+                 {% if forloop.counter == 1 %}
+                 {% if not active %}
+                  <div style="position:relative">
+
+                  <div style="position: absolute; top: 0px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-lock" style="padding-bottom:3px;font-size: 22px"></i>
+                    <p class="lock-text" style="margin-left:5px;margin-top:3px;padding-top:7px;font-size: 22px;">Subscribe to unlock</p>
+                </div>
+              </div>
+             
+                <div class="blurred" style="
+                 flex-direction: column;
+                  justify-content: center;
+                  align-items: center;opacity:.5">
+                 
+                     
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                <!--
+
+                {% if today|length > 1 %}
+                <div style="padding:0px;min-height: 50px;">
+                  <button id="predict-all-btn"className="list-group-item list-group-item-light btn btn-grey-secondary" onClick="predictAll()" style="box-shadow: 2px 4px 8px rgba(0, 0, 0, .5);background-color: rgba(248, 248, 248,.8)!important;color:#333333;background-color:#FFFFFF;border-radius: 3px;height:45px;width:25%;margin-left:0px;margin-top:2px;margin-bottom:2px; border-width:0px;">Predict All! </button>
+                  
+                  <select class="list-group-item list-group-item-light" id="model-slot" style="background-color: rgba(248, 248, 248,.8)!important;color:#333333;float:right;margin-right:0px;margin-top:2px;width:73.5%;height:45px;border-radius: 3px;;margin-bottom: 2px !important;padding:5px;border: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                    <option value="0" selected>Model 0</option>
+     
+                    <option value="1">Model 1</option>
+    
+                    <option value="2">Model 2</option>
+    
+    
+                  </select>
+                </div>
+                {% endif %}
+                
+                -->
+              {% if today|length > 3  and not active%}
+              </div>
+
+              {% endif %}
+
+              </ul>
+              </div>
+              </div>
+<script>
+  function predictAll(){
+    window.location.href = "{% url 'predict-all' %}"+ document.getElementById("Datetimepicker").value+'/'+document.getElementById('model-slot').value
+  }
+</script>
+
+
+        <div id="games-div"class="col-lg-6 " style="margin-bottom: 10px;padding-left:7px;padding-right:7px">
+
+          <div id="gamescroll"class="content-section "style="height:100%; min-height: 753px;max-height: 790px;overflow-y:scroll;overflow-x:hidden">
+              <!--
+         
+          <div class="buttons-container" style="
+               display: flex;
+               justify-content: space-between;
+               padding: 10px 0; 
+               ">
+
+              <a style="flex: 1; 
+              margin-left: 12px;
+
+              text-align: center;
+              "class="btn btn-grey-secondary" href="/predict/train/0"> <i class="fas fa-robot"></i> Train </a>
+              <a  style="flex: 1; 
+              margin-left: 15px;
+              margin-right: 15px;
+              text-align: center;
+              "class="btn btn-grey-secondary" href="/predict/teams/"><i class="fas fa-database"></i> Data </a>
+              <a  style="flex: 1; 
+                margin-right: 2px;
+
+                text-align: center;
+              "class="btn btn-grey-secondary" href="/predict/simple"> <i class="fas fa-list-ul"></i> Simple </a>
+
+          </div>
+              -->
+
+          {% if request.user.is_authenticated %}
+          {% for game in games %}
+
+
+            {% if game.p0 is None %}
+                <div class="ff" >
+
+              <article  class="media content-section ff">
+              <p style="margin-bottom: 0px;">
+                <font color="red">Error game not found</font>: Invalid Input.  Make sure the game date is correct and visitor/home team are not miss-matched.  Try again or click on one of today's games.  
+
+              </p>
+
+            </article>
+          </div>
+
+            {% else %}
+            <a href="{% url 'edit-predict' game.pk%}">
+            <div class="" >
+
+              <article id="game" class="content-section gameScroll"style="margin-top: 10px;padding-top:8px;">
+                <!--
+                  background: linear-gradient(90deg, {{game.visitorcolor}} 0%, rgba(248,248,248,1) 30%, rgba(248,248,248,1) 50%, rgba(248,248,248,1) 70%, {{game.homecolor}} 100%);
+                -->
+
+                  <div class="row">
+                    <div class="col-3"style="padding:0">
+                      <center>
+                        <p style="margin:0px">{{ game.visitor }} {{ game.visitor_score }} {{ game.visitor_spread }} </p>
+                        <img id="team-logo" class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
+
+                    </center>
+                    </div>
+                    <div class="col-6"style="padding:0;">
+                        <center>
+                        <!--<p style="margin:0px">{{ game.prediction }}</p>!-->
+
+                        
+                        {% if not game.finished%}
+                          <form id="get_score" action="{% url 'get-score' game.pk %}" method="get">
+                            <div>
+                              <p style="margin-bottom: 5px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;border-color:grey !important" class="btn btn-grey-secondary footer-btn" value="Get Score" name="mybtn"> </p>
+
+                              
+                            </div>
+                          </form>
+                        {% else%}
+
+                                            
+                        <p style="margin-bottom:3px">{{ game.gamedate }}</p>
+                        {% endif %}
+                        <div style="height: 65px !important;">
+                        <canvas  style=''id="{{ game.pk }}" ></canvas>
+                          
+
+
+                      <div id="margin-display">
+                      {% if game.visitor_spread == '0' %}
+                      {% elif game.pmscore != 0 %}
+                      <p style="margin:0px;"class="text-muted">
+                      
+                      {% if game.finished %}
+                        {% if game.ev_won == '1'%}
+                        <p class="text-muted"style="margin-bottom: 0px;">
+                          {% if game.spread_prediction == '1'%}
+                          Margin: {{ game.margin |floatformat:2}}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-right"></i>
+                          {% else%}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-left"></i>
+                          Margin: {{ game.margin |floatformat:2}}
+                          {%endif%}
+                        </p>
+                        
+                        {% else %}
+                        <p class="text-muted" style="margin-bottom: 0px;">
+                          {% if game.spread_prediction == '1'%}
+                          Margin {{ game.margin |floatformat:2}}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-right"></i> 
+
+                          {% else %}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-left"></i> 
+
+                          Margin: {{ game.margin |floatformat:2}}
+                          {% endif %}
+                          {% endif %}
+
+                        {% else %}
+                      
+                      {% if game.spread_prediction == '1'%}
+                        Margin {{ game.margin |floatformat:2}}
+                        <i class="fas fa-arrow-right"></i> 
+
+                        {% else %}
+                        <i  class="fas fa-arrow-left"></i> 
+                        Margin: {{ game.margin |floatformat:2}}
+                      {% endif %}
+                      {% endif %}
+                      {% endif %}
+                      </div>
+                        </div>
+                        </center>
+
+
+
+
+                        <script defer>
+                            let data{{game.pk }} = {
+                                labels: [
+                                  '',
+                                ],
+                                datasets: [{
+                                  label: 'Plus Minus Prediction',
+                                  data: ["{{ game.pmscore }}"],
+
+                                  backgroundColor: [
+
+                                  {% if game.finished%}
+                                    {% if game.pmscore >= 0 and game.winner == 1 or game.pmscore < 0 and game.winner == 0 %}
+                                      'rgb(65, 199, 8)',
+                                    {%else%}
+                                      'rgb(255, 0, 0)',
+
+                                    {% endif %} 
+                                  {% endif %}
+
+                                  {%if not game.finished%}
+                                  '#8d8f8f',
+                                  {% endif %}
+
+
+                                    
+
+                                  ],
+                                  hoverOffset: 10,
+
+                                  borderWidth: 1,
+
+                                
+                                }]
+                              };
+
+
+                          let config{{game.pk }} = {
+                              type: 'bar',
+                              data: data{{game.pk }},
+                              options: {
+                                  maintainAspectRatio: false,
+                                  responsive: true,
+                                  reverse: true,
+
+                                  start: 0,
+                                  end: 0,
+                                  begin: 1,
+                                  base: 0,
+                                  middle: 0,
+                                  indexAxis: 'y',
+                                  plugins: {
+                                      legend: {
+                                        display: false
+                                      }
+                                    },
+                                    layout: {
+                                      padding: {
+                                          // Any unspecified dimensions are assumed to be 0                     
+                                          top: 0,
+                                          bottom: 0,
+                                          left: 5,
+                                          right: 5,
+                                      }
+                                  },
+                                  yAxes: [{
+                                      type: 'time',
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 1
+                                      }
+                                }],
+                                  scales: {
+                                    x: {
+                                      min: -10,
+                                      max: 10,
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 4
+                                      },
+                                    
+
+
+                                    },
+                                    y: {
+                                      min: 0,
+                                      max: 1,
+                                      
+                                      weight: 1,
+
+                                    }
+                                  }
+                                  }
+
+                            };
+
+                            const c{{game.pk }} = new Chart(document.getElementById('{{ game.pk }}'),config{{game.pk }});
+
+                        </script>
+                    </div>
+                      <div class="col-3" style="padding:0">
+                        <center>
+                          <p style="margin:0px">{{ game.home }} {{ game.home_score }} {{game.home_spread}}</p>
+                      <img id="team-logo" class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
+
+                        </center>
+                    </div>
+                    
+
+                  </div>
+
+
+
+
+                  {% if game.prediction is None %}
+
+
+                  {% else %}
+                  
+
+                  {% endif %}
+              </article>
+            </div>
+            </a>
+            {% endif %}
+
+            {% empty %}
+              <br>
+              <h2 style="margin-left: 13px">No Predictions!</h2>
+              <br>
+              <h5 style="margin-left: 13px">Use the calendar to select a date, then choose a game!</h5>
+
+          {% endfor %}
+          <center style="height:70px;overflow:hidden;">
+          <br>
+          {% if is_paginated %}
+            {% if page_obj.has_previous %}
+              <a style="margin-bottom: 0px"class="btn btn-grey-secondary " href="?page=1">First</a>
+              <a style="margin-bottom: 0px"class="btn btn-grey-secondary " href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <a style="margin-bottom: 0px"class="btn btn-grey " href="?page={{ num }}">{{ num }}</a>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a style="margin-bottom: 0px"class="btn btn-grey-secondary " href="?page={{ num }}">{{ num }}</a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a style="margin-bottom: 0px"class="btn btn-grey-secondary " href="?page={{ page_obj.next_page_number }}">Next</a>
+              <a style="margin-bottom: 0px"class="btn btn-grey-secondary " href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+          {% endif %}
+          </center>
+          <br>
+
+
+        </div>
+
+        </div>
+
+
+
+
+<style>
+  @media screen and (max-width: 1200px) {
+
+  .prof-stat{
+    padding-left:0px !important;
+    padding-right:0px !important;
+  }
+  }
+  .blur-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      padding:25px;
+  }
+  
+  .lock-icon {
+      width: 50px;
+      height: 50px;
+  }
+  
+  .blurred {
+      filter: blur(3px);
+  }
+
+    
+    .footer-btn{
+    background-color:rgba(0,0,0,.0) !important
+
+    }
+     .footer-btn:hover{
+    background-color:rgba(0,0,0,.3) !important
+
+    }
+
+</style>
+
+
+
+
+
+
+
+{{ numpred|json_script:"np" }}
+{{ correct|json_script:"correct" }}
+{{ gain|json_script:"gain" }}
+{{ loss|json_script:"loss" }}
+
+{{ extraCorrect|json_script:"extraCorrect" }}
+{{ pw|json_script:"pw" }}
+{{ ev_margin1|json_script:"ev_margin1" }}
+{{ ev_margin1_count|json_script:"ev_margin1_count" }}
+{{ ev_margin1_pct|json_script:"ev_margin1_pct" }}
+
+{{ ev_margin2|json_script:"ev_margin2" }}
+{{ ev_margin2_count|json_script:"ev_margin2_count" }}
+{{ ev_margin2_pct|json_script:"ev_margin2_pct" }}
+
+{{ ev_margin3|json_script:"ev_margin3" }}
+{{ ev_margin3_count|json_script:"ev_margin3_count" }}
+{{ ev_margin3_pct|json_script:"ev_margin3_pct" }}
+
+
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script  src="{% static 'predict/myChart.js'%}" defer></script>
+
+
+    {% endif %}
+</div>
+{% endblock content %}
+
+
+

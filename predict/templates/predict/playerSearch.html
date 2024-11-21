@@ -1,0 +1,44 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12">
+    <div style="margin-top:30vh">
+
+        <center>
+            <input id="player-input" placeholder="Player name" style="height: 40px;width:300px"  maxlength="50">
+            <button id="search-btn" onClick="searchPlayer()" style="paddint-left:5px;padding-right:5px;height: 40px;margin-bottom:3px;padding:3px;border-radius: 7px;" class="btn btn-grey"> <i class="fas fa-search"></i> Search </button>
+        </center>
+    </div>
+
+</div>
+
+
+<script>
+    search = document.getElementById('player-input')
+
+    search.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+            searchPlayer()
+        }
+    });
+    function searchPlayer(){
+        search = document.getElementById('player-input').value
+        window.location.href = "{% url 'player-search' %}"+search
+
+    }
+
+</script>
+{% endblock content%}

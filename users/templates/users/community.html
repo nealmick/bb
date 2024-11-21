@@ -1,0 +1,111 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+<div class='col-lg-6'style="
+margin-top:50px;
+height:500px;
+padding-left:7px;
+padding-right:7px;
+">
+
+<div class="content-section" style="height:500px;">
+<div>
+    <h2>Chat</h2>
+    <div id="m-scoll"style="margin-left:20px;margin-right:20px;min-height: 380px;max-height: 380px;overflow: scroll;">
+
+        {% for m in qs %}
+
+        <div style="margin: 1px;"><a style="color: #333333;" href="{% url 'public-profile' m.author%}"><img style="margin-bottom:0px;margin-right:5px;width:40px;height:40px"class="rounded-circle account-img" src="{{ m.author.profile.image.url }}">
+            <div style="padding-top: 0px;display: inline;">
+                {{ m.author }}:  {{ m.content }}
+            </div>
+            </a>
+        </div>
+        {% endfor %}
+
+
+
+    </div>
+</div>
+<div style="width:100%;padding: 10px">
+        <input id="message-input" placeholder="New Message" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+
+        </input>
+
+        <button onClick="sendMessage()"type="submit" className="btn btn-grey-secondary" style="color:333333;border-radius: 10px;position:relative;float:right;right:0px; bottom:35px; height:35px; border:none">Send <i class="fas fa-paper-plane"></i></button>
+        <br></br>
+    </form>
+    </div>
+</div>
+</div>
+<div class='col-lg-6'style="
+height:500px;
+margin-top:50px;
+padding-right:7px;
+padding-left:7px;
+
+">
+    <div class="content-section" style="height:500px;">
+
+        <h2>Users</h2>
+        <div style="margin-left:20px;margin-right:20px;min-height: 443px;max-height: 443px;overflow: scroll;">
+        {% for profile in profiles %}
+        <div style="padding-top: 0px;display: inline;">
+            <a style="color: #333333;" href="{% url 'public-profile' profile.user.username %}">
+            <div style="padding:5px">
+                    <div class="row" style="">
+                        <div class="col-lg-6"><img style="margin-bottom:0px;margin-right:5px;width:40px;height:40px"class="rounded-circle account-img" src="{{ profile.image.url }}">
+                            {{ profile.user.username }}
+                        </div>
+                        
+                        <div class="col-lg-2"style="padding-top:6px">
+                            <center>
+                                {{ profile.correct}}/{{ profile.predictions}}
+                            </center>
+                        </div>
+                        <div class="col-lg-4"style="padding-top:6px">
+                            <center>
+                                {{ profile.user.date_joined|date:"Y-m-d" }}
+                            </center>
+                        </div>
+
+
+                    </div>
+                    
+                    <!--
+                   {{ profile.correct }}/{{ profile.predictions }}
+
+                    -->
+                </div>
+                </a>
+            </div>
+
+
+        {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+
+
+     window.addEventListener('load', function () {
+
+        document.getElementById("m-scoll").scrollTop = $(window).height()
+
+    })
+
+    function sendMessage(){
+        el = document.getElementById('message-input')
+        console.log(el.value)
+        window.location.href = '/new-message/'+el.value
+
+
+
+    }   
+
+</script>
+
+{% endblock content%}

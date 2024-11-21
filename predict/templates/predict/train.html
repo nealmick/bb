@@ -1,0 +1,1273 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;margin-top:25px">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet" defer>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js" defer></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<div class="col-lg-6">
+    <div style="margin-top:10px;height:725px"class="content-section" >
+        <div style="width:100%;">
+            <div style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+                <h2>Train Model</h2>
+                <button type="button" class="btn btn-grey-secondary" style="margin-bottom:10px;border: 1px solid #bebebe !important;padding:3px; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; padding: 0; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);" data-toggle="modal" data-target="#modelInfoModal">
+                    ?
+                </button>
+            </div>
+        
+        <style>
+        @keyframes subtleGlow {
+            0% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+            100% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+        }
+        
+        .btn-grey-secondary {
+            animation: subtleGlow 5s ease-in-out infinite;
+        }
+        </style>
+              
+              <!-- Modal -->
+              <div class="modal fade" id="modelInfoModal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+                  <div class="modal-content" style="">
+                    <div class="modal-header">
+                      <h2 class="modal-title" id="modelInfoModalLabel">Model Training Settings</h2>
+                      <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <h4>Epochs</h4>
+                      <p>The number of epochs represents the number of complete passes through the entire training dataset. The more epochs, the more the model has a chance to learn and adjust its weights, but too many can lead to overfitting.</p>
+                        
+                      <h4>Batch Size</h4>
+                      <p>Batch size determines the number of samples that will be propagated through the network at one time. A larger batch size provides a more accurate estimate of the gradient, but it also requires more memory and may take longer to process.</p>
+               
+                      <h4>Layers and Neurons</h4>
+                      <p>Each layer in a neural network attempts to learn different features about the data. The 'Layer Count' refers to the number of neurons in a layer. More neurons can capture more complex relationships but can also lead to overfitting and increased computational load.</p>
+                        
+                      <h4>Activation Functions</h4>
+                      <p>Activation functions like ReLU (Rectified Linear Unit) introduce non-linear properties to the network, allowing it to learn more complex data patterns. <a href="https://www.tensorflow.org/api_docs/python/tf/keras/activations" target="__blank">More info here</a> </p>
+              
+                      <h4>Optimizer</h4>
+                      <p>The optimizer is an algorithm or method used to change the attributes of the neural network, such as weights and learning rate, to reduce the losses. Optimizers like Adam combine the advantages of two other extensions of stochastic gradient descent.  <a href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers" target="__blank">More info here</a> </p>
+              
+                      <h4>Early Stopping</h4>
+                      <p>This technique prevents overfitting by terminating the training process if the model performance stops improving on a validation dataset.</p>
+              
+                      <h4>Kernel Regularizer</h4>
+                      <p>Regularization techniques like L1 and L2 regularization are used to prevent overfitting by penalizing the weights of the neurons.</p>
+              
+                      <h4>Restore Best Weights</h4>
+                      <p>If enabled, this feature will restore model weights from the epoch with the best value of the monitored metric at the end of training, ensuring you keep the most optimal version of the model.</p>
+              
+                      <p>Note: The settings provided here are tailored for NBA data and are designed to balance the bias-variance tradeoff, ensuring the model can generalize well from training data to unseen data.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+            <select id="model-slot" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if model == '0' %}
+                <option value="0" selected>Model 0</option>
+                {% else %}
+                <option value="0" >Model 0</option>
+                {% endif%}
+                {%if model == '1' %}
+                <option value="1" selected>Model 1</option>
+
+                {% else %}
+                <option value="1">Model 1</option>
+
+                {% endif%}
+                {%if model == '2' %}
+                <option value="2" selected>Model 2</option>
+                {% else %}
+                <option value="2">Model 2</option>
+                {% endif%}
+
+
+              </select>
+              <hr>
+
+            <label data-toggle="tooltip" data-placement="bottom" title="Each epoch is a single pass of the entire training dataset through the neural network model. " for="epochs-input">Epochs: <p style="display:inline"id="epochs-display">{{epochs}}</p></label>
+            <input min="1" max="100" type="range" id="epochs-input" value="{{epochs}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            </input>
+
+            <label data-toggle="tooltip" data-placement="bottom" title="number of samples that are propagated through the model at once during a single iteration of the training process." for="batch-size">Batch Size: <p style="display:inline"id="batch-display">{{batchSize}}</p></label>
+            <input min="16" max="513" type="range"  id="batch-size" value="{{batchSize}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            </input>
+            
+            <label data-toggle="tooltip" data-placement="bottom" title="every neuron in the layer is connected to every neuron in the previous layer." for="layer1-count">Layer 1 Count: <p style="display:inline"id="1count-display">{{layer1Count}}</p></label>
+            <input min="4" max="513" type="range"  id="layer1-count" value="{{layer1Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label data-toggle="tooltip" data-placement="bottom" title="mathematical function that is applied to the output of each layer, introducing non-linearity into the model."  for="layer1-activation">Layer 1 Activation:</label>
+            <select id="layer1-activation" style="width:100%;height:35px;margin-bottom: 2px !important;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if layer1Activation == "relu"%}
+                <option value="0" selected>relu</option>
+                {% else %}
+                <option value="0">relu</option>
+                {% endif %}
+                {%if layer1Activation == "LeakyReLU"%}
+                <option value="1" selected>LeakyReLU</option>
+                {% else %}
+                <option value="1">LeakyReLU</option>
+                {% endif %}
+                {%if layer1Activation == "swish"%}
+                <option value="2" selected>swish</option>
+                {% else %}
+                <option value="2">swish</option>
+                {% endif %}
+                {%if layer1Activation == "elu"%}
+                <option value="3" selected>elu</option>
+                {% else %}
+                <option value="3">elu</option>
+                {% endif %}
+                {%if layer1Activation == "gelu"%}
+                <option value="4" selected>gelu</option>
+                {% else %}
+                <option value="4">gelu</option>
+                {% endif %}
+                {%if layer1Activation == "selu"%}
+                <option value="5" selected>selu</option>
+                {% else %}
+                <option value="5">selu</option>
+                {% endif %}
+              </select>            
+            <label data-toggle="tooltip" data-placement="bottom" title="every neuron in the layer is connected to every neuron in the previous layer." for="layer2-count">Layer 2 Count: <p style="display:inline"id="2count-display">{{layer2Count}}</p></label>
+            <input min="4" max="513" type="range" id="layer2-count" value="{{layer2Count}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+            <label data-toggle="tooltip" data-placement="bottom" title="mathematical function that is applied to the output of each layer, introducing non-linearity into the model." for="layer2-activation">Layer 2 Activation:</label>
+            <select id="layer2-activation" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if layer2Activation == "relu"%}
+                <option value="0" selected>relu</option>
+                {% else %}
+                <option value="0">relu</option>
+                {% endif %}
+                {%if layer2Activation == "LeakyReLU"%}
+                <option value="1" selected>LeakyReLU</option>
+                {% else %}
+                <option value="1">LeakyReLU</option>
+                {% endif %}
+                {%if layer2Activation == "swish"%}
+                <option value="2" selected>swish</option>
+                {% else %}
+                <option value="2">swish</option>
+                {% endif %}
+                {%if layer2Activation == "elu"%}
+                <option value="3" selected>elu</option>
+                {% else %}
+                <option value="3">elu</option>
+                {% endif %}
+                {%if layer2Activation == "gelu"%}
+                <option value="4" selected>gelu</option>
+                {% else %}
+                <option value="4">gelu</option>
+                {% endif %}
+                {%if layer2Activation == "selu"%}
+                <option value="5" selected>selu</option>
+                {% else %}
+                <option value="5">selu</option>
+                {% endif %}
+              </select>
+              
+            <label data-toggle="tooltip" data-placement="bottom" title="method to update weights and biases of model during training to minimize the loss metric." for="optimizer">Optimizer:</label>
+            <select id="optimizer" style="width:100%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                {%if optimizer == "adam"%}
+                <option value="0" selected>adam</option>
+                {% else %}
+                <option value="0">adam</option>
+                {% endif %}
+
+                {%if optimizer == "adamax"%}
+                <option value="1" selected>adamax</option>
+                {% else %}
+                <option value="1">adamax</option>
+                {% endif %}
+
+                {%if optimizer == "RMSprop"%}
+                <option value="2" selected>RMSprop</option>
+                {% else %}
+                <option value="2">RMSprop</option>
+                {% endif %}
+
+
+                {%if optimizer == "adagrad"%}
+                <option value="3" selected>adagrad</option>
+                {% else %}
+                <option value="3">adagrad</option>
+                {% endif %}
+
+                {%if optimizer == "nadam"%}
+                <option value="4" selected>nadam</option>
+                {% else %}
+                <option value="4">nadam</option>
+                {% endif %}
+
+         
+              </select>
+            <br></br>
+
+        </div>
+        <div class="row" style="margin-bottom:15px;">
+            <div class="col-6">
+                <div class="form-check">
+                    {% if es == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="es" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="es">
+
+                    {% endif %}
+                    <label class="form-check-label" for="es">
+                        Early Stopping
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if kr == 'true'%}
+                    <input class="form-check-input" type="checkbox" value="" id="kr" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="kr">
+
+                    {% endif %}
+                    <label data-toggle="tooltip" data-placement="bottom" title="Adds the square of the weights to the loss function (mse)." class="form-check-label" for="kr">
+                        Kernel regularizer
+                    </label>
+                </div>
+            </div>            
+            <div class="col-6">
+                <div class="form-check">
+                    {% if rmw == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="rmw" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="rmw">
+
+                    {% endif %}
+                    <label class="form-check-label" for="rmw">
+                        Restore Best Weights
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    <input class="form-check-input" type="checkbox" value="" id="m" checked disabled>
+                    <label class="form-check-label" for="m">
+                        Coming soon
+                    </label>
+                </div>
+            </div>            
+
+        </div>
+        <button data-toggle="modal" data-target="#trainModal" id="train-button"onClick="trainModel()"type="submit" className="btn btn-grey-secondary" style="padding:6px;color:#333333 !important;border-radius: 10px;height:35px; border:none">Train Model <i class="fas fa-robot"></i></i></button>
+        <button data-toggle="modal" data-target="#retrainModal" id="retrain-button" className="btn btn-grey-secondary" style="padding:6px;color:#333333 !important;border-radius: 10px;height:35px; border:none">History <i class="fas fa-book"></i></button>
+        
+        <button data-toggle="modal" data-target="#oldLogsModal" id="logs-button" className="btn btn-grey-secondary" style="padding:6px;color:#333333 !important;border-radius: 10px;height:35px; border:none">Logs <i class="fa-solid fa-rectangle-terminal"></i></button>
+       
+        <button id="train-button"onclick="window.location.href='{%url 'home-predict'%}'+'resetmodel/'+document.getElementById('model-slot').value ;"type="submit" className="btn btn-grey-secondary" style="padding:6px;color:#333333 !important;border-radius: 10px;height:35px; border:none">Reset <i class="fas fa-trash"></i></button>
+        <div id="loading-div" style="opacity:0;position:absolute;margin-top:0px!important;margin-left:5px!important;display:inline">
+            <div style=""id="loading"></div>
+        </div>
+        </div>
+
+    </div>
+    <script src="https://kit.fontawesome.com/8ccc473e6e.js" crossorigin="anonymous"></script>
+
+  <!-- train Modal -->
+  <div class="modal fade" id="trainModal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+      <div class="modal-content" style="">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modelInfoModalLabel">Model Logs</h2>
+          
+          <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="max-height: 75vh;min-height: 75vh; overflow-y: auto;">
+         
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- retrain Modal -->
+  <div class="modal fade" id="retrainModal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+      <div class="modal-content" style="">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modelInfoModalLabel">Model History</h2>
+          
+          <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="max-height: 75vh;min-height: 75vh; overflow-y: auto;">
+         
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- logs Modal -->
+  <div class="modal fade" id="oldLogsModal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+      <div class="modal-content" style="">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modelInfoModalLabel">Training Model</h2>
+          
+          <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="max-height: 75vh;min-height: 75vh; overflow-y: auto;">
+         
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    let currentLine = 0;
+    let modelNumber = document.getElementById("model-slot").value;  // Assuming modelNum is stored in localStorage
+    let isModalOpen = true;  // Set this flag to false when the modal is closed
+    function retrainLogs(modelNumber) {
+        let url = `/predict/retrain-logs/${modelNumber}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    let modalContent = document.querySelector("#retrainModal .modal-body");
+                    modalContent.innerHTML = 'Model slot has no history... Click Train Model.';  // Clear existing content
+                    throw new Error('No Logs Found..');
+                }
+                return response.json();
+            })
+            .then(data => {
+                let modalContent = document.querySelector("#retrainModal .modal-body");
+                modalContent.innerHTML = '';  // Clear existing content
+
+                if (data.lines && data.lines.length > 0) {
+                    data.lines.forEach((entry, index) => {
+                        let logLine = document.createElement("p");
+                        logLine.classList.add("log-entry", entry.type); // Add class for styling
+
+                        let formattedDate = timeSince(new Date(entry.date_posted));
+                        let text = `${entry.type.charAt(0).toUpperCase() + entry.type.slice(1)} Model: ${formattedDate} `;
+                        if (entry.type === 'retrain') {
+                            text += `Game: ${entry.game} `;
+                            logLine.onclick = () => window.location.href = `/predict/edit/${entry.game}`;
+                        }
+                        
+                        logLine.textContent = text;
+                        modalContent.appendChild(logLine);
+
+                        if (index < data.lines.length - 1) {
+                            let separator = document.createElement("hr");
+                            modalContent.appendChild(separator);
+                        }
+                    });
+                } else {
+                    let noDataMsg = document.createElement("p");
+                    noDataMsg.textContent = 'No retrain logs found for model.';
+                    modalContent.appendChild(noDataMsg);
+                }
+
+                // Show the modal
+                $('#retrainModal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error fetching all model logs:', error);
+                let modalContent = document.querySelector("#retrainModal .modal-body");
+                modalContent.innerHTML = '';  // Clear existing content
+
+                let errorMsg = document.createElement("p");
+                errorMsg.textContent = 'Error fetching logs: '
+                modalContent.appendChild(errorMsg);
+                let errorMsgTxt = document.createElement("p");
+                errorMsgTxt.textContent = error.message;
+                modalContent.appendChild(errorMsgTxt);
+            });
+    }
+
+        function timeSince(date) {
+            const now = new Date();
+            const secondsPast = (now.getTime() - date.getTime()) / 1000;
+
+            if (secondsPast < 60) { // less than a minute
+                return `${parseInt(secondsPast)} seconds ago`;
+            }
+            if (secondsPast < 3600) { // less than an hour
+                return `${parseInt(secondsPast / 60)} minutes ago`;
+            }
+            if (secondsPast <= 86400) { // less than a day
+                return `${parseInt(secondsPast / 3600)} hours ago`;
+            }
+            if (secondsPast <= 2592000) { // less than a month
+                return `${parseInt(secondsPast / 86400)} days ago`;
+            }
+            if (secondsPast <= 31536000) { // less than a year
+                return `${parseInt(secondsPast / 2592000)} months ago`;
+            }
+            return `${parseInt(secondsPast / 31536000)} years ago`;
+        }
+
+    function viewOldLogs(modelNumber) {
+    let url = `/predict/all-model-logs/${modelNumber}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No Logs Found.  Make sure you have a custom model trained.  The default model does not display logs.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            let modalContent = document.querySelector("#oldLogsModal .modal-body");
+            modalContent.innerHTML = '';  // Clear existing content
+
+            if (data.lines && data.lines.length > 0) {
+                data.lines.forEach(line => {
+                    let logLine = document.createElement("p");
+                    logLine.textContent = line;
+                    modalContent.appendChild(logLine);
+                });
+            } else {
+                let noDataMsg = document.createElement("p");
+                noDataMsg.textContent = 'No logs found for this model.';
+                modalContent.appendChild(noDataMsg);
+            }
+
+            // Show the modal
+            $('#oldLogsModal').modal('show');
+        })
+        .catch(error => {
+            console.error('Error fetching all model logs:', error);
+            let modalContent = document.querySelector("#oldLogsModal .modal-body");
+            modalContent.innerHTML = '';  // Clear existing content
+
+            let errorMsg = document.createElement("p");
+            errorMsg.textContent = 'Error fetching logs: '
+            modalContent.appendChild(errorMsg);
+            let errorMsgTxt = document.createElement("p");
+            errorMsgTxt.textContent = error.message;
+            modalContent.appendChild(errorMsgTxt);
+        });
+    }
+
+    function fetchModelLogs() {
+        if (!isModalOpen) {
+            return;  // Stop fetching if the modal is closed
+        }
+
+        // Construct the URL for the AJAX request
+        let url = `/predict/model-logs/${modelNumber}/${currentLine}`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.line) {
+                    // Append the new line to the modal's content
+                    let modalContent = document.querySelector("#trainModal .modal-body");
+                    let newLine = document.createElement("p");
+                    newLine.textContent = data.line;
+                    modalContent.appendChild(newLine);
+                    modalContent.scrollTop = modalContent.scrollHeight;
+
+                    // Increment the current line number
+                    currentLine++;
+                }
+
+                // Repeat the request after a short delay
+                setTimeout(fetchModelLogs, 25);
+            })
+            .catch(error => console.error('Error fetching model logs:', error));
+    }
+
+    // Start fetching logs when the modal is shown
+    $(document).ready(function() {
+    // Fetch and display training logs when the training modal is opened
+    $('#trainModal').on('shown.bs.modal', function() {
+        currentLine = 0;
+        isModalOpen = true;
+        modelNumber = document.getElementById("model-slot").value; // Get the model number
+        fetchModelLogs(); // Start fetching logs
+    });
+
+    // Stop fetching training logs when the training modal is closed
+    $('#trainModal').on('hidden.bs.modal', function() {
+        isModalOpen = false;
+    });
+
+    // Fetch and display old logs when the old logs modal is opened
+    $('#oldLogsModal').on('shown.bs.modal', function() {
+        modelNumber = document.getElementById("model-slot").value; // Get the model number
+        viewOldLogs(modelNumber); // Fetch and display old logs
+    });
+    $('#retrainModal').on('shown.bs.modal', function() {
+        modelNumber = document.getElementById("model-slot").value; // Get the model number
+        retrainLogs(modelNumber); // Fetch and display old logs
+
+    });
+
+   
+
+    
+
+});
+
+
+
+    
+</script>
+
+
+
+
+
+
+<div class="col-lg-6">
+    <div style="margin-top:10px;height:725px"class="content-section">
+
+        <div style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+                <h2>Data Features</h2>
+
+                <button type="button" class="btn btn-grey-secondary" style="margin-bottom:10px;border: 1px solid #bebebe !important; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; padding: 0;" data-toggle="modal" data-target="#modal-data-features">
+                    ?
+                </button>
+            </div>
+              
+              <!-- Modal -->
+              <div class="modal fade" id="modal-data-features" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px;border-radius: 10px;" role="document">
+                  <div class="modal-content" style="">
+                    <div class="modal-header">
+                      <h2 class="modal-title" id="exampleModalLabel">Data Feature Settings</h2>
+                      <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Understanding the data features and how they can be configured is crucial for optimizing model performance and relevance. Here's a breakdown of each feature and its role:</p>
+                        
+                        <h4>General Overview</h4>
+                        <p>Our datasets encompass over 20,000 game's, each with over 500 data points. By standard, our platform ingests the season averages of the top seven players from each team based on playing time. Additionally, to capture the momentum and form of the teams, we include a detailed breakdown of the previous game's statistics for the top five players from both the featured team and their opponents, as well as the final score of that game.</p>
+                        
+                        <p>This nuanced approach ensures that not only are the long-term trends captured through seasonal averages, but also the immediate past performance, which might give insights into the current state of the teams and players.</p>
+                 
+                        <h4>Field Goal Three (FG3M & FG3A)</h4>
+                        <p>Includes both the three-point attempts and the successful three-point shots, offering insights into a team's long-range shooting ability, both in volume and accuracy.</p>
+                        
+                        <h4>Field Goal (FGM & FGA)</h4>
+                        <p>Consists of field goals made (FGM) and field goals attempted (FGA), providing insight into a team's overall shooting performance and offensive effectiveness from all areas of the court.</p>
+                        
+
+                        <h4>Assists (AST)</h4>
+                        <p>Represents the total number of assists a player averages per game. Assists are a strong indicator of a team's offensive flow and the ability of players to create scoring opportunities for each other.</p>
+                        
+                        <h4>Blocks (BLK)</h4>
+                        <p>Indicates the average number of shots a player blocks per game. This stat is a measure of a player's defensive impact and the team's ability to prevent scoring by the opposition.</p>
+                        
+                        <h4>Rebounds (DREB & OREB)</h4>
+                        <p>Covers two separate statistics: defensive rebounds (DREB) and offensive rebounds (OREB). Together, they paint a picture of how well a team controls the ball after a missed shot, which is crucial for both defense and second-chance points.</p>
+                        
+                  
+                        <h4>Free Throw (FTM & FTA)</h4>
+                        <p>Comprises free throws made (FTM) and free throws attempted (FTA), which can be critical in close games and also serve as a proxy for a team's ability to draw fouls.</p>
+                        
+                        <h4>Personal Foul (PF)</h4>
+                        <p>The average number of fouls a player commits per game. While aggressive play can lead to turnovers and disrupted plays, it can also result in fouls that give away free points and lead to players getting into foul trouble.</p>
+                        
+                        <h4>Points (PTS)</h4>
+                        <p>The average number of points a player scores per game. This is the most direct measure of offensive output and a key component in predicting game scores.</p>
+                        
+                        <h4>Steals (STL)</h4>
+                        <p>The average number of times a player steals the ball from the opponent. Steals can lead to fast-break opportunities and are an indicator of a team's defensive aggressiveness.</p>
+                        
+                        <h4>Turnovers (TO)</h4>
+                        <p>Represents how often a player loses possession of the ball to the opposing team. Keeping turnovers low is essential for maintaining offensive efficiency.</p>
+
+                        <h4>Games Played</h4>
+                        <p>Represents the experience stage of the season.</p>
+                
+
+                        <h4>Point Spread</h4>
+                        <p>The expected margin of victory according to vegas.</p>
+
+
+                        <h4>Players Per Team</h4>
+                        <p>Adjusting the number of players per team considered in the dataset allows for focusing on the core lineup or a broader set of players, which may change the model's focus from star players to overall team performance.</p>
+                
+
+                        <h4>Win/Loss Streaks</h4>
+                        <p>Consecutive wins or losses a team has had.</p>
+                
+                        <h4>Win/Loss Record</h4>
+                        <p>Overall performance of the team throughout the season.</p>
+                        <br>
+                        
+                        
+                        <h4  >Data Pipeline for Live stats</h4>
+
+                        <img  src="https://i.imgur.com/gd7ARVi.png"  width="100%"  />
+                        <br>
+                        <h4 style="margin-top:25px">Data Feature Corelation</h4>
+
+                        <img  src="https://i.imgur.com/xJMmvZR.png"  width="100%"  />
+                      </div>
+
+                  
+                  </div>
+                </div>
+              </div>
+
+
+
+
+              
+
+        <div class="row" style="margin-bottom:0px;">
+            <div class="col-6">
+                <div class="form-check">
+                    {% if streaks == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="streaks" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="streaks">
+                    {% endif  %}
+                    <label class="form-check-label" for="streaks">
+                        Win/Loss Streaks
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if wl == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="wl" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="wl">
+
+                    {% endif %}
+                    <label class="form-check-label" for="wl">
+                        Win/Loss Record
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if ast == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="ast" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="ast">
+                    {% endif %}
+    
+                    <label class="form-check-label" for="ast">
+                        Assists
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if blk == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="blk" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="blk">
+
+                    {% endif %}
+                    <label class="form-check-label" for="blk">
+                        Blocks
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if reb == 'true' %}
+
+                    <input class="form-check-input" type="checkbox" value="" id="reb" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="reb">
+                    {% endif %}
+                    <label class="form-check-label" for="reb">
+                        Rebounds
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if fg3 == 'true' %}
+
+                    <input class="form-check-input" type="checkbox" value="" id="fg3" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="fg3">
+
+                    {% endif %}
+                    <label class="form-check-label" for="fg3">
+                        Field Goal Three
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if fg == 'true' %}
+                    
+                    <input class="form-check-input" type="checkbox" value="" id="fg" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="fg">
+                    {% endif %}
+
+                    <label class="form-check-label" for="fg">
+                        Field Goal
+                    </label>
+                </div>
+                
+
+            </div>            
+            <div class="col-6">
+                <div class="form-check" style="padding-top:3px">
+                    {% if gp == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="gp" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="gp" >
+                    {% endif %}
+                    <label class="form-check-label" for="gp">
+                        Games Played
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if ps == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="ps" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="ps">
+                    {% endif %}
+                    <label class="form-check-label" for="ps">
+                        Point Spread
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if ft == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="ft" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="ft" >
+                    {% endif %}
+                    <label class="form-check-label" for="ft">
+                        Free Throw
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if pf == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="pf" checked>
+                    {% else  %}
+                    <input class="form-check-input" type="checkbox" value="" id="pf">
+                    {% endif %}
+                    <label class="form-check-label" for="pf">
+                        Personal Foul
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if pts == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="pts" checked>
+                    {% else  %}
+                    <input class="form-check-input" type="checkbox" value="" id="pts">
+                    {% endif %}
+
+                    <label class="form-check-label" for="pts">
+                        Points
+                    </label>
+                </div>
+
+                <div class="form-check" style="padding-top:3px">
+                    {% if stl == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="stl" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="stl">
+                    {% endif %}
+                    <label class="form-check-label" for="stl">
+                        Steals
+                    </label>
+                </div>
+                <div class="form-check" style="padding-top:3px">
+                    {% if turnover == 'true' %}
+                    <input class="form-check-input" type="checkbox" value="" id="turnover" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" value="" id="turnover">
+                    {% endif %}
+
+                    <label class="form-check-label" for="turnover">
+                        Turnovers
+                    </label>
+                </div>
+
+                
+            </div>  
+             
+            </div>         
+            <label data-toggle="tooltip" data-placement="bottom" title="Number of players input for each team.">Players Per Team: <p style="display:inline"id="players-display">{{players}}</p></label>
+            <input min="0" max="7" type="range" id="players" value="{{players}}" class="form-control"style="background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+    
+        
+
+            <div style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+                <h2>Evaluation</h2>
+
+                <button type="button" class="btn btn-grey-secondary" style="margin-bottom:10px;border: 1px solid #bebebe !important; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; padding: 0;" data-toggle="modal" data-target="#modal-evaluation">
+                    ?
+                </button>
+            </div>
+            
+              <!-- Modal -->
+              <div class="modal fade" id="modal-evaluation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px;border-radius: 10px;" role="document">
+                  <div class="modal-content" style="">
+                    <div class="modal-header">
+                      <h2 class="modal-title" id="exampleModalLabel">Evaluation</h2>
+                      <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>The model's performance is evaluated on a series of key metrics that collectively provide a comprehensive view of its predictive power and financial efficacy when applied to real-world betting scenarios. These metrics include the Win/Loss percentage, Spread Win/Loss percentage, and various Margin-based evaluations.</p>
+                        
+                        <h4>Win/Loss Evaluation</h4>
+                        <p>This metric represents the percentage of games where the model correctly predicted the winning team. It is a direct indicator of the model's ability to determine the most likely victor in a matchup without considering the point spread.</p>
+                        <h4>Spread Win/Loss Evaluation</h4>
+                        <p>The Spread Win/Loss statistic indicates the frequency with which the team favored by the Vegas spread wins the game outright. For example, if Vegas sets a spread of -10 for the home team, they predict the home team will win. If the home team wins by any margin, even if it's less than 10 points, this is counted as a 'Win' for Vegas in accurately selecting the winning team. This metric solely considers the success of Vegas odds in picking the winner, not the accuracy of the spread itself, or the spread compared to predictions. In a sense this metric is not convertible.</p>
+                        
+                        <h4>Margin-Based Evaluation</h4>
+                        <p>The Margin-Based Evaluation is a nuanced metric that assesses the model's predictions relative to the actual point spread of the game. Margins are set at various levels (e.g., 1, 2, 3, 4 points) to evaluate the model's performance against different thresholds of prediction strength.</p>
+                        
+                        <p>For each Margin level, the following statistics are captured:</p>
+                        <ul>
+                            <li><strong>Eval:</strong> Represents the count of test games the model has never seen before, providing a concrete base for the evaluation metrics.</li>
+                            <li><strong>Win:</strong> Denotes the count of games where the model's predictions were within the spread-adjusted Margin threshold and considered as wins.</li>
+                            <li><strong>Total:</strong> Refers to the aggregate number of games that were tested for a specific Margin threshold.</li>
+                            <li><strong>%:</strong> The percentage of games where the model's predictions fell within the Margin threshold, reflecting prediction accuracy.</li>
+                            <li><strong>+</strong> (Positive Variance): The maximum positive difference during the evaluation period between the cumulative count of games won by the model and the cumulative count of games lost, indicative of the model's winning streak at any point in the test.</li>
+                            <li><strong>-</strong> (Negative Variance): The maximum negative difference during the evaluation period between the cumulative count of games lost by the model and the cumulative count of games won, indicative of the model's losing streak at any point in the test.</li>                            <li><strong>Profit:</strong> The hypothetical profit or loss if one were to bet according to the model's predictions, calculated by taking the total wins, multiplying by the standard betting odds payout, and subtracting the total number of bets.</li>
+                          </ul>
+                          
+                        
+                        <p>These evaluations help in understanding not just whether the model can predict winners, but also how close the predictions are to the actual outcomes, which is crucial for assessing the model's utility in betting scenarios.</p>
+                        
+                        <h4>Graphical Representations</h4>
+                        <p>The evaluation section also includes visual aids such as charts and graphs that illustrate the model's performance over time, across different metrics, and in comparison to the point spread. These visuals are designed to provide users with an at-a-glance understanding of the model's predictive behavior and trends.</p>
+                        
+                        <p>Note: Users can expect the training and evaluation process to take a few minutes, during which the model will iterate through the data to refine its predictive capabilities.</p>
+                        
+                        <p>For more technical details on the machine learning aspects such as activation functions and optimizers, take a look at the resources provided by TensorFlow.</p>
+                        
+                    </div>
+                  
+                  </div>
+                </div>
+              </div>
+        <p>Win/Loss: {{ results.wl }}%</p>
+        <p>Spread Win/Loss: {{ results.swl }}%</p>
+        <center>
+            <table style="width:100%">
+                <tr>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="This is the model evalution consisting of {{ results.count }} test games the model has never seen.">Eval</td>
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Games won against spread.">Win</td>
+
+                    </center>
+
+                    <center>
+                        <td style="text-align: center" data-toggle="tooltip" data-placement="bottom" title="Total games tested.">Total</td>
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Percent correct against spread.">%</td>
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Postive varience game count.">+</td>
+
+                    </center>
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Negative varience game count.">-</td>
+                    </center>
+
+
+                    <center>
+                        <td data-toggle="tooltip" data-placement="bottom" title="Total Profit at end of test.">Profit</td>
+                    </center>
+
+                </tr>
+    
+                <tr style="text-align: center">
+                    <td>Margin 1</td>
+                    <td>{{ results.evMargin1 }}</td>
+                    <td>{{ results.evMargin1Count }}</td>
+                    <td>{{ results.evMargin1Pct }}%</td>
+                    <td>{{ results.evMargin1Max }}</td>
+                    <td>{{ results.evMargin1Min }}</td>
+                    <td>{{ results.evMargin1Profit }}$</td>
+                </tr>
+                    
+                <tr style="text-align: center">
+                    <td>Margin 2</td>
+                    <td>{{ results.evMargin2 }}</td>
+                    <td>{{ results.evMargin2Count }}</td>
+                    <td>{{ results.evMargin2Pct }}%</td>
+                    <td>{{ results.evMargin2Max }}</td>
+                    <td>{{ results.evMargin2Min }}</td>
+                    <td>{{ results.evMargin2Profit }}$</td>
+                </tr>
+                    
+                <tr style="text-align: center">
+                    <td>Margin 3</td>
+                    <td>{{ results.evMargin3 }}</td>
+                    <td>{{ results.evMargin3Count }}</td>
+                    <td>{{ results.evMargin3Pct }}%</td>
+                    <td>{{ results.evMargin3Max }}</td>
+                    <td>{{ results.evMargin3Min }}</td>
+                    <td>{{ results.evMargin3Profit }}$</td>
+                </tr>
+                    
+                <tr style="text-align: center">
+                    <td>Margin 4</td>
+                    <td>{{ results.evMargin4 }}</td>
+                    <td>{{ results.evMargin4Count }}</td>
+                    <td>{{ results.evMargin4Pct }}%</td>
+                    <td>{{ results.evMargin4Max }}</td>
+                    <td>{{ results.evMargin4Min }}</td>
+                    <td>{{ results.evMargin4Profit }}$</td>
+                </tr>
+            </table>
+        </center>
+        
+        <hr>
+        <p>Note: training can take up to a few minutes to complete.</p>
+        <p>Activation funtions <a target="_blank" href="https://www.tensorflow.org/api_docs/python/tf/keras/activations">here</a>, and Optimizers  <a target="_blank" href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">here</a>.</p>
+
+    </div>
+</div>
+</div>
+
+
+
+
+
+<div class="col-lg-12" style="padding-left:0px;padding-right:0px">
+    <div style="margin-top:10px;"class="content-section">
+
+        <div style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin-left:100px;margin-top:5px">
+                Evaluation Graphs
+            </h2>
+            <button type="button" class="btn btn-grey-secondary" style="margin-bottom:10px;border: 1px solid #bebebe !important; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; padding: 0;" data-toggle="modal" data-target="#modal-graphs">
+                ?
+            </button>
+        </div>
+
+           <!-- Modal -->
+           <div class="modal fade" id="modal-graphs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="max-width: 800px;border-radius: 10px;" role="document">
+              <div class="modal-content" style="">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="exampleModalLabel">Evaluation Graphs</h2>
+                  <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <p> The graphs displayed across the site are color coordinated: </p>
+                    <ul>
+                        <li><span style="height: 10px; width: 10px; background-color: #B6C9D9; border-radius: 50%; display: inline-block;"></span> - Blue for Margin 1 games</li>
+                        <li><span style="height: 10px; width: 10px; background-color: #CBDDAD; border-radius: 50%; display: inline-block;"></span> - Green for Margin 2 games</li>
+                        <li><span style="height: 10px; width: 10px; background-color: #CFB6D0; border-radius: 50%; display: inline-block;"></span> - Purple for Margin 3 games</li>
+                    </ul>   
+                    <h4 style="margin-top:15px">Variance Time Series Graph</h2>       
+                    <p>The top graph displays test game evaluation over game increments. If the model predicts a game incorrectly, the graph goes down by 1, and if it predicts correctly, it goes up by 1. This graph shows the variance or the win/loss streak at any point in the evaluation.</p>         
+                    <h4 style="margin-top:15px">Bar Chart</h2>       
+                    <p>The bar chart shows the end-of-test results in comparison to each other. It displays the total number of games for a margin level and the number of games won at that margin level.</p>         
+                    <h4 style="margin-top:15px">Pie Chart</h2>       
+                    <p>The pie charts display individual margin level accuracy, detailing both the number of games and the number of games won at each margin threshold.</p>         
+                </div>
+                </div>
+            </div>
+          </div>
+
+
+
+
+
+
+        
+
+            <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+              <canvas id="history-chart"></canvas>
+            </div>
+    
+
+
+        <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+            <canvas id="barChart"></canvas>
+          </div>
+        <div class="row" style="margin-top:25px;height:250px">
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 1 tracks games with predictions more than 1 point off the spread.">Margin 1</h5>
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin1"></canvas>
+                  </div>
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 2 tracks games with predictions more than 2 points off the spread.">Margin 2</h5>
+
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin2"></canvas>
+                  </div>
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 3 tracks games with predictions more than 3 points off the spread.">Margin 3</h5>
+
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin3"></canvas>
+                  </div>
+            </div>
+        </div>
+        <div id="margin-display" class="row"style="height:250px;margin-top:10px;">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <center>
+                    <h5 style="margin-left:40px;"data-toggle="tooltip" data-placement="bottom" title="Predicted game winners without spread.">Win/Loss</h5>
+
+                </center>
+    
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="win_loss"style="margin-left: auto !important;margin-right: auto !important;"></canvas>
+                  </div>
+    
+    
+            </div>
+            
+            <div class="col-4">
+                <center>
+                    <h5 style="margin-left:25px;"data-toggle="tooltip" data-placement="bottom" title="How often spread chooses correct winner.">Spread Win/Loss</h5>
+
+                </center>
+    
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="spred_win"style="margin-left: auto !important;margin-right: auto !important;"></canvas>
+                  </div>
+    
+    
+            </div>
+        </div>
+    </div>
+    
+    
+    
+
+</div>
+
+
+
+
+<script>
+    document.getElementById("players").addEventListener("input", () => {
+        document.getElementById("players-display").innerHTML = document.getElementById("players").value;
+    });
+
+    document.getElementById("epochs-input").addEventListener("input", () => {
+        document.getElementById("epochs-display").innerHTML = document.getElementById("epochs-input").value;
+    });
+
+    document.getElementById("batch-size").addEventListener("input", () => {
+        document.getElementById("batch-display").innerHTML = document.getElementById("batch-size").value;
+    });
+    document.getElementById("layer1-count").addEventListener("input", () => {
+        document.getElementById("1count-display").innerHTML = document.getElementById("layer1-count").value;
+    });
+    document.getElementById("layer2-count").addEventListener("input", () => {
+        document.getElementById("2count-display").innerHTML = document.getElementById("layer2-count").value;
+    });
+    document.getElementById("model-slot").addEventListener("input", () => {
+        model = document.getElementById("model-slot").value
+        window.location.href = "{% url 'home-predict' %}"+'train/'+model
+    });
+
+    function makeDataset(){
+        seasons = document.getElementById("seasons-input").value
+        numgames = document.getElementById("testGame-input").value
+        window.location.href = "{% url 'make-dataset' %}/"+ seasons+'/'+numgames
+
+    }
+    function trainModel(){
+        epochs = document.getElementById("epochs-input").value
+        batchSize = document.getElementById("batch-size").value
+        layer1Count = document.getElementById("layer1-count").value
+        layer1Activation = document.getElementById("layer1-activation").value
+        layer2Count = document.getElementById("layer2-count").value
+        layer2Activation = document.getElementById("layer2-activation").value
+        es = document.getElementById("es").checked
+        rmw = document.getElementById("rmw").checked
+        kr = document.getElementById("kr").checked
+
+        streaks = document.getElementById("streaks").checked
+        wl = document.getElementById("wl").checked
+        gp = document.getElementById("gp").checked
+        ps = document.getElementById("ps").checked
+
+        optimizer = document.getElementById("optimizer").value
+        optimizers = ['adam','adamax','RMSprop','adagrad','nadam','SGD']
+        activations = ['relu','LeakyReLU','swish','elu','gelu','selu']
+        document.getElementById("loading-div").style.opacity = 1
+        
+        model = document.getElementById("model-slot").value
+        players = document.getElementById("players").value
+
+        ast = document.getElementById("ast").checked
+        blk = document.getElementById("blk").checked
+        reb = document.getElementById("reb").checked
+        fg3 = document.getElementById("fg3").checked
+        fg = document.getElementById("fg").checked
+        ft = document.getElementById("ft").checked
+        pf = document.getElementById("pf").checked
+        pts = document.getElementById("pts").checked
+        stl = document.getElementById("stl").checked
+        turnover = document.getElementById("turnover").checked
+
+        console.log(optimizers[optimizer])
+
+
+        window.location.href = "{% url 'home-predict' %}"+'trainmodel/'+model+'/'+ epochs+'/'+batchSize +'/'+layer1Count+'/'+activations[layer1Activation]+'/'+layer2Count+'/'+activations[layer2Activation]+'/'+optimizers[optimizer]+'/'+es+'/'+rmw+'/'+kr+'/'+streaks+'/'+wl+'/'+gp+'/'+ps+'/'+players+
+        '/'+ast+'/'+blk+'/'+reb+'/'+fg3+'/'+fg+'/'+ft+'/'+pf+'/'+pts+'/'+stl+'/'+turnover+'/'+'false'
+
+    }
+</script>
+<style>
+    #loading {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+    }
+    @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+    }
+
+</style>
+
+{{ eval.spreadCorrect|json_script:"scorrect" }}
+{{ eval.spreadWrong|json_script:"swrong" }}
+
+
+{{ eval.correct|json_script:"correct" }}
+{{ eval.wrong|json_script:"wrong" }}
+
+{{ eval.evMargin1|json_script:"evMargin1" }}
+{{ eval.evMargin1wrong|json_script:"evMargin1wrong" }}
+
+{{ eval.evMargin2|json_script:"evMargin2" }}
+{{ eval.evMargin2wrong|json_script:"evMargin2wrong" }}
+
+{{ eval.evMargin3|json_script:"evMargin3" }}
+{{ eval.evMargin3wrong|json_script:"evMargin3wrong" }}
+
+
+
+{{ results.gameSeries1|json_script:"gameSeries1" }}
+{{ results.gameSeries2|json_script:"gameSeries2" }}
+{{ results.gameSeries3|json_script:"gameSeries3" }}
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script  src="{% static 'predict/eval.js'%}" defer></script>
+
+
+</div>
+
+
+
+<style>
+
+
+
+
+
+#oldLogsModal .modal-body::-webkit-scrollbar {
+    display: block !important;
+    width: 10px;
+}
+
+
+#oldLogsModal .modal-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+
+}
+
+#oldLogsModal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.log-entry {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.log-entry.train {
+    background-color: lightblue;
+}
+
+.log-entry.retrain {
+    background-color: lightgreen;
+}
+
+.log-entry.reset {
+    background-color: lightcoral;
+}
+
+.log-entry:hover {
+    opacity: 1;
+}
+</style>
+
+
+
+<script>
+    function updateURL() {
+        let modelNumber = document.getElementById("model-slot").value;
+        let newURL = '/predict/train/' + modelNumber;
+
+        // Use window.location.origin to get the base URL of the site
+        window.history.pushState({}, '', window.location.origin + newURL);
+    }
+
+    // Call this function when you want to update the URL
+    updateURL();
+</script>
+{% endblock content %}
+
+

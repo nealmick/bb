@@ -1,0 +1,66 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12" style="margin-top:10px">
+    <div class="content-section" >
+        <center>
+            <input id="player-input" placeholder="Player name" style="height: 40px;width:300px"  maxlength="50">
+            <button id="search-btn" onClick="searchPlayer()" style="padding-left:7px !important;padding-right:7px !important;height: 40px;margin-bottom:3px;padding:3px;border-radius: 7px;" class="btn btn-grey"> <i class="fas fa-search"></i> Search </button>
+        </center>
+
+        <hr>
+        <div class="row">
+            {% for team in teams %}
+                    <div class="col-lg-4">
+                            <a href="{% url 'team-view' team.abv %}" style="text-decoration: none;color:#333333">
+                                <center>
+                                    <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ team.abv }}.webp">
+
+                                    <h2 style="margin-top:25px">{{team.name}}</h2>
+                                    <p>Win: {{team.win}} Loss: {{team.loss}} Streak: {{team.streak}}</p>
+                                </center>
+
+                            </a>
+          
+                    </div>
+    
+          
+    
+            {% endfor %}
+        </div>
+        
+
+    </div>
+
+</div>
+
+
+<script>
+    search = document.getElementById('player-input')
+
+    search.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+            searchPlayer()
+        }
+    });
+    function searchPlayer(){
+        search = document.getElementById('player-input').value
+        window.location.href = "{% url 'player-search' %}"+search
+
+    }
+
+</script>
+{% endblock content%}

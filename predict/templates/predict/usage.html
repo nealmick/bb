@@ -1,0 +1,247 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+
+
+
+
+
+<div class="col-8" style="margin-left:auto;margin-right:auto">
+    <div style="margin-top:10px;min-height: 60vh;" class="content-section">
+        <center>
+            {% if active %}
+            <h1>Basic 10$</h1>
+
+            {% else %}
+            <h1>Free Daily Usage</h1>
+            {% endif %}
+            <a href="/shop/" style="padding:4px" class="btn btn-grey-secondary">View Shop</a>
+            <hr>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {% if active %}
+
+                    <h2>Predict {{prediction_count}}/150</h2>
+        
+                    {% else %}
+                    <h2>Predict {{prediction_count}}/50 </h2>
+
+                    {% endif %}
+
+                    <!-- Your Bubble Circle Progress Bar -->
+                    
+                    <div class="box">
+                        <div class="content">
+                          <div class="percent" data-text="{{prediction_count}}" style="--num: {{prediction_pct}}">
+                            <div class="dot"></div>
+                            <svg>
+                              <circle cx="70" cy="70" r="70"></circle>
+                              <circle cx="70" cy="70" r="70"></circle>
+                            </svg>
+                          </div>
+                          <div class="number">
+                            <h2>{{prediction_pct}}<span>%</span></h2>
+                          </div>
+                          {% if prediction_pct >= 90 %}
+                            <div class="warning-label">Warning: Limit</div>
+                        {% endif %}
+                        </div>
+                      </div>
+                    
+                </div>
+                <div class="col-lg-6">
+                    {% if active %}
+                    <h2>Train {{training_count}}/100</h2>
+        
+                    {% else %}
+                    <h2>Train {{training_count}}/15</h2>
+
+                    {% endif %}
+                    <div class="box">
+                        <div class="content">
+                          <div class="percent" data-text="{{training_count}}" style="--num: {{training_pct}}">
+                            <div class="dot"></div>
+                            <svg>
+                              <circle cx="70" cy="70" r="70"></circle>
+                              <circle cx="70" cy="70" r="70"></circle>
+                            </svg>
+                          </div>
+                          <div class="number">
+                            <h2>{{training_pct}}<span>%</span></h2>
+
+                          </div>
+                          {% if training_pct >= 90 %}
+                                <div class="warning-label">Warning: Limit</div>
+                            {% endif %}
+                        </div>
+                      </div>
+                </div>
+            </div>
+           
+           
+
+        </center>
+        <br>
+        <br>
+    </div>
+</div>
+<style>
+
+
+
+.warning-label {
+    color: red;  /* Example: red color for warning */
+    font-weight: bold;
+    /* Add more styling as needed */
+}
+
+
+ @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+.box {
+  position: relative;
+  width: 240px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.box .content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.box .content .percent {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.box .content .percent::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 20px;
+  background: #555;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 1.75rem;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+}
+
+.box .content .percent svg {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  transform: rotate(270deg);
+}
+
+.box .content .percent svg circle {
+  width: 100%;
+  height: 100%;
+  fill: transparent;
+  stroke-width: 3;
+  stroke: rgba(0,0,0,0.05);
+  transform: translate(5px, 5px);
+}
+
+.box .content .percent svg circle:nth-child(2) {
+  stroke: #555;
+  stroke-dasharray: 440;
+  stroke-dashoffset: calc(440 - (440 * var(--num)) / 100);
+  opacity: 0;
+  animation: fadeIn 1s linear forwards;
+  animation-delay: 1s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.box .content .percent .dot {
+  position: absolute;
+  inset: 5px;
+  z-index: 10;
+  animation: animateDot .7s linear forwards;
+}
+
+@keyframes animateDot {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(calc(3.6deg * var(--num)));
+  }
+}
+
+.box .content .percent .dot::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  background: #555;
+  border-radius: 50%;
+}
+
+.box .content .number {
+  position: relative;
+  inset: 0;
+  opacity: 0;
+  animation: fadeIn .5s linear forwards;
+  animation-delay: 1s;
+}
+
+.box .content .number h2 {
+  font-size: 2.5rem;
+  color: #555;
+}
+
+.box .content .number h2 span {
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+</style>
+
+</div>
+{% endblock content %}
+
+
+

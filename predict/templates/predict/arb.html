@@ -1,0 +1,1091 @@
+{% extends "predict/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<body class="row" style="overflow-x: hidden;">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<center>
+
+<div id="spinner" class="spinner-container" style="display:none">
+    <div class="spinner" style="z-index: 10000;"></div>
+    <h2 class="text-muted" style="z-index: 10000;color:white;">Scanning for arbitrage opportunities.</h2>
+
+</div>
+
+
+</center>
+
+
+
+
+
+
+
+
+
+<div id="welcomePopup" style="display: none;">
+    <div class="popup-content" style="max-width:600px">
+        
+        <h2>Welcome to FireBet Arbitrage</h2>
+        <hr style="background-color:var(--main-font-color)">
+        <p>This page can be used to find bet combinations that guarantee returns based on odds. </p>
+        <p>If someone is selling a t-shirt for 15$ and someone is buying that t-shirts for 20$, you can profit 5$. Arbitrage sports betting is taking advantage of price differences at multiple bookies. </p>
+        <p>It is essential to understand the strategy fully before placing bets!  The arbitrage section of the forum has all the info needed to become a profitable arb better. </p>
+        <p>Read more about arbitrage on the <a style="text-decoration: underline;" href="https://app.firebet.ai/forum/forum/arbitrage-6/">FireBet Forum</a>.</p>
+        <p>Use the refresh button to scan for fresh results.</p>
+
+        <br>
+        <!--
+        <a href="https://firebet.ai/shop" target="_blank" class="btn btn-grey">Shop</a>
+        -->
+        <button id="closePopup" onclick="welcome()" class="btn btn-grey-secondary">Close</button>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+  
+      // Check if the welcome message has been shown
+      if (!localStorage.getItem('welcomeShownArb')) {
+          // Show the popup and apply blur effect
+          //document.getElementById("welcomePopup").style.display = "flex";
+          //document.getElementById("mainContent").classList.add("blur");
+      }
+  
+      // Add event listener to the close button
+      document.getElementById("closePopup").addEventListener("click", function() {
+          // Hide the popup and remove blur effect
+
+      });
+  });
+  function welcome(){
+    document.getElementById("welcomePopup").style.display = "none";
+
+    // Set local storage item to indicate the message has been shown
+    localStorage.setItem('welcomeShownArb', 'true');
+  }
+  </script>
+<style>
+    #welcomePopup .welcome-list {
+    padding-left: 20px !important; /* Adds space for bullets */
+}
+
+#welcomePopup .welcome-list li {
+    list-style-type: disc !important; /* Ensures bullets are shown */
+    display: list-item !important; /* Ensures list item display */
+}
+  #welcomePopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+  }
+
+  .popup-content {
+      color:var(--main-font-color)!important;
+
+      background: var(--main-modal-color)!important;
+      padding: 20px;
+      border-radius: 5px;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+
+<style>
+.spinner-container {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0, 0.8);
+    z-index: 9999;
+
+}
+
+
+.spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #E97827;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@media screen and (min-width: 750px) {
+    .mobile-info{
+        display:none !important
+    }
+}
+@media screen and (max-width: 750px) {
+    .col-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-right: 0;
+        padding-left: 0;
+    }
+    .modal{
+        width:100% !important
+    }
+    .modal-dialog{
+        padding-left:0px !important;
+        padding-right:0px !important;
+        margin-right:0px !important;
+        margin-left:0px !important;
+        margin-bottom:0px !important;
+
+    }
+    img{
+        max-width: 50px !important;
+    }
+    .desktop-odds{
+        display: none;
+    }
+    .mobile-team{
+        display: block;
+    }
+    .mobile-odds{
+        display: block;
+    }
+    .mobile-info{
+        display:inline !important
+    }
+                               
+}
+
+</style>
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const regionSelect = document.getElementById('region');
+
+        // Load the stored region selection
+        const storedRegion = localStorage.getItem('selectedRegion');
+        if (storedRegion) {
+            regionSelect.value = storedRegion;
+        }
+
+        // Update local storage when the region changes
+        regionSelect.addEventListener('change', function () {
+            localStorage.setItem('selectedRegion', this.value);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const refreshButton = document.getElementById('refreshButton');
+        const regionSelect = document.getElementById('region');
+        const spinner = document.getElementById('spinner'); // Get the spinner element
+
+        // Update the refresh button's URL based on the selected region
+        refreshButton.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default link behavior
+            const selectedRegion = regionSelect.value;
+
+            const baseUrl = '{% if not active %}/autoshop/{% else %}/predict/arb/refresh/{% endif %}';
+            {% if active %}
+            const newUrl = baseUrl + selectedRegion;
+            {% else %}
+            const newUrl = baseUrl
+            {% endif %}
+            spinner.style.display = 'flex';
+            window.location.href = newUrl; // Redirect to the new URL
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const regionSelect = document.getElementById('region');
+
+        // Function to display the correct bookmaker list
+        function displayCorrectBookmakers(region) {
+            const bookmakerLists = document.querySelectorAll('.bookmakers-list');
+            bookmakerLists.forEach(list => list.classList.add('d-none'));
+            const activeList = document.getElementById(region + '-books');
+            if (activeList) {
+                activeList.classList.remove('d-none');
+            }
+        }
+
+        // Load and display the stored region selection
+        const storedRegion = localStorage.getItem('selectedRegion') || 'us';
+        regionSelect.value = storedRegion;
+        displayCorrectBookmakers(storedRegion);
+
+        // Update local storage and display when the region changes
+        regionSelect.addEventListener('change', function() {
+            localStorage.setItem('selectedRegion', this.value);
+            displayCorrectBookmakers(this.value);
+        });
+    });
+</script>
+<style>
+    .btn-grey-secondary:hover{
+  border: 1px solid #a5a5a5 !important;
+  background-color: #fc861e !important;
+
+
+}
+</style>
+
+
+
+
+
+
+
+  <div class="col-lg-8" style="height:250px;padding:15px;padding-top:0px">
+    <div class="content-section" style="width:100%;height:100%;
+    border:none !important;
+
+    background: hsla(39, 96%, 50%, 1);
+
+    background: linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    background: -moz-linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    background: -webkit-linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FAA506", endColorstr="#C75408", GradientType=1 );
+    ">
+    <div class="row">
+      <div class="col-6">
+
+        <h1 style="white-space: nowrap; overflow: visible;">Hedge Your Bets 💰</h1>
+
+        <div style="margin-left:5px">
+      <p style="margin-bottom:11px !important"><i class="fa-light fa-circle-check"></i> Over 50 Bookies</p>
+
+      <p style="margin-bottom:11px !important"> <i class="fa-light fa-circle-check"></i> Arbitrage Bets</p>
+      <p style="margin-bottom:11px !important"><i class="fa-light fa-circle-check"></i> Odds Comparison</p>
+  
+    </div>
+</a>
+    {% if active %}
+    <a class="btn btn-grey" href="/predict/faq">Frequently Asked Questions <i class="fa-sharp fa-regular fa-question"></i></a>
+
+    {% else %}
+    <a class="btn btn-grey" href="/autoshop/">Unlock Full Access 🔑</a>
+
+    {% endif %}
+    </div>
+
+    <div class="col-6" style=" text-align: right;">
+      <img id="rocket-emoji" style="font-size: 166px;margin-right:25px;margin-top:43px;" src="https://i.imgur.com/E6EPSnr.png">
+      </img>
+    </div>
+    
+
+  </div>
+</div>
+
+
+  </div>
+
+
+  <div class="col-lg-4" style="height:250px;padding:15px;padding-top:0px">
+    <div class="content-section " style="width:100%;height:100%">
+        <h3 style="display:inline">Bookies</h3>
+        <h5 style="float: right;display:inline;color:#6dac56 !important"><i class="fa-sharp fa-solid fa-up"></i> 62</h5>
+      <canvas id="myChart" width="600" height="300" style="margin-top:5px;max-height: 180px !important"></canvas>
+      <script>
+         
+          const labels = ['USA', 'EU', 'UK', 'AU'];
+          const data = {
+              labels: labels,
+              datasets: [
+                  {
+                      label: 'Bookies',
+                      data: [15, 18, 18, 11],
+                      
+                      backgroundColor: 'rgba(252, 134, 30, 0.5)',
+                        borderColor: "#fc861e",
+                      borderWidth: 2,
+                      borderRadius: Number.MAX_VALUE, // Fully rounded corners
+                      borderSkipped: false,
+                      barPercentage: 0.5,
+                      categoryPercentage: 0.5,
+                  }
+              ]
+          };
+      
+          const config = {
+              type: 'bar',
+              data: data,
+              options: {
+                  indexAxis: 'x', // Makes the bar chart vertical
+                  scales: {
+                      y: {
+                          beginAtZero: true,
+                      }
+                  },
+                  plugins: {
+                      legend: {
+                          display: false,
+                      }
+                  }
+              },
+          };
+      
+          var myChart = new Chart(document.getElementById('myChart'), config);
+      </script>
+      
+    </div>
+  </div>
+
+<div class="col-12" style="margin-left:auto; margin-right:auto;min-height:70vh;padding:15px;padding-top:10px;">
+    <div style=" min-height: 80vh;" class="content-section">
+        <div style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+
+            <h2 style="display:inline">Arbitrage</h2>
+            <button type="button" class="btn btn-grey-secondary" style="margin-left:5px;display:inline;margin-bottom:10px;padding:3px; border-radius: 50%; width: 30px; height: 30px;line-height: 30px; padding: 0; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);" data-toggle="modal" data-target="#aInfoModal">
+                ?
+            </button>
+            </div>
+              <!-- Modal -->
+              <div class="modal fade" id="aInfoModal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+                  <div class="modal-content" style="">
+                    <div class="modal-header">
+                      <h2 class="modal-title" id="modelInfoModalLabel">Arbitrage</h2>
+                      <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Welcome to the world of sports betting arbitrage! As seasoned bettors and newcomers alike seek out strategies for profitable betting, the concept of arbitrage has emerged as a particularly intriguing approach. At FireBet, we specialize in providing top-tier tools like our Arbitrage Bot and Odds Comparison to make this strategy accessible and profitable for you.
+
+                        </p>
+                        <h2>What is Arbitrage</h2>
+                        <p>Arbitrage in sports betting is a method where a bettor places multiple bets on all possible outcomes of an event at odds that guarantee a profit regardless of the result. It's like finding a pricing mismatch in the betting market.</p>
+                        <h2>How Arbitrage Works in Sports Betting</h2>
+                        <p>Arbitrage opportunities arise when different sportsbooks offer different odds for the same event. By carefully calculating these odds, a bettor can place bets in a way that ensures a profit. Identifying these opportunities requires quick, accurate comparison of odds across various platforms – this is where an odds comparison tool becomes invaluable.
+                        </p>
+                        <h2>
+                            Arbitrage Bot and Odds Comparison Tool
+                        </h2>
+                        <p>
+                            Our Arbitrage Bot scans over 200 sportsbooks worldwide, identifying risk-free betting opportunities. The Odds Comparison tool lets you quickly determine the true market value and spot underpriced events. Together, they empower you to make informed, profitable bets.
+                        </p>
+                        <h2>Advantages of Arbitrage Betting</h2>
+                        <p>
+                            The biggest draw of arbitrage betting is its "risk-free" nature. By covering all outcomes, you're guaranteed a profit. It's an excellent strategy for those looking to minimize risk while ensuring a steady return.
+                        </p>
+                        <h2>Risks and Challenges in Arbitrage Betting</h2>
+                        <p>
+                            Despite its appeal, arbitrage betting isn't without risks. Sportsbooks might limit accounts that consistently profit from arbitrage, odds can change quickly, and bet size can be limited. Knowledge, speed, and the right tools are key to mitigating these risks.
+                        </p>
+
+                        <h2>
+                            Best Practices in Arbitrage Betting
+                        </h2>
+                        <p>Successful arbitrage betting requires discipline: managing your bankroll wisely, staying informed about market changes, and consistently applying a well-thought-out strategy. It's not just about finding opportunities; it's about executing them effectively.</p>
+                        <h2><a target="_blank" style="text-decoration: underline;color:#fc861e !important" href="https://app.firebet.ai/forum/forum/arbitrage-6/">Arbitrage Forum</a></h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <div style="display: flex; align-items: center;">
+                <select id="region"  style="border-radius: 9px;padding:7px; margin-right: 10px; margin-bottom:0px;height:37px;" class="form-select form-select-lg  btn btn-grey-secondary"  aria-label=".form-select-lg example">
+                    <option value="us">us</option>
+                    
+                    <option value="eu">eu</option>
+                    <option value="uk">uk</option>
+
+                    <option value="au">au</option>
+                </select>
+                
+                <a data-toggle="modal" data-target="#calc-modal" id="calculator" style="border-radius: 9px;padding:6px;height:38px;margin-right:10px;" class="btn btn-grey">                
+                    Calculator <i class="fa-solid fa-calculator"></i>
+                </a>
+                
+                <a id="refreshButton" style="border-radius: 9px;padding:6px;height:38px;" class="btn btn-grey"
+                {% if not active %}
+                href='/autoshop/'
+                {% else %}
+                href="/predict/arb/refresh"
+                {% endif %}
+                >
+                    Refresh <i class="fa-solid fa-arrows-rotate"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="modal fade" id="calc-modal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+              <div class="modal-content" style="">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="modelInfoModalLabel">Arbitrage Hedge Calculator</h2>
+                  <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                    <div class="modal-body" style="padding: 25px;">
+                        <div class="input-group">
+                            <p>Wager 1 Amount ($)</p>
+                            <input type="text" id="wager1Amount" placeholder="Wager 1 Amount ($)" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        </div>
+                        <div class="input-group">
+                            <p>Wager 1 Odds</p>
+                            <input type="text" id="wager1Odds" placeholder="Wager 1 Odds" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        </div>
+                        <div class="input-group">
+                            <p>Wager 2 Odds</p>
+                            <input type="text" id="wager2Odds" placeholder="Wager 2 Odds" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        </div>
+                        <button class="btn btn-grey" type="button" onclick="calculateArbitrage()" style="margin-top:15px !important;padding: 10px; border-radius: 5px; border: none;  color: white; width: 100%; cursor: pointer;">Calculate</button>
+                        <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+                            <div class="input-group" style="display: flex; flex-direction: column; align-items: start;padding:10px;">
+                                <p>Wager 2 Amount ($)</p>
+                                <p id="wager2Amount" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;  width: 100%;">$0.00</p>
+                            </div>
+                            <div class="input-group" style="display: flex; flex-direction: column; align-items: start;padding:10px;">
+                                <p>Total Wager ($)</p>
+                                <p id="totalWager" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;  width: 100%;">$0.00</p>
+                            </div>
+                            <div class="input-group" style="display: flex; flex-direction: column; align-items: start;padding:10px;">
+                                <p>Profit ($)</p>
+                                <p id="profit" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;  width: 100%;">$0.00</p>
+                            </div>
+                            <div class="input-group" style="display: flex; flex-direction: column; align-items: start;padding:10px;">
+                                <p>Percent Return (%)</p>
+                                <p id="percentReturn" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;  width: 100%;">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <script>
+                        function calculateArbitrage() {
+                            // Input sanitization and conversion
+                            let wager1Amount = parseFloat(document.getElementById('wager1Amount').value) || 0;
+                            let odds1 = parseFloat(document.getElementById('wager1Odds').value);
+                            let odds2 = parseFloat(document.getElementById('wager2Odds').value);
+                    
+                            // Convert American odds to decimal
+                            const decimalOdds1 = odds1 > 0 ? odds1 / 100 + 1 : -100 / odds1 + 1;
+                            const decimalOdds2 = odds2 > 0 ? odds2 / 100 + 1 : -100 / odds2 + 1;
+                    
+                            // Calculate the amounts to wager
+                            let wager2Amount = (wager1Amount * decimalOdds1) / decimalOdds2;
+                            
+                            // Prevent negative wager scenario
+                            if (wager1Amount < 0 || wager2Amount < 0) {
+                                alert("Wager amounts cannot be negative.");
+                                return;
+                            }
+                    
+                            // Calculate total wager and payout for the original bet
+                            let totalWager = wager1Amount + wager2Amount;
+                            let payout = wager1Amount * decimalOdds1;
+                    
+                            // Calculate profit
+                            let profit = payout - totalWager;
+                    
+                            // Update UI
+                            document.getElementById('wager2Amount').textContent = `$${wager2Amount.toFixed(2)}`;
+                            document.getElementById('totalWager').textContent = `$${totalWager.toFixed(2)}`;
+                            document.getElementById('profit').textContent = `$${profit.toFixed(2)}`;
+                            document.getElementById('percentReturn').textContent = `${((profit / totalWager) * 100).toFixed(2)}%`;
+                        }
+                    </script>
+              </div>
+            </div>
+          </div>
+        <br>
+        <br>
+        
+       
+        <div style="">
+            <div class="row">
+                {% for bookmaker in bookmakers_list %}
+                    <div id="us-books" class="row bookmakers-list d-none" style="margin-left:15px">
+                        {% for bookmaker in bookmakers_list %}
+                        <div class="col-lg-2 col-6">
+                            <input type="checkbox" id="bookmaker-us-{{ bookmaker }}" name="bookmakers" value="{{ bookmaker }}" checked onchange="saveFilters()">
+            
+                            <label for="bookmaker-us-{{ bookmaker }}">{{ bookmaker }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+               
+
+                <!-- UK Bookmakers -->
+                <div id="uk-books" class="row bookmakers-list d-none"  style="margin-left:15px">
+                    {% for bookmaker in uk_books %}
+                    <div class="col-lg-2 col-6">
+                        <input type="checkbox" id="bookmaker-uk-{{ bookmaker }}" name="bookmakers" value="{{ bookmaker }}" checked onchange="saveFilters()">
+        
+                        <label for="bookmaker-uk-{{ bookmaker }}">{{ bookmaker }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- EU Bookmakers -->
+                <div id="eu-books" class="row bookmakers-list d-none"  style="margin-left:15px">
+                    {% for bookmaker in eu_books %}
+                    <div class="col-lg-2 col-6">
+                        <input type="checkbox" id="bookmaker-eu-{{ bookmaker }}" name="bookmakers" value="{{ bookmaker }}" checked onchange="saveFilters()">
+        
+                        <label for="bookmaker-eu-{{ bookmaker }}">{{ bookmaker }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- AU Bookmakers -->
+                <div id="au-books" class="row bookmakers-list d-none"  style="margin-left:15px">
+                    {% for bookmaker in au_books %}
+                    <div class="col-lg-2 col-6">
+                        <input type="checkbox" id="bookmaker-au-{{ bookmaker }}" name="bookmakers" value="{{ bookmaker }}" checked onchange="saveFilters()">
+        
+                        <label for="bookmaker-au-{{ bookmaker }}">{{ bookmaker }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% endfor %}
+            <script>
+                var usBooks = {{ bookmakers_list | safe }};
+                var auBooks = {{ au_books | safe }};
+                var euBooks = {{ eu_books | safe }};
+                var ukBooks = {{ uk_books | safe }};
+                // Function to normalize bookmaker names
+                function normalizeBookmakerName(name) {
+                    var selectedRegion = document.getElementById('region').value;
+                     if(name === 'Unibet' && selectedRegion === 'us'){
+                        name='unibet_us'
+                    }
+                    if(name === 'LowVig.ag'){
+                        name='lowvig'
+                    }
+                    return name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                }
+            
+                function filterArbitrage() {
+                    var uncheckedBookmakers = new Set();
+                    var selectedRegion = document.getElementById('region').value;
+                    document.querySelectorAll('#' + selectedRegion + '-books input[name="bookmakers"]:not(:checked)').forEach(function(checkbox) {
+                        uncheckedBookmakers.add(normalizeBookmakerName(checkbox.value));
+                    });
+                    
+                    document.querySelectorAll('.col-lg-4').forEach(function(colDiv) {
+                        var cardBookmakers = Array.from(colDiv.querySelectorAll('.line-book')).map(element => normalizeBookmakerName(element.textContent.trim()));
+                        var isHidden = cardBookmakers.some(bookmaker => uncheckedBookmakers.has(bookmaker));
+                        colDiv.style.display = isHidden ? 'none' : ''; // Apply display none to the .col-lg-4 div
+                    });
+                }
+            
+                function saveFilters() {
+                    var selectedRegion = document.getElementById('region').value;
+                    var selectedBookmakers = {};
+                    selectedBookmakers[selectedRegion] = [];
+
+                    var regionBookmakers = [];
+                    if (selectedRegion === 'au') {
+                        regionBookmakers = auBooks;
+                    } else if (selectedRegion === 'eu') {
+                        regionBookmakers = euBooks;
+                    }
+                    else if (selectedRegion === 'uk') {
+                        regionBookmakers = ukBooks;
+                    }
+                    else if (selectedRegion === 'us') {
+                        regionBookmakers = usBooks;
+                    }
+                    regionBookmakers.forEach(bookmaker => {
+                        var checkboxId = 'bookmaker-' + selectedRegion + '-' + bookmaker;
+                        var checkbox = document.getElementById(checkboxId);
+                        if (checkbox && checkbox.checked) {
+                            selectedBookmakers[selectedRegion].push(bookmaker);
+                        }
+                    });
+
+                    localStorage.setItem('selectedBookmakers', JSON.stringify(selectedBookmakers));
+                    filterArbitrage();
+                }
+
+                document.addEventListener('DOMContentLoaded', function() {
+                        var selectedRegion = document.getElementById('region').value;
+
+                        var savedBookmakers = JSON.parse(localStorage.getItem('selectedBookmakers')) || {};
+                        var selectedRegion = document.getElementById('region').value;
+                        var checkboxes = document.querySelectorAll('#' + selectedRegion + '-books input[name="bookmakers"]');
+                        //console.log(savedBookmakers)
+                        //console.log(checkboxes)
+                        if (savedBookmakers[selectedRegion]) {
+                            checkboxes.forEach(checkbox => checkbox.checked = savedBookmakers[selectedRegion].includes(checkbox.value));
+                            //checkboxes.forEach(checkbox => console.log(savedBookmakers[selectedRegion].includes(checkbox.value)));
+                        } else {
+                            checkboxes.forEach(checkbox => checkbox.checked = true);
+                        }
+
+                        filterArbitrage();
+                    });
+            
+                document.querySelectorAll('input[name="bookmakers"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', saveFilters);
+                });
+            </script>
+            
+
+            </div>
+            
+        </div>
+        
+        <hr>
+        <div class="row " >
+            
+            {% if not active %}
+            <a href="/autoshop/" style=" text-decoration: none; /* Removes underline from links */
+            color: inherit; /* Keeps the text color consistent */">
+
+            <div class="lock-overlay" style="height:30vh;position:absolute;z-index: 1000;font-size:42px;display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width:96%;
+            opacity:.7">
+                     <i class="fas fa-lock" style="font-size: 128px"></i>
+                    <p class="lock-text" style="margin-bottom:0px">Subscribe</p>
+            </div>
+             </a>
+
+            {% endif %}
+        {% for opportunity in opportunities %}
+        <div class="modal fade" id="arbModal{{ forloop.counter }}" style="margin-top:10px !important;min-width:75% !important" tabindex="-1" role="dialog" aria-labelledby="arbModalLabel{{ forloop.counter }}" aria-hidden="true">
+
+            <div class="modal-dialog modal-lg" role="document" style="padding-left:50px;padding-right:50px">
+                <div class="modal-content">
+                    <div class="modal-header">
+
+                        <button style="border:1px solid grey important"type="button" class="btn btn-grey-secondary" onclick="refreshOdds('{{ opportunity.id }}', [{% for line in opportunity.lines %}'{{ line.book }}'{% if not forloop.last %}, {% endif %}{% endfor %}], {{ forloop.counter }})">
+                            <i class="fas fa-sync-alt"></i> 
+                        </button>
+                        <h5 class="modal-title" id="arbModalLabel{{ opportunity.id }}" style="padding-top:5px;padding-left:5px;" >
+                                
+                                Optimal Profit: <span>{{ opportunity.profit_percentage }}% </span>
+                                {% if 'basketball' in opportunity.league %}
+                                    🏀
+                                {% elif 'hockey' in opportunity.league %}
+                                    🏒
+                                {% elif 'football' in opportunity.league %}
+                                    🏈
+                                {% elif 'soccer' in opportunity.league %}
+                                    ⚽
+                                {% elif 'boxing' in opportunity.league %}
+                                    🥊
+                                {% elif 'mma_mixed_martial_arts' in opportunity.league %}
+                                    🥊
+                                {% elif 'aussierules_afl' in opportunity.league %}
+                                    🏉
+                                {% elif 'tennis_wta_aus_open_singles' in opportunity.league %}
+                                 🎾
+                                
+                                {% elif 'tennis_atp_aus_open_singles' in opportunity.league %}
+                                 🎾
+                                {% endif %}
+                            </h5>
+                        
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            {% for line in opportunity.lines %}
+                            <div class="line-item" style="display: flex; flex-direction: column; align-items: center;padding:15px;">
+                                <p style="margin-top:15px;margin-bottom:30px;">{{ line.book }}</p>
+                                
+                                <div style="display: flex; align-items: center; height: 75px; justify-content: center;">
+                                    <img style="min-width:100px; max-width:150px; max-height: 100px; margin-bottom: 10px;" src="/static/predict/booklogo/{{ line.book }}.png" alt="{{ line.book }} logo">
+                                </div>
+                                <p class="desktop-odds" style="margin-bottom:0px;margin-top:15px;">
+                                    {{ line.team }} at {{ line.odds }}
+                                </p>
+                                
+                               
+
+                                {% if opportunity.lines|length != 2 %}
+                                
+                                <p class="mobile-odds" style="display: none;margin-bottom:0px;margin-top:15px;">
+                                    <center>
+                                        {{ line.stake_percentage | floatformat:2 }}%
+
+                                    </center>
+                                </p>
+                                {% endif %}
+                                <p id="odds-display-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" style="margin-bottom:0px"></p>
+                                
+                               
+                                {% if opportunity.lines|length == 2 %}
+                                {% if forloop.counter == 1 %}
+                                <span id="bankroll-display{{ forloop.parentloop.counter }}" style="display: inline; text-align: right;">Bankroll: {{ line.stake_percentage | floatformat:2 }}%</span>
+                                <p id="newProfitOutcome1{{ forloop.parentloop.counter }}" style="margin-top:5px">Profit: {{ opportunity.profit_percentage }}%</p>
+                                <p class="mobile-info" style="display:none;margin-bottom:0px;margin-top:15px;">
+                                    {{ line.team }} at {{ line.odds }}
+                                </p>
+                                
+                                {% endif %}
+                                {% if forloop.counter == 2 %}
+                                <span id="other-split{{ forloop.parentloop.counter }}" style="display: inline; text-align: left;margin-left:5px">Bankroll: {{ line.stake_percentage | floatformat:2 }}%</span>
+                                <p id="newProfitOutcome2{{ forloop.parentloop.counter }}">Profit: {{ opportunity.profit_percentage }}%</p>
+                                <p class="mobile-info" style="display:none;margin-bottom:0px;margin-top:15px;">
+                                    {{ line.team }} at {{ line.odds }}
+                                </p>
+                                
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                    </div>
+                    {% if opportunity.lines|length == 2 %}
+                    <!-- Slider for Bankroll Adjustment -->
+                    {% with opportunity.lines.0.stake_percentage as initial_percentage %}
+                        {% with initial_percentage|add:-5 as min_value %}
+                            {% with initial_percentage|add:5 as max_value %}
+                                <div style="display: inline-block; width: 250px;">
+                                    <label for="bankroll-input{{ forloop.counter }}">
+                                        Adjusted Split: 
+                                    </label>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    id="bankroll-input{{ forloop.counter }}" 
+                                    min="{{ min_value }}" 
+                                    max="{{ max_value }}" 
+                                    value="{{ initial_percentage }}" 
+                                    step="0.1" 
+                                    class="form-control" 
+                                    oninput="updateBankroll({{ forloop.counter }}, latestOddsMap[{{ forloop.counter }}].odds1, latestOddsMap[{{ forloop.counter }}].odds2)"
+
+                                >
+                                </input>
+                                <script>
+                                    var latestOddsMap = {};
+                                
+                                    // Function to initialize the latest odds for each modal
+                                    function initializeLatestOdds(counter, odds1, odds2) {
+                                        latestOddsMap[counter] = {
+                                            odds1: odds1,
+                                            odds2: odds2
+                                        };
+                                    }
+                                
+                                    // Call this function for each modal to initialize the odds
+                                    {% for opportunity in opportunities %}
+                                        initializeLatestOdds({{ forloop.counter }}, {{ opportunity.lines.0.odds }}, {{ opportunity.lines.1.odds }});
+                                    {% endfor %}
+                                </script>
+    
+                        <!-- Display Updated Values -->
+                        <p class="text-muted" style="margin-top:15px">
+                            {{ opportunity.league }} starting in {{ opportunity.hours_to_start }}h
+                        </p>
+                       
+
+                        {% endwith %}
+                        {% endwith %}
+                        {% endwith %}
+                        {% endif %}
+                        <canvas id="chartCanvas{{ forloop.counter }}" style="width:100%;max-width:600px;height:250px;"></canvas>
+                        
+                        <script>
+
+                        function fetchAndRenderChart(eventId, sportKey, modalCounter) {
+                            {% if  not active %}
+                            if(modalCounter >= 0 ){
+                                window.location.href = '/autoshop/'
+
+                            }
+                     
+                            {%else%}
+                            fetch(`/predict/history-arb/?event_id=${eventId}&sport_key=${sportKey}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    renderChart(data, modalCounter);
+                                })
+                                .catch(error => console.error('Error:', error));
+                            {%endif%}
+                        }
+                        function renderChart(chartData, modalCounter) {
+                            // Reverse the labels array (timestamps)
+                            chartData.labels.reverse();
+
+                            // Reverse each dataset's data array
+                            chartData.datasets.forEach(dataset => {
+                                dataset.data.reverse();
+                            });
+
+                            var ctx = document.getElementById('chartCanvas' + modalCounter).getContext('2d');
+
+                            // Check if the screen width is less than 750px
+                            var hideXAxisLabels = window.innerWidth < 750;
+
+                            var myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: chartData,
+                                options: {
+                                    elements: {
+                                        line: {
+                                            tension: 0.4  // Adjust for smoothing
+                                        }
+                                    },
+                                    scales: {
+                                        x: {  // 'x' replaces 'xAxes' in Chart.js version 3
+                                            display: !hideXAxisLabels, // Hide x-axis labels on small screens
+                                            // ... other x scale options
+                                        },
+                                        // ... other scales options
+                                    },
+                                    plugins: {
+                                        // Plugin options like legends, titles, etc.
+                                    },
+                                    // Other global options
+                                }
+                            });
+                        }
+
+                      
+
+
+                        function refreshOdds(eventId, bookmakers, counter) {
+                            fetch(`/predict/update-arb/?event_id=${eventId}&bookmakers[]=${bookmakers.join('&bookmakers[]=')}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                var updatedOdds = data[eventId];
+                                if (updatedOdds && updatedOdds.odds) {
+                                    var newOdds1, newOdds2;
+                                    var index = 1; // Start from 1, assuming this matches your Django template forloop.counter
+                                    for (const [bookmakerKey, markets] of Object.entries(updatedOdds.odds)) {
+                                        var h2hMarket = markets.find(market => market.key === 'h2h');
+                                        if (h2hMarket) {
+                                            h2hMarket.outcomes.forEach(outcome => {
+                                                if (index === 1) {
+                                                    newOdds1 = outcome.price; // Store the first odds value
+                                                } else if (index === 2) {
+                                                    newOdds2 = outcome.price; // Store the second odds value
+                                                }
+                                                if (index === 1) {
+                                                    latestOddsMap[counter].odds1 = outcome.price; // Update the specific modal's odds
+                                                } else if (index === 2) {
+                                                    latestOddsMap[counter].odds2 = outcome.price; // Update the specific modal's odds
+                                                }
+                                                var oddsElementId = `odds-display-${counter}-${index}`;
+                                                console.log(oddsElementId)
+                                                var oddsElement = document.getElementById(oddsElementId);
+                                                if (oddsElement) {
+                                                    oddsElement.innerHTML = `Updated Odds: ${outcome.price}`;
+                                                }
+                                                index++; // Increment index for the next outcome
+                                            });
+                                        }
+                                    }
+                                    // Call updateBankroll with new odds if they are available
+                                    if (newOdds1 !== undefined && newOdds2 !== undefined) {
+                                        updateBankroll(counter, newOdds1, newOdds2);
+                                    }
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        }
+
+                               
+
+                   function updateBankroll(counter, odds1, odds2) {
+                        var slider = document.getElementById('bankroll-input' + counter);
+                        var bankrollDisplay = document.getElementById('bankroll-display' + counter);
+                        var otherSplitDisplay = document.getElementById('other-split' + counter);
+ 
+                        var newProfitOutcome1Display = document.getElementById('newProfitOutcome1' + counter);
+                        var newProfitOutcome2Display = document.getElementById('newProfitOutcome2' + counter);
+
+                        var totalBankroll = 100; // Assuming total bankroll is 100 units for simplicity
+                        var bankrollPercentage = parseFloat(slider.value);
+                        var otherSplitPercentage = 100 - bankrollPercentage;
+
+                        bankrollDisplay.innerHTML = 'Bankroll: '+bankrollPercentage.toFixed(1) + '%';
+                        otherSplitDisplay.innerHTML = 'Bankroll: '+otherSplitPercentage.toFixed(1) + '%';
+
+                        // Calculate stakes based on the slider value
+                        var stake1 = totalBankroll * (bankrollPercentage / 100);
+                        var stake2 = totalBankroll - stake1;
+
+                        // Calculate profit for each outcome
+                        var profitIfOutcome1 = (stake1 * odds1) - totalBankroll;
+                        var profitIfOutcome2 = (stake2 * odds2) - totalBankroll;
+
+                        // Display the results
+                        newProfitOutcome1Display.innerHTML = 'Profit: ' + profitIfOutcome1.toFixed(2) + '%';
+                        newProfitOutcome2Display.innerHTML = 'Profit: ' + profitIfOutcome2.toFixed(2) + '%';
+                    }
+
+
+                    </script>
+                </div>
+            </div>
+        </div>
+        </div>
+
+   
+        <div class="col-lg-4 {% if forloop.counter >= 0 %}{% if  not active %}blurred{% endif %}{% endif %}  ">
+        
+            <div class="card mb-3 " style="border-radius: 10px;height:275px" data-toggle="modal" data-target="#arbModal{{ forloop.counter }}" onclick="fetchAndRenderChart('{{ opportunity.id }}', '{{ opportunity.league }}', {{ forloop.counter }})">
+                <style>
+                    .blur-overlay {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(255, 255, 255, 0.8);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        padding:25px;
+                    }
+                    
+                    .lock-icon {
+                        width: 50px;
+                        height: 50px;
+                    }
+                    
+                    .blurred {
+                        filter: blur(5px);
+                    }
+                </style>
+                <div class="card-body ">
+                    <center>
+                        <h5 class="card-title" style="">{{opportunity.profit_percentage}}% at {{ opportunity.total_implied_odds }} {{ opportunity.hours_to_start }}h</h5>
+
+                    </center>
+                  
+                    <div style="display: flex; justify-content: space-around; align-items: center;">
+                        {% for line in opportunity.lines %}
+                            <div class="line-item" style="display: flex; flex-direction: column; align-items: center;padding:15px;">
+                                <p class="line-book" style="display: none;">{{ line.book }}</p> <!-- Hidden element for bookmaker data -->
+                                <div style="display: flex; align-items: center; height: 75px; justify-content: center;">
+                                    <img style="min-width:50px; max-width:75px; max-height: 50px; margin-bottom: 10px;" src="/static/predict/booklogo/{{ line.book }}.png" alt="{{ line.book }} logo">
+                                </div>
+                                
+                                <p class="team-name" style="text-align: center;">{{ line.team }}</p> <!-- Display team in one line -->
+                                <script>
+                                    // This script will find all paragraph elements with a class 'team-name',
+                                    // and replace their content with just the last word of their current content.
+                                    document.addEventListener('DOMContentLoaded', (event) => {
+                                      const teamElements = document.querySelectorAll('.team-name');
+                                      
+                                      teamElements.forEach((element) => {
+                                        let fullTeamName = element.textContent || element.innerText;
+                                        let teamNameParts = fullTeamName.trim().split(' ');
+                                        let lastWord = teamNameParts[teamNameParts.length - 1];
+                                        let shortenedWord = lastWord.substring(0, 8);
+
+                                        element.textContent = shortenedWord;
+                                      });
+                                    });
+                                    </script>
+                                <p style="text-align: center;">
+                                    {{ line.stake_percentage | floatformat:2 }}% at {{ line.odds }}
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+
+                    </div>
+                            <div style="position: absolute; bottom: 10px; right: 10px;">
+                                {% if 'basketball' in opportunity.league %}
+                                    🏀
+                                {% elif 'hockey' in opportunity.league %}
+                                    🏒
+                                {% elif 'football' in opportunity.league %}
+                                    🏈
+                                {% elif 'soccer' in opportunity.league %}
+                                    ⚽
+                                {% elif 'boxing' in opportunity.league %}
+                                    🥊
+                                {% elif 'mma_mixed_martial_arts' in opportunity.league %}
+                                    🥊
+                                {% elif 'aussierules_afl' in opportunity.league %}
+                                    🏉
+                                {% elif 'tennis_wta_aus_open_singles' in opportunity.league %}
+                                 🎾
+
+                                {% elif 'tennis_atp_aus_open_singles' in opportunity.league %}
+                                 🎾
+                                {% endif %}
+                            </div>
+                </div>
+            </div>
+        </div>
+
+        {% empty %}
+            <p>No arbitrage opportunities found.</p>
+        {% endfor %}
+    </div>
+
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var apiKey = localStorage.getItem('apiKey');
+        if (apiKey) {
+            document.getElementById('message-input').value = apiKey;
+        }
+    });
+
+</script>
+<style>
+    .card:hover{
+        border: 1px solid rgb(177, 177, 177);
+        border-radius: 10px;
+    }
+    .card{
+        border: 1px solid transparent;
+        border-radius: 9px;
+    }
+
+    @media screen and (max-width: 994px) {
+        .lock-overlay{
+            margin-top:125vh !important
+        }
+        #calculator{
+           display:none !important
+        }
+        #rocket-emoji{
+            display:none !important
+        }
+    }
+</style>
+
+</div>
+{% endblock content %}

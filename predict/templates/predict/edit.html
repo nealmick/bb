@@ -1,0 +1,2343 @@
+{% extends "predict/base.html"%}
+
+{% load static %}
+
+
+{% block content%}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div style="overflow: auto;color:#333333 !important">
+
+<style>
+@media screen and (max-width: 600px) {
+
+.mobile-hide{
+  display: none;
+}
+#c{
+  height:100px !important;
+}
+}
+</style>
+  <body class="">
+
+      <div class="col-12">
+      <div class="content-section" style="margin-top:25px;overflow:hidden;padding-top:20px !important">
+
+
+
+          <div style="position: relative; width: 100%; height: 1px;z-index:10000 !important; /* Adjust height as needed */">
+            <!-- Your button with absolute positioning -->
+            <button id="home-graph-display" type="button" class="btn btn-grey-secondary glow-btn" style="position: absolute; top: 2px; right: 10px; margin-bottom:10px; border: 1px solid #bebebe !important; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; padding: 0;" data-toggle="modal" data-target="#gameEditModal">
+                ?
+            </button>
+          </div>
+        
+          <div class="modal fade" id="gameEditModal" tabindex="-1" role="dialog" aria-labelledby="gameEditModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="gameEditModalLabel">Game Page Documentation</h2>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <h4>Overview</h4>
+                  <p>The Game Edit Page is designed to give users the ability to analyze and modify player stats before finalizing game predictions. The predictive model provides estimated scores for both the home and visiting teams, presented as linear float values (decimals) for precision.</p>
+                  
+                  <h4>Functionalities</h4>
+                  <ul>
+                    <li><strong>Strength Bar:</strong> Displays the plus-minus score, calculated by subtracting visitor predicted score from home predicted score.</li>
+                    <li><strong>Margin:</strong> calculated as the distance between the predicted plus-minus score and the point spread.</li>
+                    <li><strong>Team Statistics:</strong> Shows win/loss record, streaks, and other team-based stats below the predictions.</li>
+                    <li><strong>Data Points and Model Inputs:</strong> All game stats are displayed, although custom models are able to use a subset of the full game data.  The subset of data features can be selected during training.  Which features a model uses can not be changed after training. The data features set for any model can be viewed on the model training page.</li>
+                    <li><strong>Editable Model Inputs:</strong> The top 7 players for each team can be removed and there season averages can be edited on a game by game basis.</li>
+                    <li><strong>Remove Players:</strong> Removing players must be done before editing stats.  When you remove a player the next best player will be added to the game to fill there spot.  Effectively the game is recreated without the removed players in the background.</li>
+                    <li><strong>Edit Stats:</strong> The top 7 players season averages can be edited by clicking a stat in the table, change it and press enter.  when your done editing the game and ready for the model to make the prediction, your changes will be written to the dataset before computing the result.</li>
+                    <li><strong>Injury Report:</strong> Below the editable input table, shows player injury status provided by espn. Injured players are not automatically removed. you must make the final decision to remove the player.</li>
+                    <li><strong>Vegas Odds:</strong> Below the injury table, there is a odds table displaying vegas odds from various book keepers. </li>
+                    <li><strong>Last Game Stats:</strong> Below the vegas odds table there are 2 more tables showing the previous game for both the home and visitor teams.  The Last game table's are not editable and are currently input for every model (non-optional).</li>
+                    
+                  </ul>
+          
+                  <h4 style="margin-top:15px">Editing Predictions</h4>
+                  <p>Before making a prediction, users can adjust player availability and expected performance. Hover over a player's name to remove them due to injury.  Edit player season averages if you expect their performance to deviate from the norm.</p>
+                  
+                  <h4 >Last Game Stats</h4>
+                  <p>Currently the last game for both the home and visitor teams are used as model input features.  Each previous game contains the top 5 players stats from the featured team and there opponent, along with the game score.  The last game's are input for every model.  There is currently no option to edit or remove players from the last game.  Models currently cannot be trained without last game data.  Last game data is used for all models and is not editable. </p>
+
+                  <h4>Making Predictions</h4>
+                  <p>With all adjustments made, users can proceed to make a prediction. The model calculates the outcome with the new parameters.</p>
+                  
+                  <h4>Controls</h4>
+                  <ul>
+                    <li><strong>Update Odds:</strong> This feature refreshes the data in the vegas odds table.</li>
+                    <li><strong>Get Score:</strong> Updates the actual game score.  Marks game as finished and triggers the game to be counted on the profile stats.</li>
+                    <li><strong>Bet:</strong> Marks game as a bet true or false which can be used to track activity from the profile game bets page <a href="https://nbadata.cloud/predict/bets/">here</a>.</li>
+                    <li><strong>ReTrain:</strong> Only available after a game is final and if a custom model was used (the default model cannot be retrained). This feature allows the model to be trained on the result of a specific game.</li>
+                  </ul>
+                  <h4>Navigation and Usage</h4>
+                  <p>The interface is designed to be intuitive, with interactive elements for an easy and informative user experience.</p>
+                
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+      <div style="overflow: auto;">
+
+       
+
+                  <div id="game-info" class="row center col-md-12" style="padding-left:0px !important;padding-right:0px !important;">
+
+                    <div class="col-3"style="padding:0">
+                      <center>
+                        <div style="height: 150px;">
+                          <a href="{% url 'team-view' visitor%}">
+                            <img id="team-logo" class="" style="display:inline;height: 15vh;max-height:150px"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+  
+                        </a>
+                        </div>
+
+                        <h5 data-toggle="tooltip" data-placement="bottom" title="Visitor Projected Score" for="pvscore" id="pvscore" style="margin:0px;white-space: nowrap; overflow: auto;">{{ pvscore }} </h5>
+                        <hr>
+                        {%if home_score != '0' %}
+
+                        <p style="margin:0px;white-space: nowrap; overflow: auto;">{{ visitor_score }} </p>
+                        <hr>
+                        {% endif %}
+                        <p class="mobile-hide" style="margin:0px;white-space: nowrap; overflow: auto;">{{ vw }} / {{ vl }} / {{ visitor_streak }} </p>
+                        <hr class="mobile-hide">
+
+
+                    </center>
+                    </div>
+                    <div class="col-6"style="padding:0; height: 200px;">
+                      <center>
+                        
+
+
+                        <div style="height: 125px !important;">
+                          {% if pmscore == 0 %}
+                        <input style="margin-top:35px;margin-bottom:7px" onclick="myFunction()" type="button" class="btn btn-grey glow-btn" value="Predict">
+                        <br>
+                      <select id="model-slot" style="margin-top:5px;width:50%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3 glow-btn" aria-label=".form-select-lg example">
+                        <option value="0" selected>Model 0</option>
+         
+                        <option value="1">Model 1</option>
+        
+                        <option value="2">Model 2</option>
+        
+        
+                      </select>
+                      <br>
+                      {% else %}
+                      {% if visitor_spread == '0' %}
+                      <p style="margin:0px">No Spread found!!</p>
+
+                      {% else%}
+                        
+                      {% if visitor_spread == '0' %}
+                      {% elif pmscore != 0 %}
+                      <p data-toggle="tooltip" data-placement="bottom" title="Distance From Spread." for="margin" id="margin"  style="margin:0px;">
+                      
+                      {% if finished %}
+                        {% if ev_won == '1'%}
+                        <p data-toggle="tooltip" data-placement="bottom" title="Distance From Spread." for="margin" id="margin" style="margin-bottom: 0px;">
+                          {% if spread_prediction == '1'%}
+                          Margin: {{ margin |floatformat:2}}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-right"></i>
+                          {% else%}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-left"></i>
+                          Margin: {{ margin |floatformat:2}}
+                          {%endif%}
+                        
+                        {% else %}
+                        <p data-toggle="tooltip" data-placement="bottom" title="Distance From Spread." for="margin" id="margin"  style="margin-bottom: 0px;">
+                          {% if spread_prediction == '1'%}
+                          Margin {{ margin |floatformat:2}}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-right"></i> 
+
+                          {% else %}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-left"></i> 
+
+                          Margin: {{ margin |floatformat:2}}
+                          {% endif %}
+                          {% endif %}
+
+                        {% else %}
+                      
+                      {% if spread_prediction == '1'%}
+                        Margin {{ margin |floatformat:2}}
+                        <i class="fas fa-arrow-right"></i> 
+
+                        {% else %}
+                        <i  class="fas fa-arrow-left"></i> 
+                        Margin: {{ margin |floatformat:2}}
+                      {% endif %}
+                      {% endif %}
+                      {% endif %}
+
+                    </p>
+                      
+                      {% endif %}
+                      <canvas  id="c" ></canvas>
+                      <br>
+                      <br>
+                      {% endif%} 
+                        </div>
+                      </center>
+                      <center>
+    
+                      <br>
+
+                        <h5 data-toggle="tooltip" data-placement="bottom" title="Projected Spread" for="pmscore-display" id="pmscore-display"  style="margin:0px;margin-left: 7px !important;white-space: nowrap; overflow: auto;margin-top: 1px;">{{ pmscore|floatformat:2 }}</h5>
+                        <hr>
+                        {%if home_score != '0' %}
+                        <p style="margin:0px;margin-left: 7px !important;white-space: nowrap; overflow: auto;">Actual {{ pmactual }}</p>
+                        <hr>
+                        {% endif %}
+                      <p class="mobile-hide"  style="margin:0px;margin-left: 7px !important;white-space: nowrap; overflow: auto;">Win / Loss / Streak </p>
+                        <hr class="mobile-hide">
+
+                      
+                      
+                      
+
+                    </a>
+                      <br>
+                      <br>
+                      <!--
+                    <input style="margin:10px"type="text" id="player_search" name="player_search"placeholder="Search Players"><br><br>
+
+                      -->
+                      
+                      
+
+              
+                      </center>
+
+
+
+
+
+                        <script defer>
+                            let data = {
+                                labels: [
+                                  '',
+                                ],
+                                datasets: [{
+                                  label: 'Projected Spread',
+                                  data: ["{{ pmscore }}"],
+
+
+                                  backgroundColor: [
+
+                                  {% if finished%}
+                                    {% if pmscore >= 0 and winner == 1 or pmscore < 0 and winner == 0 %}
+                                      'rgb(65, 199, 8)',
+                                    {%else%}
+                                      'rgb(255, 0, 0)',
+
+                                    {% endif %} 
+                                  {% endif %}
+
+                                  {%if not finished%}
+                                  '#8d8f8f',
+                                  {% endif %}
+
+
+                                    
+
+                                  ],
+                                  hoverOffset: 10,
+
+                                  borderWidth: 1,
+
+                                
+                                }]
+                              };
+
+
+                          let config{{game.pk }} = {
+                              type: 'bar',
+                              data: data{{game.pk }},
+                              options: {
+                                maintainAspectRatio: false,
+                                  responsive: true,
+                                  reverse: true,
+
+                                  start: 0,
+                                  end: 0,
+                                  begin: 1,
+                                  base: 0,
+                                  middle: 0,
+                                  indexAxis: 'y',
+                                  plugins: {
+                                      legend: {
+                                        display: false
+                                      }
+                                    },
+                                    layout: {
+                                      padding: {
+                                          // Any unspecified dimensions are assumed to be 0                     
+                                          top: 5,
+                                          bottom: 5,
+                                          left: 5,
+                                          right: 5,
+                                      }
+                                  },
+                                  yAxes: [{
+                                      type: 'time',
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 1
+                                      }
+                                }],
+                                  scales: {
+                                    x: {
+                                      min: -10,
+                                      max: 10,
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 4
+                                      },
+                                    
+
+
+                                    },
+                                    y: {
+                                      min: 0,
+                                      max: 1,
+                                      
+                                      weight: 1,
+
+                                    }
+                                  }
+                                  }
+
+                            };
+
+                            const c = new Chart(document.getElementById('c'),config);
+
+                        </script>
+                    </div>
+                      <div class="col-3" style="padding:0">
+                        <center>
+                           <div style="height: 150px;">
+                            <a href="{% url 'team-view' home%}">
+                              <img id="team-logo" class="" style="display:inline;height: 15vh;max-height:150px"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+    
+                          </a>
+                          </div>
+                         
+
+                          <h5 data-toggle="tooltip" data-placement="bottom" title="Home Projected Score" for="phscore" id="phscore"   style="margin:0px;white-space: nowrap; overflow: auto;">{{ phscore }} </h5>
+                       <hr>
+                        {%if home_score != '0' %}
+
+                          <p style="margin:0px;white-space: nowrap; overflow: auto;">{{ home_score }} </p>
+                       <hr>
+                       {%endif%}
+
+                          <p class="mobile-hide"  style="margin:0px;white-space: nowrap; overflow: auto;">{{ hw }} / {{ hl }} / {{ home_streak }} </p>
+                       <hr class="mobile-hide">
+
+
+                        </center>
+                    </div>
+                    
+
+                  </div>
+
+
+
+
+                  {% if game.prediction is None %}
+                  
+
+                  {% else %}
+                  {% if not finished%}
+                    <form action="{% url 'get-score' pk %}" method="get">
+                      <div>
+                        <p style="margin-bottom: 0px;margin-top:2px;border: 1px solid #969696;border-radius: 10px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey" value="Get Score" name="mybtn"> </p>
+
+                        
+                    </form>
+                  {% endif %}
+
+                  </div>
+            {% endif %}
+
+        
+
+
+        {% if simpleRecord%} 
+        {% else %}
+        
+ 
+        <p></p>
+        <h2 style="margin-bottom:15px;margin-top:35px;">Edit Stats</h2>
+        <div style="overflow: auto; color:white;">
+        <table align="center" id="input-players" style="width:100% !important">
+            <tr>
+              <td>Input Players</td>
+              <td>#</td>
+              {% for label in labels%}
+                <td>{{label}}</td>
+              {% endfor %}
+            </tr>
+
+
+
+
+            {% for k, v in stats.items %}
+
+              <tr>
+              
+              
+                  {% if pmscore == 0%}
+                  <td class="remove-player" style="border-radius:0px">
+                  <button  style="background: transparent;
+                  border: none !important;color: #333333"onclick="window.location.href='{% url 'remove-player' pk k%}';">
+                    {{k}}
+                  </button>
+                </td>
+
+                  {% else %}
+                  <td  class="oof" >
+                    <button  style="background: transparent;
+                    border: none !important;color: #333333"onclick="window.location.href='{% url 'player-detail-name' k%}';">
+                      {{k}}
+                    </button>
+                </td>
+                  
+                  {% endif %}
+
+
+              {%for stat in v%}
+
+                  {% if forloop.counter == 1 %}
+                      <td >{{stat}}</td>
+                  {%else%}
+                      {% if pmscore == 0%}
+                        <td class="e oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
+                      {% else %}
+                        <td class="oof" id="{{ v.0 }}:{{forloop.counter}}">{{stat}}</td>
+                      {% endif %}
+                  {%endif%}
+              {%endfor%}
+            </tr>
+            {% endfor %}
+
+
+        </table>
+      </div>
+      {% endif %}
+
+     
+          <br>
+          <br>
+
+
+          {% if complexSpreadDisplay %}
+          <h2 style="margin-bottom:0px;margin-top:5px;">Vegas Odds</h2>
+          <div class="row" style="margin-bottom:5px;padding:5px; text-align: center;">
+            <div class="col-2">
+
+            </div>
+            <div class="col-2" style="padding-left:0px !important;padding-right:0px !important">
+            </div>
+            <div class="col-8">
+              <div class="row">
+                <div class="col-4 text-muted" style="padding-left:0px !important;padding-right:0px !important">
+                  Spread
+                </div>
+                <div class="col-4 text-muted" style="padding-left:0px !important;padding-right:0px !important">
+                  ML
+                </div>
+                <div class="col-4 text-muted" style="padding-left:0px !important;padding-right:0px !important">
+                  O/U
+                </div>
+
+              </div>
+              
+            </div>
+          </div>
+              {% for line in complexSpread %}
+              {%if line.name == "fanduel" %}
+                  <a target="_blank" href="https://sportsbook.fanduel.com/navigation/nba">
+
+                  {% endif %}
+                  {%if line.name == "pointsbet" %}
+                  <a target="_blank" href="https://pointsbet.com">
+
+                  {% endif %}
+                  {%if line.name == "betrivers" %}
+                  <a target="_blank" href="https://www.betrivers.com/">
+
+                  {% endif %}
+                  {%if line.name == "caesars_sportsbook" %}
+                  <a target="_blank" href="https://www.caesars.com/sportsbook-and-casino">
+
+                  {% endif %}
+                  {%if line.name == "betmgm" %}
+                  <a target="_blank" href="https://sports.betmgm.com/en/sports">
+                    {% endif %}
+              <div class="row injury book-link" style="margin:5px;margin-top:15px;margin-bottom:15px;padding:15px;padding-bottom:0px;text-align: center;">
+                <div class="col-2">
+                  {%if line.name == "fanduel" %}
+                  <img data-toggle="tooltip" data-placement="bottom" title="FanDuel" for="line.name" id="line.name"  src="{% static 'predict/fd.jpeg'%}" style="position:relative;z-index: 10;height:55px;border-radius: 10px;margin-top:3px"> </img>
+                  {% endif %}
+                  {%if line.name == "pointsbet" %}
+                  <img data-toggle="tooltip" data-placement="bottom" title="Points Bet" for="line.name" id="line.name" src="{% static 'predict/pb.png'%}" style="position:relative;z-index: 10;height:55px;border-radius: 10px;margin-top:3px"> </img>
+                  {% endif %}
+                  {%if line.name == "betrivers" %}
+                  <img data-toggle="tooltip" data-placement="bottom" title="Bet Rivers" for="line.name" id="line.name" src="{% static 'predict/br.png'%}" style="position:relative;z-index: 10;height:55px;border-radius: 10px;margin-top:3px"> </img>
+                  {% endif %}
+                  {%if line.name == "caesars_sportsbook" %}
+                  <img data-toggle="tooltip" data-placement="bottom" title="Caesars Sports-books" for="line.name" id="line.name" src="{% static 'predict/cs.jpeg'%}" style="position:relative;z-index: 10;height:55px;border-radius: 10px;margin-top:3px"> </img>
+                  {% endif %}
+                  {%if line.name == "betmgm" %}
+                  <img data-toggle="tooltip" data-placement="bottom" title="Bet MGM" for="line.name" id="line.name" src="{% static 'predict/mgm.png'%}" style="position:relative;z-index: 10;height:55px;border-radius: 10px;margin-top:3px"> </img>
+                  {% endif %}
+                </div>
+                <div class="col-2" style="z-index: 1;padding-left:0px !important;padding-right:0px !important">
+                  <p class="mobile-hide" style="margin-bottom:0px">{{ home }}</p>
+                  <hr class="mobile-hide" style="z-index: 10;">
+                  <p class="mobile-hide">{{ visitor }}</p>
+
+                </div>
+                <div class="col-8">
+                  <div class="row">
+                    <div class="col-4" style="padding-left:0px !important;padding-right:0px !important">
+                      <p style="margin-bottom:0px">{{ line.homeTeamSpread }}</p>
+                      <hr >
+                      <p>{{ line.awayTeamSpread }}</p>
+    
+                    </div>
+                    <div class="col-4" style="padding-left:0px !important;padding-right:0px !important">
+                      <p style="margin-bottom:0px">{{ line.homeTeamMLOdds }}</p>
+                      <hr>
+                      <p>{{ line.awayTeamMLOdds}}</p>
+    
+                    </div>
+                    <div class="col-4" style="padding-left:0px !important;padding-right:0px !important">
+                      <p style="margin-bottom:0px">o{{ line.totalUnder }}</p>
+                      <hr>
+                      <p>u{{ line.totalOver }}</p>
+    
+                    </div>
+
+                  </div>
+                  
+                </div>
+              </div>
+            </a>
+              {% endfor %}
+
+          {% endif %}
+      <br>
+      <div id="chartContainer" style="width: 100%; height: 400px;">
+        <canvas id="vegasOddsChart"></canvas>
+    </div>
+    <style>
+        #chartContainer {
+            width: 100%;
+            height: 400px; /* Fixed height */
+        }
+        #vegasOddsChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+    
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          var ctx = document.getElementById('vegasOddsChart').getContext('2d');
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [{% for line in complexSpread %}'{{ line.name }}',{% endfor %}],
+                  datasets: [{
+                      label: 'Home Spread',
+                      data: [{% for line in complexSpread %}{{ line.homeTeamSpread }},{% endfor %}],
+                      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                      borderColor: 'rgba(255, 99, 132, 1)',
+                      borderWidth: 1,
+                      yAxisID: 'y-axis-spread',
+                  }, {
+                      label: 'Visitor Spread',
+                      data: [{% for line in complexSpread %}{{ line.awayTeamSpread }},{% endfor %}],
+                      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                      borderColor: 'rgba(54, 162, 235, 1)',
+                      borderWidth: 1,
+                      yAxisID: 'y-axis-spread',
+                  }, {
+                      label: 'Home Money Line',
+                      data: [{% for line in complexSpread %}{{ line.homeTeamMLOdds }},{% endfor %}],
+                      type: 'bar',
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      borderWidth: 1,
+                      yAxisID: 'y-axis-ml',
+                  }, {
+                      label: 'Visitor Money Line',
+                      data: [{% for line in complexSpread %}{{ line.awayTeamMLOdds }},{% endfor %}],
+                      type: 'bar',
+                      backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                      borderColor: 'rgba(153, 102, 255, 1)',
+                      borderWidth: 1,
+                      yAxisID: 'y-axis-ml',
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      'y-axis-spread': {
+                          type: 'linear',
+                          display: true,
+                          position: 'left',
+                          title: {
+                              display: true,
+                              text: 'Spread'
+                          }
+                      },
+                      'y-axis-ml': {
+                          type: 'linear',
+                          display: true,
+                          position: 'right',
+                          title: {
+                              display: true,
+                              text: 'Money Line'
+                          },
+                          grid: {
+                              drawOnChartArea: false,
+                          },
+                      }
+                  }
+              }
+          });
+      });
+      </script>
+      
+        
+        
+    </div>
+
+<style>
+  .big-btn{
+    border: 1px solid rgba(198, 198, 198, 0.2);
+    background-color: var(--event-background);
+
+
+    }
+    .big-btn:hover{
+        border: 1px solid var(--main-border-color);
+      background-color: var(--event-hvr-background);
+
+
+    }
+    table{
+      border: 1px solid rgba(198, 198, 198, 0.2) !important;
+
+    }
+
+
+</style>
+
+
+
+
+
+
+
+
+<h2 class="lg-display" style="margin-top:25px;margin-bottom:25px">Game History</h2>
+    <div class="row lg-display" style="margin-left:15px;margin-right:15px">
+
+
+
+        <div class="col-6" style="margin-bottom:10px">
+          <div class='content-section big-btn' style="min-height:155px; text-align: center;" data-toggle="modal" data-target="#gh1">
+            <div class="row" style="padding-top:10px">
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+              </div>
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ hh_op_abv }}.webp">
+              </div>
+              </div>
+              <div>
+                <h2 class="lg-display-score" style="margin-top:5px">{{hh_score}}-{{hh_op_score}}</h2>
+                  <p class="text-muted">{{home}} last game {{hh_date}} </p>
+
+              </div>
+          </div>
+        </div>
+
+
+
+
+        <div class="modal fade" id="gh1" tabindex="-1" role="dialog" aria-labelledby="gh1" aria-hidden="true">
+          <div class="modal-dialog" style="max-width: 1200px; border-radius: 10px;" role="document">
+            <div class="modal-content" style="">
+              <div class="modal-header">
+                <h2 class="modal-title" id="modelInfoModalLabel">Game History</h2>
+                <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              
+
+              <div id="game-info" class="row center col-md-10" style="">
+
+                <div class="col-3"style="padding:0">
+                  <center>
+                      <a href="{% url 'team-view' home%}">
+        
+                    <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+                  </a>
+                  </center>
+        
+                </div>
+                <div class="col-6"style="padding:0">
+                  <center>
+                    <h2 class="lg-display" style="margin-top:25px">{{home}} last game</h2>
+                    <h2 class="lg-display-score" style="">{{hh_score}}-{{hh_op_score}}</h2>
+                    <p class="text-muted">{{hh_date}} </p>
+        
+                  </center>
+        
+                  
+                </div>
+                <div class="col-3"style="padding:0">
+                  <center>
+                    <a href="{% url 'team-view' hh_op_abv%}">
+        
+                    <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ hh_op_abv }}.webp">
+                    </a>
+                  </center>
+        
+        
+                  
+                </div>
+              </div>
+        
+        
+              <div id="hh-table" style="overflow: auto;padding:25px">
+             
+        
+                <table align="center" style="width:100%">
+                  <tr>
+                    <td style="width:15%"><center>{{home}} Players</center></td>
+                    {% for label in labels %}
+                    <td style="width:200px"><center>{{label}}</center></td>
+        
+                      {% endfor %}
+        
+                  </tr>
+                  {% for player in hh_players%}
+                  <tr>
+                    <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                        {{player.name}}
+                    </center></td>
+                    <td>
+                      <center>
+                        {{player.ast}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.blk}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.dreb}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.fg3_pct|floatformat:2}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.fg3a}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.fg3m}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.fga}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.fgm}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.fta}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.ftm}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.oreb}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.pf}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.pts}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.reb}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.stl}}
+                      </center>
+                    </td>
+                    <td>
+                      <center>
+                        {{player.turnover}}
+                      </center>
+                    </td>
+        
+                    <td>
+                      <center>
+                        {{player.min}}
+                      </center>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  
+                  </table>
+                  <br>
+                  <table align="center" style="width:100%">
+                    <tr>
+                      <td style="width:15%"><center>{{hh_op_abv}} Players</center></td>
+                      {% for label in labels %}
+                      <td style="width:200px"><center>{{label}}</center></td>
+          
+                        {% endfor %}
+          
+                    </tr>
+                    {% for player in hh_op_player%}
+                    <tr>
+                      <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                        {{player.name}}
+                    </center></td>
+                      <td>
+                        <center>
+                          {{player.ast}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.blk}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.dreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3_pct|floatformat:2}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3a}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3m}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fga}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fgm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fta}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.ftm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.oreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pf}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pts}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.reb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.stl}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.turnover}}
+                        </center>
+                      </td>
+          
+                      <td>
+                        <center>
+                          {{player.min}}
+                        </center>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    </table>
+              </div>
+        
+
+
+
+              
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+   
+        <div class="col-6" style="margin-bottom:10px">
+          <div class='content-section big-btn' style="min-height:155px; text-align: center;" data-toggle="modal" data-target="#gh2">
+            <div class="row" style="padding-top:10px">
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+              </div>
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ vh_op_abv }}.webp">
+              </div>
+              </div>
+              <div>
+                <h2 class="lg-display-score" style="margin-top:5px">{{vh_score}}-{{vh_op_score}}</h2>
+                  <p class="text-muted">{{visitor}} last game {{vh_date}} </p>
+
+              </div>
+          </div>
+        </div>
+
+
+
+
+        <div class="modal fade" id="gh2" tabindex="-1" role="dialog" aria-labelledby="gh2" aria-hidden="true">
+          <div class="modal-dialog" style="max-width: 1200px; border-radius: 10px;" role="document">
+            <div class="modal-content" style="">
+              <div class="modal-header">
+                <h2 class="modal-title" id="modelInfoModalLabel">Game History</h2>
+                <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div id="game-info" class="row center col-md-10" style="">
+
+                  <div class="col-3"style="padding:0">
+                    <center>
+                      <a href="{% url 'team-view' visitor%}">
+          
+                      <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+                      </a> 
+                    </center>
+          
+                  </div>
+                  <div class="col-6"style="padding:0">
+          
+                    <center>
+                      <h2 class="lg-display" style="margin-top:25px">{{visitor}} last game</h2>
+                      <h2 class="lg-display-score" style="">{{vh_score}}-{{vh_op_score}}</h2>
+                      <p class="text-muted">{{vh_date}}</p>
+          
+                    </center>
+                  </div>
+                  <div class="col-3"style="padding:0">
+                    <center>
+                      <a href="{% url 'team-view' vh_op_abv%}">
+          
+                      <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ vh_op_abv }}.webp">
+                      </a>
+                    </center>
+           
+                    
+                  </div>
+                </div>
+          
+          
+          
+                <div id="vh-table" style="overflow: auto;">
+                  <center>
+                  </center>
+          
+                  <table align="center" style="width:100%">
+                    <tr>
+                      <td style="width: 15% !important;"><center>{{visitor}} Players</center></td>
+                      {% for label in labels %}
+                      <td style="width:200px"><center>{{label}}</center></td>
+          
+                        {% endfor %}
+          
+                    </tr>
+                    {% for player in vh_players%}
+                    <tr>
+                      <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                        {{player.name}}
+                    </center></td>
+                      <td>
+                        <center>
+                          {{player.ast}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.blk}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.dreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3_pct|floatformat:2}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3a}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3m}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fga}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fgm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fta}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.ftm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.oreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pf}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pts}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.reb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.stl}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.turnover}}
+                        </center>
+                      </td>
+          
+                      <td>
+                        <center>
+                          {{player.min}}
+                        </center>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    </table>
+                    <br>
+          
+                    <table align="center" style="width:100%">
+                      <tr>
+                        <td style="width: 15% !important;"><center>{{vh_op_abv}} Player</center></td>
+                        {% for label in labels %}
+                        <td style="width:200px"><center>{{label}}</center></td>
+            
+                          {% endfor %}
+            
+                      </tr>
+                      {% for player in vh_op_player%}
+                      <tr>
+                        <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                          {{player.name}}
+                      </center></td>
+                        <td>
+                          <center>
+                            {{player.ast}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.blk}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.dreb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3_pct|floatformat:2}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3a}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3m}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fga}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fgm}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fta}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.ftm}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.oreb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.pf}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.pts}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.reb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.stl}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.turnover}}
+                          </center>
+                        </td>
+            
+                        <td>
+                          <center>
+                            {{player.min}}
+                          </center>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                      
+                      </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="col-6" style="margin-bottom:10px">
+          <div class='content-section big-btn' style="min-height:155px; text-align: center;" data-toggle="modal" data-target="#gh3">
+            <div class="row" style="padding-top:10px">
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+              </div>
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ hh2_op_abv }}.webp">
+              </div>
+              </div>
+              <div>
+                <h2 class="lg-display-score" style="margin-top:5px">{{hh2_score}}-{{hh2_op_score}}</h2>
+                  <p class="text-muted">{{home}} 2nd last game {{hh2_date}} </p>
+
+              </div>
+          </div>
+        </div>
+        <div class="modal fade" id="gh3" tabindex="-1" role="dialog" aria-labelledby="gh3" aria-hidden="true">
+          <div class="modal-dialog" style="max-width: 1200px; border-radius: 10px;" role="document">
+            <div class="modal-content" style="">
+              <div class="modal-header">
+                <h2 class="modal-title" id="modelInfoModalLabel">Game History</h2>
+                <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div id="game-info" class="row center col-md-10" style="">
+  
+                  <div class="col-3"style="padding:0">
+                    <center>
+                      <a href="{% url 'team-view' home%}">
+        
+                      <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ home }}.webp">
+                      </a>
+                    </center>
+          
+                  </div>
+                  <div class="col-6"style="padding:0">
+                    <center>
+                      <h2 class="lg-display" style="margin-top:25px">{{home}} last game 2</h2>
+                      <h2 class="lg-display-score" style="">{{hh2_score}}-{{hh2_op_score}}</h2>
+                      <p class="text-muted">{{hh2_date}} </p>
+          
+                    </center>
+          
+                    
+                  </div>
+                  <div class="col-3"style="padding:0">
+                    <center>
+                      <a href="{% url 'team-view' hh2_op_abv%}">
+        
+                      <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ hh2_op_abv }}.webp">
+                      </a>
+                    </center>
+          
+          
+                    
+                  </div>
+                </div>
+          
+          
+                <div id="hh-table" style="overflow: auto;">
+                  <center>
+          
+                  </center>
+          
+                  <table align="center" style="width:100%">
+                    <tr>
+                      <td style="width:15%"><center>{{home}} Players</center></td>
+                      {% for label in labels %}
+                      <td style="width:200px"><center>{{label}}</center></td>
+          
+                        {% endfor %}
+          
+                    </tr>
+                    {% for player in hh2_players%}
+                    <tr>
+                      <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                          {{player.name}}
+                      </center></td>
+                      <td>
+                        <center>
+                          {{player.ast}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.blk}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.dreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3_pct|floatformat:2}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3a}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3m}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fga}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fgm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fta}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.ftm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.oreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pf}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pts}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.reb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.stl}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.turnover}}
+                        </center>
+                      </td>
+          
+                      <td>
+                        <center>
+                          {{player.min}}
+                        </center>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    </table>
+                    <br>
+                    <table align="center" style="width:100%">
+                      <tr>
+                        <td style="width:15%"><center>{{hh2_op_abv}} Players</center></td>
+                        {% for label in labels %}
+                        <td style="width:200px"><center>{{label}}</center></td>
+            
+                          {% endfor %}
+            
+                      </tr>
+                      {% for player in hh2_op_player%}
+                      <tr>
+                        <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                          {{player.name}}
+                      </center></td>
+                        <td>
+                          <center>
+                            {{player.ast}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.blk}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.dreb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3_pct|floatformat:2}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3a}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3m}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fga}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fgm}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fta}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.ftm}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.oreb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.pf}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.pts}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.reb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.stl}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.turnover}}
+                          </center>
+                        </td>
+            
+                        <td>
+                          <center>
+                            {{player.min}}
+                          </center>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                      
+                      </table>
+                </div>
+          
+                
+        
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="col-6" style="margin-bottom:10px">
+          <div class='content-section big-btn' style="min-height:155px; text-align: center;" data-toggle="modal" data-target="#gh4">
+            <div class="row" style="padding-top:10px">
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+              </div>
+              <div class="col-6">
+      
+                  <img id="team-logo" class="" style="display:inline;max-height:130px"src="{% static 'predict/nba-logo/' %}{{ vh2_op_abv }}.webp">
+              </div>
+              </div>
+              <div>
+                <h2 class="lg-display-score" style="margin-top:5px">{{vh2_score}}-{{vh2_op_score}}</h2>
+                  <p class="text-muted">{{visitor}} 2nd last game {{vh2_date}} </p>
+
+              </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="gh4" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+          <div class="modal-dialog" style="max-width: 1200px; border-radius: 10px;" role="document">
+            <div class="modal-content" style="">
+              <div class="modal-header">
+                <h2 class="modal-title" id="modelInfoModalLabel">Game History</h2>
+                <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div id="game-info" class="row center col-md-10" style="">
+
+                  <div class="col-3"style="padding:0">
+                    <center>
+                        <a href="{% url 'team-view' visitor%}">
+          
+                      <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ visitor }}.webp">
+                    </a>
+                    </center>
+          
+                  </div>
+                  <div class="col-6"style="padding:0">
+          
+                    <center>
+                      <h2 class="lg-display" style="margin-top:25px">{{visitor}} last game 2</h2>
+                      <h2 class="lg-display-score" style="">{{vh2_score}}-{{vh2_op_score}}</h2>
+                      <p class="text-muted">{{vh2_date}}</p>
+          
+                    </center>
+                  </div>
+                  <div class="col-3"style="padding:0">
+                    <center>
+                      <a href="{% url 'team-view' vh2_op_abv%}">
+          
+                      <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ vh2_op_abv }}.webp">
+                      </a>
+                    </center>
+           
+                    
+                  </div>
+                </div>
+          
+          
+          
+                <div id="vh-table" style="overflow: auto;">
+                  <center>
+                  </center>
+          
+                  <table align="center" style="width:100%">
+                    <tr>
+                      <td style="width: 15% !important;"><center>{{visitor}} Players</center></td>
+                      {% for label in labels %}
+                      <td style="width:200px"><center>{{label}}</center></td>
+          
+                        {% endfor %}
+          
+                    </tr>
+                    {% for player in vh2_players%}
+                    <tr>
+                      <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                        {{player.name}}
+                    </center></td>
+                      <td>
+                        <center>
+                          {{player.ast}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.blk}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.dreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3_pct|floatformat:2}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3a}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fg3m}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fga}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fgm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.fta}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.ftm}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.oreb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pf}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.pts}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.reb}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.stl}}
+                        </center>
+                      </td>
+                      <td>
+                        <center>
+                          {{player.turnover}}
+                        </center>
+                      </td>
+          
+                      <td>
+                        <center>
+                          {{player.min}}
+                        </center>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    </table>
+                    <br>
+          
+                    <table align="center" style="width:100%">
+                      <tr>
+                        <td style="width: 15% !important;"><center>{{vh_op_abv}} Player</center></td>
+                        {% for label in labels %}
+                        <td style="width:200px"><center>{{label}}</center></td>
+            
+                          {% endfor %}
+            
+                      </tr>
+                      {% for player in vh2_op_player%}
+                      <tr>
+                        <td style="width:200px" class="oof" onclick="window.location.href='{% url 'player-detail' player.id%}';"><center>
+                          {{player.name}}
+                      </center></td>
+                        <td>
+                          <center>
+                            {{player.ast}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.blk}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.dreb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3_pct|floatformat:2}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3a}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fg3m}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fga}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fgm}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.fta}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.ftm}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.oreb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.pf}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.pts}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.reb}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.stl}}
+                          </center>
+                        </td>
+                        <td>
+                          <center>
+                            {{player.turnover}}
+                          </center>
+                        </td>
+            
+                        <td>
+                          <center>
+                            {{player.min}}
+                          </center>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                      
+                      </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+     
+
+    </div>
+
+
+    {% if pmscore != 0 %}
+    <h2 style="margin-top:25px;margin-botto:10px">Inferred Projections</h2>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6 col-md-12">
+          <div id="chartContainer1" style="height: 400px;">
+            <canvas id="radarChart" style="margin-left:auto;margin-right:auto"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+          <div id="chartContainer2" style="height: 400px;">
+            <canvas id="totalPointsChart" style="margin-left:auto;margin-right:auto"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <style>
+      #chartContainer1, #chartContainer2 {
+        width: 100%; /* Only a minimum height to ensure there is some initial space */
+        height: 400px; /* Only a minimum height to ensure there is some initial space */
+      }
+      #totalPointsChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        #radarChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+  <script>
+    
+          var radarlabels = ['Projection ML Away'];
+          var projectedML = convertPMScoreToML({{ pmscore }});
+          var radardata = [projectedML];
+
+          {% for line in complexSpread %}
+          {% if line.awayTeamSpread != 0 %}
+          radarlabels.push("{{ line.name }}");
+          radardata.push(Math.abs({{ line.awayTeamMLOdds }}));
+          {% endif %}
+          {% endfor %}
+
+          radardata = radardata.map(value => Math.round(Math.abs(value)));
+
+          // Define a dynamic color palette for the dataset
+          const colors = [
+              'rgba(255, 159, 64, 0.2)' , // Orange
+              'rgba(255, 99, 132, 0.2)', // Red
+              'rgba(54, 162, 235, 0.2)', // Blue
+              'rgba(255, 206, 86, 0.2)', // Yellow
+              'rgba(75, 192, 192, 0.2)', // Green
+              'rgba(153, 102, 255, 0.2)', // Purple
+          ];
+          const borderColors = [
+              'rgb(255, 159, 64)',  // Orange
+              'rgb(255, 99, 132)', // Red
+              'rgb(54, 162, 235)', // Blue
+              'rgb(255, 206, 86)', // Yellow
+              'rgb(75, 192, 192)', // Green
+              'rgb(153, 102, 255)', // Purple
+          ];
+
+          // Generate colors for each point
+          let backgroundColors = [];
+          let pointBorderColors = [];
+          radardata.forEach((_, index) => {
+              backgroundColors.push(colors[index % colors.length]);
+              pointBorderColors.push(borderColors[index % borderColors.length]);
+          });
+
+          const radarconfig = {
+              type: 'radar',
+              data: {
+                  labels: radarlabels,
+                  datasets: [{
+                      label: 'Moneyline Odds',
+                      data: radardata,
+                      fill: true,
+                      backgroundColor: backgroundColors, // Apply unique colors to each point
+                      borderColor: pointBorderColors,
+                      pointBackgroundColor: pointBorderColors,
+                      pointBorderColor: '#fff',
+                      pointHoverBackgroundColor: '#fff',
+                      pointHoverBorderColor: pointBorderColors,
+                      borderWidth: 2
+                  }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                  elements: {
+                      line: {
+                          tension: 0.3 // Smooths the lines
+                      },
+                      point: {
+                          radius: 4 // Adjusts point size
+                      }
+                  },
+                  scale: {
+                      ticks: {
+                          display: true,
+                          beginAtZero: true,
+                          suggestedMax: Math.max(...radardata) + 500, // Adjust for your data
+                          stepSize: 500
+                      },
+                      pointLabels: {
+                          fontSize: 16,
+                          fontColor: 'rgb(54, 162, 235)'
+                      }
+                  }
+              },
+          };
+
+         // Initialize the radar chart
+    // Initialize the radar chart
+    new Chart(document.getElementById('radarChart'), radarconfig);
+    function convertPMScoreToML(pointSpread) {
+      // Approximations based on general observations
+      if (pointSpread >= 1 && pointSpread <= 2) {
+          return -130; // Example for spreads 1 to 2 points
+      } else if (pointSpread >= 2.5 && pointSpread <= 3.5) {
+          return -160; // Example for spreads 2.5 to 3.5 points
+      } else if (pointSpread >= 4 && pointSpread <= 5) {
+          return -190; // Example for spreads 4 to 5 points
+      } else if (pointSpread >= 5.5 && pointSpread <= 6.5) {
+          return -220; // Example for spreads 5.5 to 6.5 points
+      } else if (pointSpread >= 7 && pointSpread <= 8) {
+          return -260; // Example for spreads 7 to 8 points
+      } else if (pointSpread >= 8.5 && pointSpread <= 9.5) {
+          return -300; // Example for spreads 8.5 to 9.5 points
+      } else if (pointSpread >= 10) {
+          return -350; // Example for spreads 10 points and above
+      } else {
+          return 100; // Flat return for underdogs or as a default (should ideally handle underdogs differently)
+      }
+  }
+
+  window.addEventListener('resize', () => {
+  resizeChart(radarChart, 2);
+  resizeChart(totalPointsChart, 2);
+});
+function resizeChart(chart, aspectRatio = 2) {
+  const container = chart.canvas.parentNode;
+  const width = container.clientWidth;
+  const height = width / aspectRatio;
+  chart.canvas.style.width = width + 'px';
+  chart.canvas.style.height = height + 'px';
+  chart.resize();
+}
+
+</script>
+<script>
+  var totalPointsLabels = ['Projection Total Points'];
+  var projectedTotalPoints = {{ phscore }}+{{pvscore}}; // Assuming pmscore can represent a total points projection
+  var totalPointsData = [projectedTotalPoints];
+
+  {% for line in complexSpread %}
+  {% if line.awayTeamSpread != 0 %}
+  totalPointsLabels.push("{{ line.name }}");
+  totalPointsData.push({{ line.totalUnder }});
+  {% endif %}
+  {% endfor %}
+
+  totalPointsData = totalPointsData.map(value => Math.round(Math.abs(value))); // Ensure all values are rounded and positive
+
+  // Adapt colors for total points chart or reuse from the radar chart setup
+  let totalPointsBackgroundColors = [];
+  let totalPointsBorderColors = [];
+  totalPointsData.forEach((_, index) => {
+      totalPointsBackgroundColors.push(colors[index % colors.length]);
+      totalPointsBorderColors.push(borderColors[index % borderColors.length]);
+  });
+
+  const totalPointsConfig = {
+      type: 'radar', // Or 'bar' if you prefer a bar chart for total points
+      data: {
+          labels: totalPointsLabels,
+          datasets: [{
+              label: 'Total Points',
+              data: totalPointsData,
+              fill: true,
+              backgroundColor: totalPointsBackgroundColors,
+              borderColor: totalPointsBorderColors,
+              pointBackgroundColor: totalPointsBorderColors,
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: totalPointsBorderColors,
+              borderWidth: 2
+          }]
+      },
+      options: {
+        responsive: true,
+          maintainAspectRatio: false,
+
+          elements: {
+              line: {
+                  tension: 0.3
+              },
+              point: {
+                  radius: 4
+              }
+          },
+          scale: {
+              ticks: {
+                  display: true,
+                  suggestedMax: Math.max(...totalPointsData) ,
+                  stepSize: 1000
+              },
+              pointLabels: {
+                  fontSize: 14,
+                  fontColor: 'rgb(54, 162, 235)'
+              }
+          }
+      },
+  };
+
+  new Chart(document.getElementById('totalPointsChart'), totalPointsConfig);
+</script>
+{%endif%}
+
+    <h2 style="margin-bottom:15px;margin-top:35px;">Injury Report</h2>
+
+    {%for i in hInjuryComplex%}
+    <div class="flex-container injury" style="display: flex; margin-top: 10px; padding: 15px;">
+      <div class="flex-image" style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        {% if i.4 != "" %}
+        <img id="player-image" style="height: 90px; border-radius: 50%;" src="{{i.4}}">
+        {% endif %}
+      </div>
+      <div class="flex-content" style="flex: 5; display: flex; flex-direction: column; justify-content: center;">
+        <div style="display:block">
+    
+        <h3 style="margin-top: 30px !important;display:inline !important">
+          {{home}} - {{ i.0 }}
+        </h3>
+        <p class="text-muted" style="float: right;display:inline !important">
+          {{ i.3 }}
+        </p>
+        <p>{{ i.1 }}</p>
+      </div>
+    
+      </div>
+    </div>
+    
+    {% endfor %}
+    {%for i in vInjuryComplex%}
+    <div class="flex-container injury" style="display: flex; margin-top: 10px; padding: 15px;">
+      <div class="flex-image" style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        {% if i.4 != "" %}
+        <img id="player-image" style="height: 90px; border-radius: 50%;" src="{{i.4}}">
+        {% endif %}
+      </div>
+      <div class="flex-content" style="flex: 5; display: flex; flex-direction: column; justify-content: center;">
+        <div style="display:block">
+    
+        <h3 style="margin-top: 30px !important;display:inline !important">
+          {{visitor}} - {{ i.0 }}
+        </h3>
+        <p class="text-muted" style="float: right;display:inline !important">
+          {{ i.3 }}
+        </p>
+        <p>{{ i.1 }}</p>
+      </div>
+    
+      </div>
+    </div>
+    
+    {% endfor %}
+
+
+
+
+
+
+
+
+      <script>
+        function hh() {
+          var x = document.getElementById("hh-table");
+          var hh_btn = document.getElementById("hh-btn");
+          if (x.style.display === "none") {
+            hh_btn.value = "Hide Stats"
+            x.style.display = "block";
+          } else {
+            hh_btn.value = "Show Stats"
+            x.style.display = "none";
+          }
+        }
+        function vh() {
+          var x = document.getElementById("vh-table");
+          var hh_btn = document.getElementById("vh-btn");
+          if (x.style.display === "none") {
+            hh_btn.value = "Hide Stats"
+            x.style.display = "block";
+          } else {
+            hh_btn.value = "Show Stats"
+            x.style.display = "none";
+          }
+        }
+      </script>
+      <br>
+      <br>
+
+          <div style="margin-left:0px;">
+            <a style='margin-left:3px' class="btn btn-grey-secondary"href="{%url 'update-spread' pk %}">Update Odds</a>
+            <a style='margin-left:3px' class="btn btn-grey-secondary"href="{% url 'get-score-edit' pk '1' %}">Get Score</a>
+
+            {% if isAuthor %}
+            
+            
+          {% if bet %}
+          <a style='margin-left:3px' class="btn btn-grey-secondary"href="{%url 'bet' pk %}">Bet True</a>
+
+          {% else %}
+          <a style='margin-left:3px'class="btn btn-grey-secondary"href="{%url 'bet' pk %}">Bet False</a>
+          {% endif %}
+          {% if finished %}
+           {% if customModel %}
+           {% if active %}
+
+           
+            <a id="retrain-button" style='margin-left:3px;width:130px !important'class="btn btn-grey-secondary"href="{%url 'retrain-model' pk %}">Retrain <p id="retrain-display" style=";display:inline">100%</p></a>
+
+
+            <div style="margin-left:10px;margin-top: 0px;display:inline;position: absolute;">
+            <label data-toggle="tooltip" data-placement="bottom" title="number of samples that are propagated through the model at once during a single iteration of the training process." for="batch-size"><p style="display:inline"id="batch-display">{{batchSize}}</p></label>
+
+            <input min="1" max="200" type="range"  id="retrain-strength" value="100" class="form-control"style="margin-top:5px;background-color:#fff;border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none;width:250px;display:inline;">
+            </input>
+            </div>
+            <script>
+                  document.getElementById("retrain-strength").addEventListener("input", () => {
+                  var sliderValue = document.getElementById("retrain-strength").value;
+                  document.getElementById("retrain-display").innerHTML = sliderValue + '%';
+
+                  // Update the button's href to include the slider value as a query parameter
+                  var baseUrl = "{%url 'retrain-model' pk %}";
+                  document.getElementById("retrain-button").href = baseUrl + '?strength=' + sliderValue;
+              });
+            </script>
+
+
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            <p class="text-muted"style="margin-left:3px;white-space: pre-line;margin-bottom:2px;margin-top:3px">Model: {{model}} &nbsp&nbsp&nbsp Removed Players: {{removed_players}} &nbsp&nbsp&nbsp User: {{author}}    &nbsp&nbsp&nbsp csvid: {{csvid}}    &nbsp&nbsp&nbsp  GameID: {{gameid}}   &nbsp&nbsp&nbsp  created: {{date_posted}} </p>
+            </div>
+        </div>
+        
+        <script defer>
+        var changes = "change=";
+        var asdf =""
+        editing = false
+
+        document.body.addEventListener('click', function (event) {
+          console.log('click')
+
+        var press = jQuery.Event("keypress");
+        press.ctrlKey = false;
+        press.which = 13;
+        $(".e").trigger(press);
+        console.log(changes)
+
+        })
+
+
+
+        $(function(){
+            $(".e").click(function(event){
+                if(!editing){
+                  editing=true;
+                  if($(this).children("input").length > 0)
+                      return false;
+                  f = $(this).attr("id");
+                  var tdObj = $(this);
+                  asdf = tdObj
+                  lastObj = tdObj
+                  var preText = tdObj.html();
+                  var inputObj = $("<input type='number' id='asdf'/>");
+                  tdObj.html("");
+                  inputObj.width(tdObj.width())
+                      .height(tdObj.height())
+                      .css({border:"0px",fontSize:"17px"})
+                      .val(preText)
+                      .appendTo(tdObj)
+                      .trigger("focus")
+                      .trigger("select");
+
+                  inputObj.keyup(function(event){
+                      if(13 == event.which) { // press ENTER-key
+                          var text = $(this).val();
+                          tdObj.html(text);
+                          changes += f+":"+$(this).val()+"-";
+                          editing=false;
+                      }
+
+                      else if(27 == event.which) {  // press ESC-key
+                          tdObj.html(preText);
+                          editing=false;
+
+                      }
+
+                    });
+
+
+
+                  inputObj.click(function(){
+                      return false;
+                  });
+            }
+
+            });
+        });
+
+        function myFunction() {
+            window.location.href = document.getElementById("model-slot").value +'/'+changes;
+
+        }
+        </script>
+
+
+
+
+      </div>
+
+
+
+
+
+  </body>
+<style>
+  td{
+    border: 1px solid var(--table-color) !important;
+
+  }
+    #input-players tr:nth-child(9 ) td {
+      margin-top: 10px;
+      border-top: 2px dashed rgb(122, 122, 122) !important;
+    }
+    @media screen and (min-width: 500px) {
+
+
+  .edit-mobile{
+      display:none;
+    }
+  }
+
+    @keyframes subtleGlow {
+        0% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+        50% { box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+        100% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+    }
+    
+      .glow-btn {
+          animation: subtleGlow 10s ease-in-out infinite;
+      }
+       hr{
+        margin-top:5px !important;
+        margin-bottom:5px !important;
+        background-color: var(--main-font-color) !important;
+        opacity:.2 !important
+      }
+
+  @media screen and (max-width: 750px) {
+      #team-logo{
+        height:11vh !important;
+        margin-top:3vh !important
+        
+      }
+      .lg-display{
+        display:none;
+      }
+      .lg-display-score{
+         margin-top:35px;
+      } 
+      .col-12{
+
+        padding-right: 0px !important; 
+        padding-left: 0px !important; 
+      }
+
+    }
+
+    td,th{
+        text-align: center;
+    }
+    .modal{
+      z-index:1000000 !important;
+    }
+    .injury{
+      background-color: var(--event-background);
+      border-radius: 10px;
+      padding:5px;
+      margin-left:10px;
+      margin-right:10px;
+
+    }
+  
+    .book-link{
+      border: 1px solid transparent;
+
+    }
+    
+    </style>
+    
+    
+{% endblock %}

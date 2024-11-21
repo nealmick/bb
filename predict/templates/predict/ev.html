@@ -1,0 +1,791 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+
+{% if not active %}
+<script>
+    var tos = localStorage.getItem('tos');
+
+    if (tos === null) {
+        // First time visit, set shopLoad to true for future visits
+        //localStorage.setItem('tos', true);
+        // Redirect to /autoshop/
+        window.location.href = '/tos-auth/';
+    }
+</script>
+
+{% endif %}
+
+
+
+<body class="row" style="overflow-x: hidden;">
+<style>
+@media screen and (max-width: 750px) {
+    .col-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function updateFilters() {
+    var checkedBookmakers = [];
+    document.querySelectorAll('.bookmaker-checkbox:checked').forEach((checkbox) => {
+        checkedBookmakers.push(checkbox.value);
+    });
+    localStorage.setItem('checkedBookmakers', JSON.stringify(checkedBookmakers));
+    filterTable();
+    updateToggleButtonText();
+}
+function loadCheckboxStates() {
+    var checkedBookmakers = JSON.parse(localStorage.getItem('checkedBookmakers'));
+    if (checkedBookmakers !== null) {
+        document.querySelectorAll('.bookmaker-checkbox').forEach((checkbox) => {
+            checkbox.checked = checkedBookmakers.includes(checkbox.value);
+        });
+    } else {
+        // If no saved state, check all checkboxes by default
+        document.querySelectorAll('.bookmaker-checkbox').forEach((checkbox) => {
+            checkbox.checked = true;
+        });
+        // Save this default state
+        updateFilters(); 
+    }
+    updateToggleButtonText(); // Update the text of the toggle button based on the state of checkboxes
+}
+
+function updateToggleButtonText() {
+    var allChecked = Array.from(document.querySelectorAll('.bookmaker-checkbox')).every(checkbox => checkbox.checked);
+    document.getElementById('toggle-all').textContent = allChecked ? 'Uncheck All' : 'Check All';
+}
+function filterTable() {
+    var checkedBookmakers = JSON.parse(localStorage.getItem('checkedBookmakers')) || [];
+    document.querySelectorAll('.ev-table tbody tr').forEach((eventRow) => {
+        var eventId = eventRow.getAttribute('data-target').replace('#event-', '');
+        var modal = document.getElementById('event-' + eventId);
+        var eventDisplay = document.getElementById('display-event-' + eventId);
+        if (!modal) return; // Skip if modal not found
+
+        var bookiesInModal = modal.querySelectorAll('td:nth-child(2)'); // Adjust the number to match bookie column
+        var showEvent = false;
+
+        bookiesInModal.forEach((td) => {
+            var betRow = td.parentNode;
+            if (checkedBookmakers.includes(td.textContent.trim())) {
+                betRow.style.display = ''; // Show this bet row
+                showEvent = true; // At least one bet is shown, so show the event
+            } else {
+                betRow.style.display = 'none'; // Hide this bet row
+            }
+        });
+
+        eventRow.style.display = showEvent ? '' : 'none';
+        eventDisplay.style.display = showEvent ? '' : 'none';
+    });
+}
+
+
+function toggleAllBookmakers() {
+    var checkboxes = document.querySelectorAll('.bookmaker-checkbox');
+    var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+    
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = !allChecked;
+    });
+
+    // Even if all checkboxes are unchecked, update the filters and save the state
+    updateFilters(); 
+}
+
+
+function toggleSettings() {
+    var settingsDiv = document.getElementById('settings');
+    if (settingsDiv.style.display === 'none') {
+        settingsDiv.style.display = 'block';
+        document.getElementById('toggle-settings').textContent = 'Settings';
+    } else {
+        settingsDiv.style.display = 'none';
+        document.getElementById('toggle-settings').textContent = 'Settings';
+    }
+}
+function init() {
+    loadCheckboxStates();
+    // Add any other functions that need to be called on page load
+    filterTable()
+}
+
+window.addEventListener('load', init);
+</script>
+
+
+
+
+<div id="welcomePopup" style="display: none;">
+    <div class="popup-content" style="max-width:600px">
+        
+        <h2>Welcome to FireBet +EV</h2>
+        <hr style="background-color:var(--main-font-color)">
+        
+        <p>Value bets occur when a bookie offers an event at a price that does not match the market fair price.</p>
+        <p>With enough bets this strategy out performs the targeted bookies and is able generate returns fairly quickly.</p>
+        <p>Value bets are found by creating a market average of hundreds of bookies. We then compare the fair price to the bookie odds to determine if a bet is mispriced. The value of the bet is then calculated as the discrepancy or difference in prices.</p>
+        <p>Read more about +EV bets on the <a style="text-decoration: underline;" href="https://app.firebet.ai/forum/forum/general-2/topic/understanding-ev-bets-maximizing-profits-in-sports-betting-34/">FireBet Forum</a>.</p>
+
+        <br>
+        <!--
+        <a href="https://firebet.ai/shop" target="_blank" class="btn btn-grey">Shop</a>
+        -->
+        <button id="closePopup" onclick="welcome()" class="btn btn-grey-secondary">Close</button>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+  
+      // Check if the welcome message has been shown
+      if (!localStorage.getItem('welcomeShownEV2')) {
+          // Show the popup and apply blur effect
+          //document.getElementById("welcomePopup").style.display = "flex";
+          //document.getElementById("mainContent").classList.add("blur");
+      }
+  
+      // Add event listener to the close button
+      document.getElementById("closePopup").addEventListener("click", function() {
+          // Hide the popup and remove blur effect
+
+      });
+  });
+  function welcome(){
+    document.getElementById("welcomePopup").style.display = "none";
+
+    // Set local storage item to indicate the message has been shown
+    localStorage.setItem('welcomeShownEV2', 'true');
+  }
+  </script>
+
+
+
+<div class="col-lg-4" style="height:250px;padding:15px;padding-top:0px">
+    <div class="content-section " style="width:100%;height:100%">
+        <h3 style="display:inline">Assets</h3>
+        <h5 style="float: right;display:inline;color:#6dac56 !important"><i class="fa-sharp fa-solid fa-up"></i> {{fullprofit}}%</h5>
+      <canvas id="myChart" width="600" height="300" style="margin-top:5px;max-height: 180px !important"></canvas>
+      <script>
+         
+          const labels = ['1000', '500', '250', '100'];
+          const data = {
+              labels: labels,
+              datasets: [
+                  {
+                      label: 'Trend',
+                      data: [{{percent1000}}, {{percent500}}, {{percent250}}, {{percent100}}],
+                      
+                      backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                      borderColor: 'rgb(54, 162, 235)',
+                      borderWidth: 2,
+                      borderRadius: Number.MAX_VALUE, // Fully rounded corners
+                      borderSkipped: false,
+                      barPercentage: 0.5,
+                      categoryPercentage: 0.5,
+                  }
+              ]
+          };
+      
+          const config = {
+              type: 'bar',
+              data: data,
+              options: {
+                  indexAxis: 'x', // Makes the bar chart vertical
+                  scales: {
+                      y: {
+                          beginAtZero: true,
+                      }
+                  },
+                  plugins: {
+                      legend: {
+                          display: false,
+                      }
+                  }
+              },
+          };
+      
+          var myChart = new Chart(document.getElementById('myChart'), config);
+      </script>
+      
+    </div>
+  </div>
+  <div class="col-lg-8" style="height:250px;padding:15px;padding-top:0px">
+    <div class="content-section" style="width:100%;height:100%;
+    border:none !important;
+
+    background: hsla(39, 96%, 50%, 1);
+
+    background: linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    background: -moz-linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    background: -webkit-linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FAA506", endColorstr="#C75408", GradientType=1 );
+    ">
+    <div class="row">
+      <div class="col-6">
+
+        <h1 id="main-header" style="white-space: nowrap; overflow: visible;">FireBet Positive EV 💰</h1>
+
+        <div style="margin-left:5px">
+      <p style="margin-bottom:11px !important"> <i class="fa-light fa-circle-check"></i> Market Fair Odds</p>
+      <p style="margin-bottom:11px !important"><i class="fa-light fa-circle-check"></i> Direct Bookie Links</p>
+      <p style="margin-bottom:11px !important"><i class="fa-light fa-circle-check"></i> Positive Value Bets</p>
+  
+    </div>
+    {% if active %}
+    <a class="btn btn-grey mobile-hide" href="/predict/faq">Frequently Asked Questions <i class="fa-sharp fa-regular fa-question"></i></a>
+
+    {% else %}
+    <a class="btn btn-grey mobile-hide" href="/autoshop/">Unlock Free Trial 🔑</a>
+
+    {% endif %}
+    </div>
+
+    <div class="col-6" style=" text-align: right;">
+      <img id="nba-emoji" style="font-size: 166px;margin-right:25px;margin-top:43px;" src="https://i.imgur.com/JxhzNFz.png">
+      </img>
+    </div>
+    
+
+  </div>
+</div>
+
+  </div>
+  <div class="col-lg-9" style="margin-top:12px;height:250px;padding:15px;padding-top:0px">
+    <div class="content-section" style="width:100%;height:100%;">
+      <h3 style="display:inline">Record</h3>
+      <!-- Canvas for Chart.js -->
+      <canvas id="recordChart" style="width: 100%; height: 180px !important;max-height: 180px !important"></canvas>
+    </div>
+</div>
+
+<script>
+    // Convert Django context variable 'record' to JSON and use it in Chart.js
+    const recordData = JSON.parse('{{ record|safe }}');
+
+    const ctx = document.getElementById('recordChart').getContext('2d');
+    const recordChart = new Chart(ctx, {
+        type: 'line', // Specifies the chart type
+        data: {
+            labels: [...Array(recordData.length).keys()], // Generates labels as 0, 1, 2, etc.
+            datasets: [{
+                label: 'Value Asset Trading Record',
+                data: recordData, // Uses the data passed from Django
+                backgroundColor: 'rgba(252, 134, 30, 0.5)',
+                borderColor: "#fc861e",
+                fill: false, // Set to false for a line chart without a filled area
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // This will allow the chart to fill the height of its container
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+
+    });
+</script>
+
+<div class="col-lg-3" style="margin-top:12px;height:250px;padding:15px;padding-top:0px">
+    <div class="content-section big-btn" style="width:100%;height:100%;"  data-toggle="modal" data-target="#cmodal">
+        <center>
+            <i class="fa-thin fa-calculator" style="font-size: 100px;margin-top:35px"></i>
+            <h2>Calculator</h2>
+        </center>
+    </div>
+</div>
+
+<div class="modal fade" id="cmodal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 600px; border-radius: 10px;" role="document">
+      <div class="modal-content" style="">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modelInfoModalLabel">Expected Value Calculator</h2>
+          <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="width:90%;margin-left:auto;margin-right:auto;padding:25px;">
+            <div class="input-group">
+                <p>Wager</p>
+                <input type="text" id="wager" placeholder="Wager ($)" value="100" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            </div>
+            <div class="input-group">
+                <p>Odds</p>
+
+                <input type="text" id="odds" placeholder="Odds" value="+100" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            </div>
+            <div class="input-group">
+                <p>Win Probability</p>
+
+                <input type="text" id="winProbability" placeholder="Win Probability (%)" value="50" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            </div>
+            <br>
+            <button class="btn btn-grey" type="button" onclick="calculateEV()" style="padding: 10px; border-radius: 5px; border: none; width: 100%; cursor: pointer;">Calculate</button>
+            <br>
+            
+            <div class="input-group" style="margin-top:25px">
+                <p>Expected Value</p>
+
+                <input type="text" id="expectedValue" placeholder="Expected Value" readonly value="$0.00" style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background-color: #f8f8f8;">
+            </div>
+            <br>
+            <br>
+
+        </div>
+        
+        <script>
+            function calculateEV() {
+                const wager = parseFloat(document.getElementById('wager').value);
+                const odds = document.getElementById('odds').value;
+                const winProbability = parseFloat(document.getElementById('winProbability').value) / 100;
+        
+                let winAmount = 0;
+                if (odds.startsWith('+')) {
+                    winAmount = (parseFloat(odds.substring(1)) / 100) * wager;
+                } else if (odds.startsWith('-')) {
+                    winAmount = (100 / parseFloat(odds.substring(1))) * wager;
+                }
+        
+                const lossProbability = 1 - winProbability;
+                const ev = (winProbability * winAmount) - (lossProbability * wager);
+                document.getElementById('expectedValue').value = `$${ev.toFixed(2)}`;
+            }
+        </script>
+    </div>
+</div>
+</div>
+
+
+<div class="col-12" style="padding:15px;">
+    <div class="content-section" style="overflow:scroll;padding-top:10px">
+        <div style="margin-top:5px;">
+            <div style="margin-top:5px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+
+                    <h2 style="display:inline">EV Bets</h2>
+                    <button type="button" class="btn btn-grey-secondary mobile-hide" style="margin-left:5px;display:inline;margin-bottom:10px;padding:3px; border-radius: 50%; width: 30px; height: 30px;line-height: 30px; padding: 0; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);" data-toggle="modal" data-target="#aInfoModal">
+                        ?
+                    </button>
+                    </div>
+                      <!-- Modal -->
+                      <div class="modal fade" id="aInfoModal" tabindex="-1" role="dialog" aria-labelledby="modelInfoModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" style="max-width: 800px; border-radius: 10px;" role="document">
+                          <div class="modal-content" style="">
+                            <div class="modal-header">
+                              <h2 class="modal-title" id="modelInfoModalLabel">Positive Expected Value</h2>
+                              <button type="button" style="border-radius: 10px;" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>In the world of sports betting, 'value betting' is a key strategy employed by savvy bettors. It revolves around identifying odds that significantly deviate from the 'market fair price.' However, it's not without challenges, notably the risk of account limitations by bookmakers. This page explores the concept of value bets, their identification, and strategies to sustainably engage in value betting.
+
+
+                                </p>
+                                <h2>What are Value Bets?</h2>
+                                <p>Value betting occurs when a bettor finds odds that offer more value compared to the actual probability of the event happening. This involves comparing a bookmaker's odds against the 'market fair price.' A value bet exists when the odds offered are more favorable than the actual risk involved.
+                                </p>
+
+                                <h2>Deriving Fair Odds</h2>
+
+                                <p>Unlike detailed statistical models or forecasts, fair odds are derived from aggregating market averages, with a weighting towards odds from sharper bookmakers. These bookies are known for their accurate odds, and their prices often reflect the most realistic probabilities. By comparing these odds, bettors can determine the market fair price and identify bets that offer significant value.
+                                </p>
+                                <h2>The Challenge of Account Limitations</h2>
+                                <p>While profitable, value betting can lead to bookmakers limiting or closing accounts. This is a defense mechanism against bettors who consistently win or only select bets that offer value, affecting the bookmaker's profit margins.
+                                </p>
+                                <h2>Strategies to Avoid Quick Limitation</h2>
+                                <div style="margin-left:30px">
+
+                                <p>Bet Rounding: Round bets to conventional figures (e.g., $50 instead of $53.75) to blend with recreational bettors.
+                                </p>
+                                <p>Manage Your Bet Size: Increase stakes gradually to avoid drawing attention.</p>     
+                                <p>Mimic Recreational Betting: Occasionally place bets on popular events to appear as a casual bettor.</p>
+                                <p>Use Multiple Bookmakers: Spread your bets across different bookmakers to reduce the risk of being flagged as a sharp bettor.</p>
+                                <p>Stay Under the Radar: Avoid consistently betting the maximum limits on markets to prevent being marked as a professional bettor.</p>
+                                    
+                                </div>
+                                    
+                                    
+
+                                <h2>Conclusion</h2>
+                                <p>Value betting is a sophisticated approach in sports betting, focusing on finding odds that are off from the market fair price. The key lies not just in identifying these opportunities but in executing them in a manner that maintains the longevity of your betting accounts.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                <div>
+                    <a href="/predict/evrecord/" class="btn btn-grey-secondary mobile-hide" style="margin-bottom:15px !important; margin-right:10px;"> <i class="fa-solid fa-chart-simple"></i> Record </a>
+                    <button onclick="toggleSettings()" class="btn btn-grey mobile-hide" style="margin-bottom:15px !important;"><i class="fa-solid fa-gear"></i> Settings</button>
+                </div>
+            </div>
+        <div id="settings" style="display:none">
+
+        <center>
+            <button id="toggle-all" class="btn btn-grey-secondary" onclick="toggleAllBookmakers()">Toggle All</button>
+
+        </center>
+        <br>
+        <div class="bookmakers-checkboxes row" >
+            
+            {% for bookmaker in books %}
+                <div class="col-md-2">
+                    <input type="checkbox" id="bookmaker-{{ bookmaker }}" class="bookmaker-checkbox" name="bookmakers" value="{{ bookmaker }}" checked onchange="updateFilters()">
+                    <label for="bookmaker-{{ bookmaker }}">{{ bookmaker }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        </div>
+
+        <br>
+        {% if not active %}
+        <a href="/autoshop/" style="text-decoration: none; color: inherit; display: flex; justify-content: center; width: 100%;">
+            <div class="lock-overlay" style="margin-top:300px;position: absolute; z-index: 1000; font-size: 42px; width: 96%; height: 50%; opacity: .7;">
+                <center>
+                    <i class="fas fa-lock" style="font-size: 128px"></i>
+                    <p class="lock-text" style="margin-bottom:0px">Subscribe</p>
+                    
+                </center>
+         
+            </div>
+        </a>
+        
+        {% endif %}
+
+        <div>
+            <div class="row">
+                <div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="event-container" style="">
+            {% for key, value in ev %}
+                <div id="display-event-{{ key }}" class="event {% if forloop.counter >= 4 %}{% if  not active %} blurred {% endif %} {% endif %}" data-toggle="modal" {% if forloop.counter <= 4 %} data-target="#event-{{ key }}" {%endif%} {% if active %} data-target="#event-{{ key }}" {% endif %}>
+                    <div class="event-emoji" style="font-size:2.85rem;">
+                        {% if value.sport == 'soccer' %}⚽{% endif %}
+                        {% if value.sport == 'ice-hockey' %}🏒{% endif %}
+                        {% if value.sport == 'basketball' %}🏀{% endif %}
+                        {% if value.sport == 'darts' %}🎯{% endif %}
+
+                    </div>
+                    <div class="event-details">
+                        <div class="event-teams">
+                            <h5 style="margin-bottom:0px;margin-left:10px">{{ value.team1 }}</h5>
+                            <hr style="background-color:var(--main-font-color) !important;opacity:.2 !important">
+                            <h5 style="margin-bottom:0px;margin-left:10px">{{ value.team2 }}</h5>
+                        </div>
+                    </div>
+                    <div class="event-status">
+                        <span style="">{{ value.match_status }} </span>
+                    </div>
+                    <div class="event-date">
+                        <span style=""> {{ value.date }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+<style>
+
+       td,th{
+        text-align: center;
+        border-color:#9e9e9e !important
+    }
+
+    
+.event-container {
+    margin: 25px 0;
+    
+}
+
+.event {
+    display: flex;
+    align-items: center; /* Centers children vertically */
+    margin-bottom: 10px;
+    width: 100%; /* Event takes the full width of its container */
+    margin-bottom:20px;
+    margin-top:10px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background-color: var(--event-background);
+
+
+}
+.event:hover {
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background-color: var(--event-background-hvr);
+
+
+}
+
+
+
+
+.event-emoji {
+    font-size: 2.85rem;
+    flex: 0 0 10%; /* Fixed width, 10% of the event's width */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-details {
+    flex: 0 0 66%; /* Fixed width, 60% of the event's width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.event-teams {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Full width of the event-details section */
+}
+
+.event-teams hr {
+    width: 100%;
+    margin: 5px 0;
+}
+.event-status {
+    flex: 0 0 10%; /* Fixed width */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 25px;
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: shown; /* Hides any overflow */
+}
+
+.event-date {
+    flex: 0 0 15%; /* Fixed width, 15% of the event's width each */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 1200px) {
+        .event-date{
+            display: none;
+        }
+    }
+    
+
+</style>
+
+
+
+        <table class="ev-table" style="border-radius: 0px !important;margin-top:5px;min-width: 100%;margin-bottom:10px;display: none;">
+            <thead>
+                <tr style="">
+                    <th>Competition</th>
+                    <th>Match</th>
+                    <th>Status</th>
+                    <th>Sport</th>
+                    <th>Scraped Date</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in ev %}
+                    <tr class="{% if forloop.counter >= 4 %}{% if  not active %} blurred {% endif %} {% endif %}" data-toggle="modal" {% if active %} data-target="#event-{{ key }}" {% endif %} {% if forloop.counter <= 3 %} {% if not active %} data-target="#event-{{ key }}" {% endif %}{% endif %}>
+                        <td>{{ value.competition }}</td>
+                        <td>{{ value.match }}</td>
+                        <td>{{ value.match_status }}</td>
+                        <td>{{ value.sport }}</td>
+                        <td>{{ value.scraped_date }}</td>
+                        <td>{{ value.time }}</td>
+                        <td>{{ value.date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+
+
+        {% for key, value in ev %}
+        <div style="margin-top:50px" class="modal fade" id="event-{{ key }}" tabindex="-1" role="dialog" aria-labelledby="eventLabel{{ key }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="arbModalLabel{{ loop.index }}">
+                            {{ value.competition }} - {{ value.match }}
+
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="overflow:scroll;min-height:300px">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="The type of bet being placed, such as home win, draw, or away win in a soccer match.">Bet Type</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="The bookmaker offering the odds for the bet.">Bookie</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="An estimation of the true odds of an event happening, calculated without the bookmaker's margin.">Fair Odds</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="The odds offered by the bookmaker for this specific bet.">Odds</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="Calculated as fair odds divided by bookie odds">Value</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="A direct link to the bookmaker's website for this specific bet.">Link</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for betKey, betValue in value.valuebet.items %}
+                                    <tr>
+                                        <td>{{ betValue.bettype }}</td>
+                                        <td>{{ betValue.bookie }}</td>
+                                        <td>{{ betValue.fair_odds }}</td>
+                                        <td>{{ betValue.odds }}</td>
+                                        <td>{{ betValue.value }}</td>
+                                        <td><a href="{{ betValue.match_url }}" target="_blank">Link</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+
+<style>
+.ev-table tr:hover {
+    background-color: rgba(0,0,0,.2); /* Or any color you prefer */
+}
+td,tr{
+    border-radius: 0px !important;
+}
+td,th{
+    text-align: center;
+    border-color:#9e9e9e !important
+}
+
+    .blur {
+      filter: blur(5px);
+  }
+  #welcomePopup .welcome-list {
+    padding-left: 20px !important; /* Adds space for bullets */
+}
+
+#welcomePopup .welcome-list li {
+    list-style-type: disc !important; /* Ensures bullets are shown */
+    display: list-item !important; /* Ensures list item display */
+}
+  #welcomePopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+  }
+
+  .popup-content {
+      color:var(--main-font-color)!important;
+
+      background: var(--main-modal-color)!important;
+      padding: 20px;
+      border-radius: 5px;
+  }
+ 
+    .blur-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding:25px;
+    }
+    
+    .lock-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .blurred {
+        filter: blur(3px);
+    }
+
+    @media screen and (max-width: 700px) {
+        .lock-overlay{
+            margin-top:50vh !important
+        }
+        .event-status{
+            display:none !important;
+        }
+        #main-header{
+            display: none !important;
+        }
+        .mobile-hide{
+            display: none !important;
+        }
+    }
+    @media screen and (max-width: 1200px) {
+        .lock-overlay{
+            margin-top:50vh !important
+        }
+    }
+    
+
+
+
+    .big-btn{
+      border: 1px solid rgba(198, 198, 198, 0.2);
+
+
+    }
+   .big-btn:hover{
+        border: 1px solid var(--main-border-color);
+
+
+    }
+
+
+
+
+
+</style>
+
+<script>
+  
+
+</script>
+{% endblock content%}

@@ -1,0 +1,357 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+<style>
+@media screen and (max-width: 750px) {
+    .col-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function updateFilters() {
+    var checkedBookmakers = [];
+    document.querySelectorAll('.bookmaker-checkbox:checked').forEach((checkbox) => {
+        checkedBookmakers.push(checkbox.value);
+    });
+    localStorage.setItem('checkedBookmakers', JSON.stringify(checkedBookmakers));
+    filterTable();
+    updateToggleButtonText();
+}
+function loadCheckboxStates() {
+    var checkedBookmakers = JSON.parse(localStorage.getItem('checkedBookmakers'));
+    if (checkedBookmakers !== null) {
+        document.querySelectorAll('.bookmaker-checkbox').forEach((checkbox) => {
+            checkbox.checked = checkedBookmakers.includes(checkbox.value);
+        });
+    } else {
+        // If no saved state, check all checkboxes by default
+        document.querySelectorAll('.bookmaker-checkbox').forEach((checkbox) => {
+            checkbox.checked = true;
+        });
+        // Save this default state
+        updateFilters(); 
+    }
+    updateToggleButtonText(); // Update the text of the toggle button based on the state of checkboxes
+}
+
+function updateToggleButtonText() {
+    var allChecked = Array.from(document.querySelectorAll('.bookmaker-checkbox')).every(checkbox => checkbox.checked);
+    document.getElementById('toggle-all').textContent = allChecked ? 'Uncheck All' : 'Check All';
+}
+function filterTable() {
+    var checkedBookmakers = JSON.parse(localStorage.getItem('checkedBookmakers')) || [];
+    document.querySelectorAll('.ev-table tbody tr').forEach((eventRow) => {
+        var eventId = eventRow.getAttribute('data-target').replace('#event-', '');
+        var modal = document.getElementById('event-' + eventId);
+        if (!modal) return; // Skip if modal not found
+
+        var bookiesInModal = modal.querySelectorAll('td:nth-child(2)'); // Adjust the number to match bookie column
+        var showEvent = false;
+
+        bookiesInModal.forEach((td) => {
+            var betRow = td.parentNode;
+            if (checkedBookmakers.includes(td.textContent.trim())) {
+                betRow.style.display = ''; // Show this bet row
+                showEvent = true; // At least one bet is shown, so show the event
+            } else {
+                betRow.style.display = 'none'; // Hide this bet row
+            }
+        });
+
+        eventRow.style.display = showEvent ? '' : 'none';
+    });
+}
+
+
+function toggleAllBookmakers() {
+    var checkboxes = document.querySelectorAll('.bookmaker-checkbox');
+    var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+    
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = !allChecked;
+    });
+
+    // Even if all checkboxes are unchecked, update the filters and save the state
+    updateFilters(); 
+}
+
+
+function toggleSettings() {
+    var settingsDiv = document.getElementById('settings');
+    if (settingsDiv.style.display === 'none') {
+        settingsDiv.style.display = 'block';
+        document.getElementById('toggle-settings').textContent = 'Settings';
+    } else {
+        settingsDiv.style.display = 'none';
+        document.getElementById('toggle-settings').textContent = 'Settings';
+    }
+}
+function init() {
+    loadCheckboxStates();
+    // Add any other functions that need to be called on page load
+    filterTable()
+}
+
+window.addEventListener('load', init);
+</script>
+
+
+
+
+<div id="welcomePopup" style="display: none;">
+    <div class="popup-content" style="max-width:600px">
+        
+        <h2>Welcome to FireBet +EV</h2>
+        <p>This page displays miss priced bets for a variety of events. We use over 150 bookies to create our market fair price. </p>
+        <p>Value bets are found by creating a market average of hundreds of bookies. We then compare the fair price to the bookie odds to determine if a bet is mispriced. The value of the bet is then calculated as the discrepancy or difference in prices.</p>
+        <p>Read more about +EV bets on the <a href="https://firebet.ai/forum/forum/general-2/topic/understanding-ev-bets-maximizing-profits-in-sports-betting-34/">FireBet Forum</a>.</p>
+
+        <br>
+        <!--
+        <a href="https://firebet.ai/shop" target="_blank" class="btn btn-grey">Shop</a>
+        -->
+        <button id="closePopup" onclick="welcome()" class="btn btn-grey-secondary">Close</button>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+  
+      // Check if the welcome message has been shown
+      if (!localStorage.getItem('welcomeShownEV1')) {
+          // Show the popup and apply blur effect
+          document.getElementById("welcomePopup").style.display = "flex";
+          document.getElementById("mainContent").classList.add("blur");
+      }
+  
+      // Add event listener to the close button
+      document.getElementById("closePopup").addEventListener("click", function() {
+          // Hide the popup and remove blur effect
+
+      });
+  });
+  function welcome(){
+    document.getElementById("welcomePopup").style.display = "none";
+
+    // Set local storage item to indicate the message has been shown
+    localStorage.setItem('welcomeShownEV1', 'true');
+  }
+  </script>
+
+
+
+<div class="col-12" style="margin-top:25px;">
+    <div class="content-section" style="overflow:scroll;padding-top:10px">
+        <div style="margin-top:5px;">
+            <div style="margin-top:5px; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin-left:5px">EV+</h2>
+                <div>
+                    <a href="/predict/evrecord/" class="btn btn-grey-secondary" style="margin-bottom:15px !important; margin-right:10px;"> <i class="fa-solid fa-chart-simple"></i> Record </a>
+                    <button onclick="toggleSettings()" class="btn btn-grey-secondary" style="margin-bottom:15px !important;"><i class="fa-solid fa-gear"></i> Settings</button>
+                </div>
+            </div>
+        <div id="settings" style="display:none">
+
+        <center>
+            <button id="toggle-all" class="btn btn-grey-secondary" onclick="toggleAllBookmakers()">Toggle All</button>
+
+        </center>
+        <br>
+        <div class="bookmakers-checkboxes row" >
+            
+            {% for bookmaker in books %}
+                <div class="col-md-2">
+                    <input type="checkbox" id="bookmaker-{{ bookmaker }}" class="bookmaker-checkbox" name="bookmakers" value="{{ bookmaker }}" checked onchange="updateFilters()">
+                    <label for="bookmaker-{{ bookmaker }}">{{ bookmaker }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        </div>
+
+        <br>
+        {% if not active %}
+        <a href="/autoshop/" style="text-decoration: none; color: inherit; display: flex; justify-content: center; width: 100%;">
+            <div class="lock-overlay" style="margin-top:250px;position: absolute; z-index: 1000; font-size: 42px; width: 96%; height: 50%; opacity: .7;">
+                <center>
+                    <i class="fas fa-lock" style="font-size: 128px"></i>
+                    <p class="lock-text" style="margin-bottom:0px">Free Trial</p>
+                    <p class="lock-text" style="font-size: 22px;margin-top:0px">Subscribe to unlock</p>
+                </center>
+         
+            </div>
+        </a>
+        
+        {% endif %}
+
+        <table class="ev-table" style="border-radius: 0px !important;margin-top:5px;min-width: 100%;margin-bottom:10px">
+            <thead>
+                <tr>
+                    <th>Competition</th>
+                    <th>Match</th>
+                    <th>Status</th>
+                    <th>Sport</th>
+                    <th>Scraped Date</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in ev %}
+                    <tr class="{% if forloop.counter >= 4 %}{% if  not active %} blurred {% endif %} {% endif %}" data-toggle="modal" {% if active %} data-target="#event-{{ key }}" {% endif %} {% if forloop.counter <= 3 %} {% if not active %} data-target="#event-{{ key }}" {% endif %}{% endif %}>
+                        <td>{{ value.competition }}</td>
+                        <td>{{ value.match }}</td>
+                        <td>{{ value.match_status }}</td>
+                        <td>{{ value.sport }}</td>
+                        <td>{{ value.scraped_date }}</td>
+                        <td>{{ value.time }}</td>
+                        <td>{{ value.date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% for key, value in ev %}
+        <div style="margin-top:150px" class="modal fade" id="event-{{ key }}" tabindex="-1" role="dialog" aria-labelledby="eventLabel{{ key }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="arbModalLabel{{ loop.index }}">
+                            Event Details - {{ value.match }}
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="overflow:scroll;min-height:300px">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="The type of bet being placed, such as home win, draw, or away win in a soccer match.">Bet Type</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="The bookmaker offering the odds for the bet.">Bookie</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="An estimation of the true odds of an event happening, calculated without the bookmaker's margin.">Fair Odds</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="The odds offered by the bookmaker for this specific bet.">Odds</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="Calculated as fair odds divided by bookie odds">Value</th>
+                                    <th data-toggle="tooltip" data-placement="bottom" title="A direct link to the bookmaker's website for this specific bet.">Link</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for betKey, betValue in value.valuebet.items %}
+                                    <tr>
+                                        <td>{{ betValue.bettype }}</td>
+                                        <td>{{ betValue.bookie }}</td>
+                                        <td>{{ betValue.fair_odds }}</td>
+                                        <td>{{ betValue.odds }}</td>
+                                        <td>{{ betValue.value }}</td>
+                                        <td><a href="{{ betValue.match_url }}" target="_blank">Link</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+
+<style>
+.ev-table tr:hover {
+    background-color: rgba(0,0,0,.2); /* Or any color you prefer */
+}
+td,tr{
+    border-radius: 0px !important;
+}
+td,th{
+    text-align: center;
+}
+
+    .blur {
+      filter: blur(5px);
+  }
+  #welcomePopup .welcome-list {
+    padding-left: 20px !important; /* Adds space for bullets */
+}
+
+#welcomePopup .welcome-list li {
+    list-style-type: disc !important; /* Ensures bullets are shown */
+    display: list-item !important; /* Ensures list item display */
+}
+  #welcomePopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+  }
+
+  .popup-content {
+      color:var(--main-font-color)!important;
+
+      background: var(--main-bg-color)!important;
+      padding: 20px;
+      border-radius: 5px;
+  }
+ 
+    .blur-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding:25px;
+    }
+    
+    .lock-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .blurred {
+        filter: blur(3px);
+    }
+
+    @media screen and (max-width: 700px) {
+        .lock-overlay{
+            margin-top:50vh !important
+        }
+    }
+    @media screen and (max-width: 1200px) {
+        .lock-overlay{
+            margin-top:50vh !important
+        }
+    }
+</style>
+
+<script>
+  
+
+</script>
+{% endblock content%}

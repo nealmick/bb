@@ -1,0 +1,293 @@
+{% extends "predict/base.html"%}
+{% load static %}
+
+{% load crispy_forms_tags %}
+{% block content%}
+
+<script src="https://js.stripe.com/v3/"></script>  <!-- new -->
+<script>
+    window.location.href = '/profile'
+</script>
+{% if subscription.status == "active" or subscription.status == "trialing" %}
+
+<div class="col-lg-6" style="margin-top:10px;margin-left:auto;margin-right:auto;z-index:100;position:relative;">
+           
+            <div class="content-section "style="padding:5px;height:400px;">
+
+            <center>
+                <h5 class="card-title"style='margin-top:17.5%'>Your Subscription:</h5>
+                <h2>{{ product.name }}</h2>
+                 {% if subscription.status == "trialing" %}
+                 <h1>Free Trial</h1>
+                 {% endif %}
+                <h5 class="card-text">
+                </h5>
+                <p style="margin-bottom: 0px;">{{start}}</p>
+                <p style="margin-bottom: 0px;">{{end}}</p>
+                <br>
+                <button onclick="window.location.href='{% url 'cancel-sub' %}'" class="btn btn-grey" >Cancel</button>
+
+            </center>
+</div>
+</div>
+    {% else %}
+    <script>
+     window.location.href = '/autoshop/'
+    </script>
+  {% endif %}
+
+
+<!--
+ <div class="col-lg-6" style="margin-top:10px;margin-left:auto;margin-right:auto;z-index:100;position:relative;">
+           
+        {% if subscription.status == "active" %}
+            <div class="content-section "style="padding:5px;height:400px;">
+
+            <center>
+                <h5 class="card-title"style='margin-top:17.5%'>Your Subscription:</h5>
+                <h2>{{ product.name }}</h2>
+                <h5 class="card-text">
+                    {{ product.description }}
+                </h5>
+                <p style="margin-bottom: 0px;">{{start}}</p>
+                <p style="margin-bottom: 0px;">{{end}}</p>
+                <br>
+                <button onclick="window.location.href='{% url 'cancel-sub' %}'" class="btn btn-grey" >Cancel</button>
+
+            </center>
+      {% else %}
+      <div class="content-section "style="padding:5px;height:675px;">
+
+        <center>
+            <h1 style="margin-top:5px">Free</h1>
+            <br>
+            <img style="margin-top:15px;margin-bottom:0px;margin-right:5px;width:30%;height:30%"class="rounded-circle account-img" src="{% static 'predict/test.png'%}">
+            <br>
+            <br>
+        </center>
+            <hr>
+            <br>
+            <div class="row">
+                <div class="col-6" style="padding-left:8.5%">
+                    <p><i class="fa fa-solid fa-check"></i>   Game Dashboard</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Accuracy Metrics</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Injured Players</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Odds Data</p>
+    
+                </div>                
+                <div class="col-6" style="padding-left:8.5%">
+                    
+                    <p><i class="fa fa-solid fa-times"></i>   RLHF Retrain</p>
+                    <p><i class="fa fa-solid fa-times"></i>   Arb 0/day</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Predict 10/day</p>
+                    <p><i class="fa fa-solid fa-check"></i>   Train 1/day</p>
+
+    
+                </div>
+    
+
+            </div>
+
+
+
+
+
+        <center>
+            <hr>
+            <a style="margin-top:28px; width:145px" class="btn btn-grey" id="" href="https://nbadata.cloud/login/">Login</a>
+    
+        </center>
+
+    </div>
+</div>
+
+-->
+
+
+{% if subscription.status == "active" or subscription.status == "trialing" %}
+
+
+{%else %}
+<div class="col-lg-7" style="margin-top:10px;margin-left:auto;margin-right:auto;z-index:100;position:relative;">
+        <div class="content-section "style="padding:5px;height:675px;">
+
+
+
+      <center>
+        <h1 id="updatedPrice"style="margin-top:5px">FireBet Pro</h1>
+        <br>
+        <img style="margin-top:15px;margin-bottom:0px;margin-right:5px;width:30%;height:30%"class="rounded-circle account-img" src="{% static 'predict/test.png'%}">
+        <br>
+        <br>
+    </center>
+        <hr>
+        <br>
+        <div class="row">
+           <div class="col-6 shop-list" style="padding-left:10.5%">
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Game Dashboard</p>
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Accuracy Metrics</p>
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Injured Players</p>
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Odds Data</p>
+            </div>
+            <div class="col-6 shop-list" style="padding-left:10.5%">
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> RLHF Retrain</p>
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Arb 50/day</p>
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Predict 150/day</p>
+                <p style="white-space: nowrap;"><i class="fa fa-solid fa-check"></i> Train 100/day</p>
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+        <center>
+        <hr>
+        <button  style="margin-top:28px; width:145px"type="submit" class="btn btn-grey" id="submitBtn">Subscribe</button>
+
+    </center>
+
+
+      {% endif %}
+
+
+    </div>
+    </div>
+    {% if subscription.status != "active" %}
+    <center>
+        <p id="disclaimer" style="margin-left:200px;margin-right:200px;margin-bottom:5px;margin-top:25px;min-width:300px">
+            FireBet is an analytical tool and is not responsible for the accuracy or results of our models. Past performance does not guarantee future outcomes. Please use your own judgment and independently verify information before making decisions.
+
+        </p>
+    </center>
+
+    <br>
+   <div class="col-lg-6 mx-auto my-4 d-none" style="margin-top:5px !important"> <!-- Centering the column -->
+
+        <div class="d-flex justify-content-center"> <!-- Flex container for centering -->
+
+            <input type="text" id="couponCode" class=" coupon-input form-control me-2 " placeholder="Enter Coupon Code" style="max-width: 210px;min-width: 210px;"> <!-- Bootstrap form control -->
+            <button id="applyCoupon" class="btn btn-grey-secondary ">Apply</button>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
+
+    <style>
+
+        @media screen and (max-width: 600px) {
+            .shop-list{
+                padding-left: 30px !important;
+            }
+            #disclaimer {
+                margin-left: 10px !important;
+                margin-right: 10px !important;
+                margin-bottom: 5px !important;
+                margin-top: 25px !important;
+                
+            }
+        }
+
+        .coupon-input {
+            background: rgba(161, 161, 161,.2 );
+            border: 1px solid #4E4E4E;
+            padding: 0.375rem 0.75rem; /* Adjust to match your button's padding */
+            font-size: 1rem; /* Match your site's font size */
+            border-radius: 10px; /* Optional: to match the button's border-radius */
+            margin-right: 10px;
+            height: calc(1.5em + 0.75rem + 2px); /* Adjust height to align with the button */
+            color: #373737 !important;
+        }
+
+        .btn-grey-secondary {
+            /* Add your button styling here if needed */
+            /* Example: */
+            background-color: #f8f9fa;
+            background: rgba(161, 161, 161,.2 ) !important;
+
+            border-color: #4E4E4E !important;
+            color: #373737 !important;
+            border-radius: 10px; /* Optional: to match the button's border-radius */
+
+            padding: 0.375rem 0.75rem; /* Match input padding */
+            font-size: 1rem; /* Match input font size */
+            height: calc(1.5em + 0.75rem + 2px); /* Match input height */
+        }
+        .coupon-input::placeholder {
+            color: #373737 !important;
+
+            opacity: 1; /* Optional: ensures full opacity of the placeholder text */
+    }
+    .coupon-input::focus {
+            background-color: #969696 !important;
+            color:white !important;
+            opacity: 1; /* Optional: ensures full opacity of the placeholder text */
+    }
+    </style>
+<script>
+    var encodedCouponCode = ""
+document.getElementById("applyCoupon").addEventListener("click", function() {
+    let couponCode = document.getElementById("couponCode").value;
+    encodedCouponCode = encodeURIComponent(couponCode);
+    fetch(`/verify-coupon/?coupon_code=${encodedCouponCode}`)
+    .then(response => response.json())
+    .then(data => {
+        let couponResponseElem = document.getElementById("couponCode");
+        let updatedPriceElem = document.getElementById("updatedPrice");
+
+        if (data.valid) {
+            console.log("Coupon is valid. Discount: ", data.discount);
+            couponResponseElem.value = "Coupon is valid!";
+            couponResponseElem.style.color = "green";
+
+            // Assuming the original price is $10
+            let originalPrice = 10;
+            let discount = data.discount;
+            let discountedPrice = originalPrice - (originalPrice * discount / 100);
+            updatedPriceElem.innerText = "$" + discountedPrice.toFixed(2);
+        } else {
+            console.log("Invalid coupon code");
+            couponResponseElem.value = "Invalid coupon code";
+            couponResponseElem.style.color = "red";
+        }
+    });
+});
+
+console.log("Sanity check!");
+
+// Get Stripe publishable key
+fetch("/config/")
+.then((result) => { return result.json(); })
+.then((data) => {
+  // Initialize Stripe.js
+  const stripe = Stripe(data.publicKey);
+
+  // new
+  // Event handler
+  let submitBtn = document.getElementById("submitBtn");
+  if (submitBtn !== null) {
+    submitBtn.addEventListener("click", () => {
+    fetch(`/create-checkout-session/?coupon_code=${encodeURIComponent(encodedCouponCode)}`)
+    .then((result) => { return result.json(); })
+    .then((data) => {
+        console.log("Checkout session data:", data);
+        // Redirect to Stripe Checkout
+        return stripe.redirectToCheckout({sessionId: data.sessionId})
+    })
+    .then((res) => {
+        console.log("Stripe response:", res);
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
+    });
+
+  }
+});
+</script>
+</div>
+
+{% endblock content%}

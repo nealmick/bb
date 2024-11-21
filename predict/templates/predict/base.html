@@ -1,0 +1,756 @@
+
+{% load static %}
+<link rel="shortcut icon" type="image/ico" href="{% static 'predict/flame-logo.png'%}"/>
+
+
+
+<style>
+
+@media screen and (min-width: 000px) {
+
+  .container{
+    max-width:500px !important;
+  }
+}
+
+    @media screen and (min-width: 900px) {
+      .site-header{
+    display:none
+  }
+  .container{
+    margin-left:120px !important;
+    min-width:700px !important;
+    max-width:700px !important;
+  }
+}
+  @media screen and (min-width: 1000px) {
+  .site-header{
+    display:none
+  }
+  .container{
+    margin-left:120px !important;
+    min-width:900px !important;
+    max-width:900px !important;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .site-header{
+    display:none
+  }
+  .container{
+    margin-left:175px !important;
+    min-width:950px !important;
+    max-width:950px !important;
+  }
+}
+
+
+@media screen and (min-width: 1300px) {
+  .site-header{
+    display:none
+  }
+  .container{
+    margin-left:200px !important;
+    min-width:1050px !important;
+    max-width:1050px !important;
+  }
+}
+
+@media screen and (min-width: 1500px) {
+  .site-header{
+    display:none
+  }
+  .container{
+    margin-left:250px !important;
+    min-width:1150px !important;
+    max-width:1150px !important;
+  }
+}
+
+@media screen and (min-width: 1700px) {
+  .site-header{
+    display:none
+  }
+  .container{
+    margin-left:300px !important;
+    min-width:1350px !important;
+    max-width:1350px !important;
+  }
+}
+@media screen and (max-width: 900px) {
+  .sidebar{
+    display:none
+  }
+  .home-section{
+    display:none
+
+  }
+}
+
+  /* Google Fonts Import Link */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 260px;
+  background-color: #1d1d2a;
+  z-index: 100;
+  transition: all 0.5s ease;
+  border-right: 1px solid rgba(122, 122, 122, 0.7);
+  isolation: isolate;
+  opacity: 1 !important;
+
+}
+.sidebar.close{
+  width: 78px;
+}
+.sidebar .logo-details{
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.sidebar .logo-details i{
+  font-size: 30px;
+  color: #fff;
+  height: 50px;
+  min-width: 78px;
+  text-align: center;
+}
+.sidebar .logo-details .logo_name{
+  font-size: 25px;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.3s ease;
+  transition-delay: 0.1s;
+  margin-top:4px;
+}
+.sidebar.close .logo-details .logo_name{
+  transition-delay: 0s;
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar .nav-links{
+  height: 100%;
+  padding: 30px 0 150px 0;
+  overflow: auto;
+}
+.sidebar.close .nav-links{
+  overflow: visible;
+}
+.sidebar .nav-links::-webkit-scrollbar{
+  display: none;
+}
+.sidebar .nav-links li {
+  position: relative;
+  list-style: none;
+  transition: all 0.4s ease;
+  background-color: #1d1d2a;
+}
+.sidebar .nav-links li:hover{
+  background: #56565651;
+}
+.sidebar .nav-links li .iocn-link{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar.close .nav-links li .iocn-link{
+  display: block
+}
+.sidebar .nav-links li i{
+  height: 50px;
+  min-width: 78px;
+  text-align: center;
+  line-height: 50px;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.sidebar .nav-links li.showMenu i.arrow{
+  transform: rotate(-180deg);
+}
+.sidebar.close .nav-links i.arrow{
+  display: none;
+}
+.sidebar .nav-links li a{
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+.sidebar .nav-links li a .link_name{
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+  transition: all 0.4s ease;
+}
+.sidebar.close .nav-links li a .link_name{
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar .nav-links li .sub-menu {
+  padding: 6px 6px 14px 80px;
+  margin-top: -10px;
+  background-color: #1d1d2a;
+
+  display: none;
+  padding-left: 5px;
+  border: 1px solid rgba(122, 122, 122, 0.7);
+  position: relative;
+  z-index: 1000;
+  opacity: 1;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.sidebar .nav-links li.showMenu .sub-menu{
+  display: block;
+
+}
+
+.sub-menu li{
+  border-radius: 10px !important;
+  padding-right:10px !important;
+}
+.sidebar .nav-links li .sub-menu a{
+  color: #fff;
+  font-size: 15px;
+  padding: 5px 0;
+  white-space: nowrap;
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+.sidebar .nav-links li .sub-menu a:hover{
+  opacity: 1;
+}
+.sidebar.close .nav-links li .sub-menu{
+  position: absolute;
+  left: 100%;
+  top: -10px;
+  margin-top: 0;
+  padding: 10px 20px;
+  border-radius: 0 6px 6px 0;
+  opacity: 0;
+  display: block;
+  pointer-events: none;
+  transition: 0s;
+}
+.sidebar.close .nav-links li:hover .sub-menu{
+  top: 0;
+  opacity: 1;
+  pointer-events: auto;
+  transition: all 0.4s ease;
+
+}
+.sidebar .nav-links li .sub-menu .link_name{
+  display: none;
+}
+.sidebar.close .nav-links li .sub-menu .link_name{
+  font-size: 18px;
+  opacity: 1;
+  display: block;
+}
+.sidebar .nav-links li .sub-menu.blank{
+  opacity: 1;
+  pointer-events: auto;
+  padding: 3px 20px 6px 16px;
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar .nav-links li:hover .sub-menu.blank{
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.one {
+  width: 80%;
+  margin-left: 10%;
+  background-color: black;
+  height: 400px;
+}
+
+.sidebar .profile-details{
+  position: fixed;
+  bottom: 0;
+  width: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1d1b31;
+  padding: 12px 0;
+  transition: all 0.5s ease;
+}
+.sidebar.close .profile-details{
+  background: none;
+}
+.sidebar.close .profile-details{
+  width: 78px;
+}
+.sidebar .profile-details .profile-content{
+  display: flex;
+  align-items: center;
+}
+.sidebar .profile-details img{
+  height: 52px;
+  width: 52px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 0 14px 0 12px;
+  background: #1d1b31;
+  transition: all 0.5s ease;
+}
+.sidebar.close .profile-details img{
+  padding: 10px;
+}
+.sidebar .profile-details .profile_name,
+.sidebar .profile-details .job{
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.sidebar.close .profile-details i,
+.sidebar.close .profile-details .profile_name,
+.sidebar.close .profile-details .job{
+  display: none;
+}
+.sidebar .profile-details .job{
+  font-size: 12px;
+}
+.home-section{
+  position: relative;
+  left: 260px;
+  width: calc(100% - 260px);
+  transition: all 0.5s ease;
+}
+.sidebar.close ~ .home-section{
+  left: 78px;
+  width: calc(100% - 78px);
+}
+.home-section .home-content{
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+.home-section .home-content .bx-menu,
+.home-section .home-content .text{
+  color: #11101d;
+  font-size: 35px;
+}
+.home-section .home-content .bx-menu{
+  margin: 0 15px;
+  cursor: pointer;
+}
+.home-section .home-content .text{
+  font-size: 26px;
+  font-weight: 600;
+}
+@media (max-width: 420px) {
+  .sidebar.close .nav-links li .sub-menu{
+    display: none;
+  }
+}
+
+
+</style>
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <!--<title> Drop Down Sidebar Menu | CodingLab </title>-->
+    <link rel="stylesheet" href="style.css">
+    <!-- Boxiocns CDN Link -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <script>(function(w,r){w._rwq=r;w[r]=w[r]||function(){(w[r].q=w[r].q||[]).push(arguments)}})(window,'rewardful');</script>
+    <script async src='https://r.wdfl.co/rw.js' data-rewardful='49b3ad'></script>
+   </head>
+<body>
+  <div class="sidebar close" style="z-index: 10000000; ">
+    <div class="logo-details" style="padding-top:10px; padding-left:15px;">
+      <img class="resp"style="margin-top:10px;height:55px;padding-bottom:10px"src="{% static 'predict/flame-logo.png'%}">
+      <span class="logo_name">FireBet.ai</span>
+    </div>
+    <ul class="nav-links" style="">
+      
+      <li>
+        <div class="iocn-link">
+          <a href="/predict/dash">
+            <i class="fa-solid fa-basketball"></i>
+            <span class="link_name">Basketball</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow' ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="/predict/dash">Basketball</a></li>
+          <li><a href="/predict"><i class="fa-solid fa-list-ul"></i> Game Analysis</a></li>
+          <li><a href="/predict/train/0"><i class="fa-solid fa-robot"></i> Train Model</a></li>
+          <!--
+          <li><a href="/predict/teams"> <i class="fa-solid fa-database"></i> Data Trends</a></li>
+          -->
+          
+
+        </ul>
+      </li>
+
+
+
+      <li>
+        <div class="iocn-link">
+          <a href="/predict/arb">
+            <i class="fa-solid fa-sack-dollar"></i>
+            <span class="link_name">Arbitrage</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow' ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="/predict/arb">Arbitrage</a></li>
+          <li><a href="/predict/arb"><i class="fa-solid fa-list-ul"></i> Hedged Bets</a></li>
+          <li><a href="https://app.firebet.ai/forum/forum/arbitrage-6/"><i class="fa-solid fa-circle-question"></i> About</a></li>
+        </ul>
+      </li>
+      <!-- 
+      <li>
+        <div class="iocn-link">
+          <a href="/predict/ev">
+            <i class="fa-solid fa-star"></i>
+            <span class="link_name">Value Bets</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow' ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="/predict/ev">Value Bets</a></li>
+          <li><a href="/predict/ev"><i class="fa-solid fa-list-ul"></i> Positive EV</a></li>
+          <li><a href="/predict/evrecord"><i class="fa-solid fa-clipboard"></i>Record</a></li>
+          <li><a href="https://app.firebet.ai/forum/forum/general-2/topic/understanding-ev-bets-maximizing-profits-in-sports-betting-34/"><i class="fa-solid fa-circle-question"></i> About EV</a></li>
+        </ul>
+      </li>
+-->
+      <li>
+        <a href="https://app.firebet.ai/tensorboard/?darkMode=true#timeseries&regexInput=." target="_blank">
+          <i class="fa-solid fa-chart-simple"></i>
+          <span class="link_name">TensorBoard</span>
+        </a>
+        <ul class="sub-menu blank">
+            
+            <li><a class="link_name" href="https://app.firebet.ai/tensorboard/?darkMode=true#timeseries&regexInput=." target="_blank"> <i class="fa-regular fa-chart-column"></i> TensorBoard</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="iocn-link">
+          <a href="https://app.firebet.ai/forum/">
+            <i class="fa-solid fa-comment"></i>
+            <span class="link_name">Forums</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow' ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="https://app.firebet.ai/forum/">Forums</a></li>
+          <li><a href="https://app.firebet.ai/forum/forum/general-2/"><i class="fa-solid fa-list-ul"></i> General</a></li>
+          <li><a href="https://app.firebet.ai/forum/forum/arbitrage-6/"><i class="fa-solid fa-sack-dollar"></i> Arbitrage</a></li>
+          <li><a href="https://app.firebet.ai/forum/forum/general-2/topic/understanding-ev-bets-maximizing-profits-in-sports-betting-34/">            <i class="fa-solid fa-star"></i>
+            EV Forum</a></li>
+          <li><a href="https://app.firebet.ai/forum/forum/model-training-3/"><i class="fa-solid fa-robot"></i>  AI Models</a></li>
+        </ul>
+      </li>
+
+      
+      <li>
+        <a href="/profile" >
+          <i class="fa-solid fa-user"></i>
+          <span class="link_name">Profile</span>
+        </a>
+        <ul class="sub-menu blank">
+            
+            <li><a class="link_name" href="/profile"> <i class="fa-solid fa-user"></i> Profile</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="/predict/faq" >
+          <i class="fa-solid fa-circle-question"></i>
+          <span class="link_name">About</span>
+        </a>
+        <ul class="sub-menu blank">
+            
+            <li><a class="link_name" href="/predict/faq">           <i class="fa-solid fa-circle-question"></i> About</a></li>
+        </ul>
+      </li>
+
+
+    <div class="profile-details">
+      <div class="profile-content">
+        <!--<img src="image/profile.jpg" alt="profileImg">-->
+      </div>
+      <div class="name-job">
+        <div class="profile_name">Machine Learning</div>
+        <div class="job">Sports Analytics</div>
+      </div>
+      <a href="https://app.firebet.ai/logout/">
+
+        <i class='bx bx-log-out'  style="margin-right:25px"></i>
+
+      </a>
+    </div>
+  </li>
+</ul>
+  </div>
+  <section class="home-section">
+    
+  </section>
+  <section class="home-section">
+    <div class="home-content" style="position:fixed;padding-top:7px;width:100%;z-index: 10000000000;">
+      <i style="color:var(--main-font-color)" class='bx bx-menu' ></i>
+      <span style="z-index: 10000000000;"class="text" style="color:var(--main-font-color)"></span>
+    </div>
+  </section>
+  <script>
+  let arrow = document.querySelectorAll(".arrow");
+  for (var i = 0; i < arrow.length; i++) {
+    arrow[i].addEventListener("click", (e)=>{
+   let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+   arrowParent.classList.toggle("showMenu");
+    });
+  }
+  let sidebar = document.querySelector(".sidebar");
+  let sidebarBtn = document.querySelector(".bx-menu");
+  console.log(sidebarBtn);
+  sidebarBtn.addEventListener("click", ()=>{
+    sidebar.classList.toggle("close");
+  });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="Transform your bets using AI to spot patterns and help you gain an edge over vegas odds.  Simulate future events and gain insights into game outcomes. Fire Bet models use a wealth of data enabling you to make smarter more profitable bets.Beat the bookies with Fire Bet ai models and market analysis tools.">
+
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- icons 
+<div class="background3"id="bkgrnd"style="height:100%;width:100%!important;"></div>
+
+<div class="background2"id="bkgrnd"style="opacity:.4;top:0px;position: fixed;width:100%;overflow:hidden;overflow-y:hidden"></div>
+    <script src="https://kit.fontawesome.com/f530480be2.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/3068fc76d0.js" crossorigin="anonymous"></script>
+
+    -->
+    <script src="https://kit.fontawesome.com/7e00f5d413.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'predict/main.css'%}">
+    <link rel="shortcut icon" type="image/ico" href="{% static 'predict/flame-logo.png'%}"/>
+    <title>Sports Bet AI and Machine Learning Picks.  FireBet AI Tools, Arbitrage, Odds, and more.</title>
+<meta name="msvalidate.01" content="C6383F52430DF3585D486848E2E96F4D" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16453183002"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-16453183002');
+</script>
+
+  <!-- Hotjar Tracking Code for nbaDataCloud -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:3730209,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+
+ <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+    const currentTheme = localStorage.getItem('theme') || 'default';
+    if (currentTheme === 'alternate') {
+        document.documentElement.classList.add('alternate-theme');
+    }
+
+   
+});
+
+
+    function resizeAllCharts() {
+      // Select all canvas elements on the page
+      var allCanvases = document.querySelectorAll('canvas');
+
+      allCanvases.forEach(function(canvas) {
+        // Attempt to access the Chart instance associated with each canvas
+        if (canvas.chart instanceof Chart) {
+          // If there's a Chart instance, call update or resize
+          canvas.chart.update();
+        }
+      });
+    }
+
+    // Call this function when you need to resize all charts, for example,
+    // after your page layout changes are complete or after a delay
+    resizeAllCharts();
+      document.addEventListener('DOMContentLoaded', (event) => {
+    resizeAllCharts();
+
+
+   
+});
+      setTimeout(function() {
+    resizeAllCharts();
+
+}, 100); 
+
+  </script>
+
+
+    <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/65a414068d261e1b5f533b49/1hk4eseud';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
+
+  
+
+  </head>
+  <body class=""  translate="no" style="margin-top:0px !important">
+      <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel">
+          <div class="container">
+            <a class="navbar-brand mr-4" href="https://firebet.ai"><h2 style="margin-bottom: 0px; color:#F8F8F8 !important"><img class="resp"style="height:55px;padding-bottom:10px"src="{% static 'predict/flame-logo.png'%}">FireBet.ai</h2></a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+              <div class="navbar-nav mr-auto" id="navigation-bar">
+                <!-- Navbar Right Side 
+
+                <a class="nav-item nav-link" href="{% url 'home-page'%}"><i class="fa fa-home"></i><span> Home</span></a>
+                <a class="nav-item nav-link" href="https://nealmick.com/contact/"><i class="far fa-address-card"></i><span> Contact</span></a>
+                <a class="nav-item nav-link" href="{% url 'stats-view'%}"><i class="fas fa-chart-line"></i><span> Stats</span></a>
+                
+                -->
+
+              </div>
+              <div class="navbar-nav" id="navigation-bar" >
+
+                {% if user.is_authenticated %}
+                <!-- Navbar Right Side 
+                
+                <a class="nav-item nav-link" href="/predict/simple/"><i class="fa-solid fa-list"></i><span> Simple</span></a>
+
+                -->
+                
+
+                <a class="nav-item nav-link" href="{% url 'arb' %}"><i class="fa-solid fa-money-check-dollar"></i><span> Arb</span></a>
+                <a class="nav-item nav-link" href="{% url 'home-predict' %}"><i class="fa-solid fa-basketball"></i><span> NBA</span></a>
+                <a class="nav-item nav-link" href="/forum"><i class="fas fa-comment-dots"></i> Forum</span></a>
+
+                <a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span></span></a>
+
+
+                {% else %}
+                <a class="nav-item nav-link" href="{% url 'faq'%}"><i class="far fa-question-circle"></i><span> About </span></a>
+                <a class="nav-item nav-link" href="{% url 'login'%}"><span><i style="width:17px;margin-right:5px"class="fas fa-sign-in-alt"></i>Login</span></a>
+                <a class="nav-item nav-link" href="{% url 'register'%}"><span><i style="width:17px;margin-right:5px" class="far fa-user"></i>Register</span></a>
+                {% endif %}
+                </ul>
+              </div>
+        </nav>
+      </header>
+
+      <main role="main" class="container">
+        <div class="row"  style="padding-top:60px;">
+
+            
+            {% block f %}{% endblock %}
+            {% block content %}{% endblock %}
+    </div>
+
+
+    </main>
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+
+
+<style>
+
+</style>
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+  var r = document.querySelector(':root');
+  function myFunction_set() {
+    var randomNumber = Math.floor(Math.random() * 60) + 1;
+
+  // Set the value of variable --blue to another value (in this case "lightblue")
+    r.style.setProperty('--rotation', randomNumber+'deg');
+  }
+  myFunction_set()
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Detect if the user's OS is Windows
+    if (navigator.userAgent.indexOf("Win") != -1) {
+      console.log('windows detected')
+        // Select the container-fluid element(s) and apply a new max-width
+        var containers = document.querySelectorAll('.container-fluid');
+        containers.forEach(function(container) {
+            container.style.maxWidth = '1100px'; // Set the desired max-width for Windows
+        });
+    }
+});
+
+</script>
+<style>
+
+  
+</style>
+
+
+
+

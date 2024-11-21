@@ -1,0 +1,326 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12" style="margin-top:25px;">
+    <div class="content-section" style="min-height:600px">
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <center>
+                        <img id="team-logo" class="" style="display:inline;height: 150px;"src="{{data.nbaComHeadshot}}">
+
+                    </center>
+
+                </div>
+                <div class="col-lg-4">
+                    <center>                    
+                        <h2 class="player-name" style="margin-top:30px;white-space: nowrap;">{{name}}</h2>
+
+                        <a class='btn btn-grey-secondary' href="{% url 'update-stats' id %}">Update Stats</a>
+                        <a class='btn btn-grey-secondary' href="{% url 'update-team' id %}">Update Team</a>
+                    </center>
+
+                </div>
+                <div class="col-lg-4">
+                    <center>
+                        <a href="{% url 'team-view' abv%}">
+                            <img id="team-logo" class="" style="display:inline;height: 150px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
+
+                        </a>
+                    </center>
+
+                </div>
+            </div>
+            
+
+
+
+       
+
+
+
+        <div style="margin-top:0px;overflow: auto; color:white;margin-bottom:25px;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">
+            <table align="center" style="width:100%;">
+                <tr>
+                    <td style="width:10px"><center>Stat</center></td>
+
+                      {% for label in labels %}
+                      <td style="width:10px"><center>{{label}}</center></td>
+                      {% endfor %}
+    
+                </tr>
+                <tr>
+                    <td>
+                        <center>
+                            SeasonAVG
+    
+                        </center>
+                    </td> 
+                    {% for stat in seasonAverage %}
+                    <td>
+                        <center>
+                            {{stat}} 
+    
+                        </center>
+                    </td> 
+                    {% empty %}
+                    {% for label in labels %}
+                    <td>
+                      <center>
+                        0
+                      </center>
+                  </td>
+    
+    
+                  {% endfor %}
+    
+                    {% endfor%}
+    
+                </tr>
+               
+             
+                <tr>
+                
+                    <td>
+
+                        <center>
+                        <label data-toggle="tooltip" data-placement="bottom" title="{{ abv }} {{lg1_score}} : {{lg1_opponent_abv}} {{lg1_opponent_score}} : {{lg1_date}} " for="lg1" style="margin-bottom:0px !important">Last Game</label>
+
+                            
+        
+                        </center>
+                    </td> 
+                    {% for stat in lg1_stats %}
+                    <td>
+                        <center>
+                            {{stat}} 
+        
+                        </center>
+                    </td> 
+                    {% empty %}
+                    {% for label in labels %}
+                    <td>
+                      <center>
+                        0
+                      </center>
+                  </td>
+        
+        
+                  {% endfor %}
+        
+                    {% endfor%}
+        
+                </tr>
+                
+
+           
+                <tr>
+
+                    <td>
+
+                        <center>
+                        <label data-toggle="tooltip" data-placement="bottom" title="{{ abv }} {{lg2_score}} : {{lg2_opponent_abv}} {{lg2_opponent_score}} {{lg2_date}} " for="lg2" style="margin-bottom:0px !important">Last Game2</label>
+
+                            
+        
+                        </center>
+                    </td>
+
+                    {% for stat in lg2_stats %}
+                    <td>
+                        <center>
+                            {{stat}} 
+        
+                        </center>
+                    </td> 
+                    {% empty %}
+                    {% for label in labels %}
+                    <td>
+                      <center>
+                        0
+                      </center>
+                  </td>
+        
+        
+                  {% endfor %}
+        
+                    {% endfor%}
+        
+                </tr>
+                
+
+
+               
+
+                </table>
+
+
+              
+
+
+                
+        </div>
+
+
+        {% if data.injury %}
+        <p ><center>{{data.description}}</center></p>
+        {% else %}
+        <p><center> Un-injured</center></p>
+
+        {% endif %}
+
+        <div style="margin-top:0px;overflow: auto; color:white;margin-bottom:25px;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">
+            <table align="center" style="width:100%;">
+
+
+                
+
+     
+
+    </table>
+
+
+
+
+                
+</div>
+
+
+
+
+
+    <center>
+        <select id="model-slot" style="width:30%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+            {% for label in labels %}
+            <center>
+                {% if label == 'ast' %}
+                <option value="{{ forloop.counter0 }}" selected>{{label}}</option>
+                {% else %}
+                <option value="{{ forloop.counter0 }}" >{{label}}</option>
+
+                {% endif %}
+            </center>
+
+
+            {% endfor %}
+
+
+
+        </select>
+    </center>
+
+    <!-- Canvas for Chart.js Graph -->
+    <center>
+        <canvas id="statsChart" style="width:80%;margin-bottom:100px;max-height: 250px;"></canvas>
+    </center>
+
+
+
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+    <script>
+        var lg10 = {{ lg10|safe }};
+        var ctx = document.getElementById('statsChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Stat Value',
+                    data: [],
+                    borderColor: "#3e95cd",
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Player Trend',
+                    data: [],
+                    borderColor: "#ff7b05",
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                legend: {
+                    display: false
+                }
+            }
+        });
+    
+        function calculateMovingAverage(data) {
+            let runningTotal = 0;
+            return data.map((value, index) => {
+                let numericValue = parseFloat(value); // Ensure value is a number
+                runningTotal += numericValue;
+                return runningTotal / (index + 1);
+            });
+        }
+        function updateChart(statIndex) {
+            var newLabels = [];
+            var newData = [];
+        
+            lg10.forEach(game => {
+                newLabels.push(game.date);
+                newData.push(game.stats[parseInt(statIndex, 10)]);
+            });
+        
+            newLabels.reverse();
+            newData.reverse();
+    
+            const movingAverageData = calculateMovingAverage(newData);
+        
+            chart.data.labels = newLabels;
+            chart.data.datasets[0].data = newData;
+            console.log(statIndex)
+            chart.data.datasets[1].data = movingAverageData;
+            chart.update();
+        }
+        
+        updateChart(0);
+    
+        function displaySelectedStat() {
+            var selectedStatIndex = document.getElementById("model-slot").value;
+            updateChart(selectedStatIndex);
+        }
+        
+        document.getElementById("model-slot").onchange = displaySelectedStat;
+    </script>
+
+
+
+
+
+        <div  style="position:absolute;bottom:8px">
+            <p class="text-muted" style="margin-bottom:0px">TeamID: {{team}}</p>
+            <p class="text-muted"style="margin-bottom:25px">PlayerID: <a class="text-muted" href="https://www.balldontlie.io/api/v1/players/{{id}}" target="_blank">{{id}}</a></p>
+                
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+  
+
+</script>
+{% endblock content%}

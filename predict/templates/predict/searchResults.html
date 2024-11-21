@@ -1,0 +1,86 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    #player-name:hover{
+        background-color: grey !important;
+    }
+</style>
+
+<div class="col-12" style="margin-top:25px;">
+    <div class="content-section"style="min-height: 500px">
+        <h2>Searching for: {{playerName}}</h2>
+        <div style="margin-top:25px;overflow: auto; color:white;">
+          <table align="center" style="width:100%">
+              <tr>
+
+                    <td style="width:50px !important"><center>Name</center></td>
+                    {% for label in labels %}
+                    <td style="width:10px"><center>{{label}}</center></td>
+
+
+                    {% endfor %}
+  
+              </tr>
+
+            {% for player in res %}
+            <tr>
+
+                <td class="oof" id="player-name" style="background-color:#fc861e ;border-radius: 0px;">
+                    <center>
+                      <button  style="background: transparent;
+                      border: none !important;color: #333333"onclick="window.location.href='{% url 'player-detail-name' player.name%}';">
+                        {{player.name}}
+                      </button>
+                      
+
+                    </center>
+                </td>
+                {% for stat in player.seasonAverage %}
+                <td>
+                    <center>
+                        {{stat}} 
+
+                    </center>
+                </td>
+
+                {% endfor%}
+                
+
+
+
+
+
+            </tr>
+            {% empty %}
+            <h2>No Players Found!</h2>
+            {% endfor %}
+            </table>
+        </div>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+
+
+{% endblock content%}

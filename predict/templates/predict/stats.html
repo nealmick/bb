@@ -1,0 +1,267 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+
+
+<div class="col-12">
+    <div style="margin-top:10px;"class="content-section">
+
+        <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+            <canvas id="barChart"></canvas>
+          </div>
+        <div class="row" style="margin-top:25px;height:250px">
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 1 tracks games with predictions more than 1 point off the spread.">Margin 1</h5>
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin1"></canvas>
+                  </div>
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 2 tracks games with predictions more than 2 points off the spread.">Margin 2</h5>
+
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin2"></canvas>
+                  </div>
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 3 tracks games with predictions more than 3 points off the spread.">Margin 3</h5>
+
+                </center>
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin3"></canvas>
+                  </div>
+            </div>
+        </div>
+        <div class="row"style="height:250px">
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Predicted game winners without spread.">Win/Loss</h5>
+
+                </center>
+    
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="win_loss"></canvas>
+                  </div>
+    
+    
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Gain is the amount of points a team is predicted to win by (counted if correct).  Loss is the opposite, if the prediction is wrong.  Gain/Loss does not account for spread.">Gain/Loss</h5>
+
+                </center>
+        
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="gain_loss"></canvas>
+                  </div>
+    
+            </div>
+            <div class="col-4">
+                <center>
+                    <h5 data-toggle="tooltip" data-placement="bottom" title="Margin refers to the distance between the predicted outcome and the point spread. Margin 0 tracks all games against the spread.">Margin 0</h5>
+
+                </center>
+    
+                <div style="margin-top:10px;margin-left: auto;margin-right: auto;height: 200px; width: 80%;">
+                    <canvas id="margin0"></canvas>
+                  </div>
+        
+            </div>
+        </div>
+    </div>
+    
+    
+    
+
+</div>
+
+
+
+
+
+
+    <div class='d-none col-lg-6'style="
+    margin-top:5px;
+    height:500px;
+    padding-left:14px;
+    padding-right:5px;
+    ">
+    
+    <div class="content-section" style="height:500px;">
+    <div>
+        <h2>Chat</h2>
+        <div id="m-scoll"style="margin-left:20px;margin-right:20px;min-height: 380px;max-height: 380px;overflow: scroll;">
+    
+            {% for m in qs %}
+    
+            <div style="margin: 1px;"><a style="color: #333333;" href="{% url 'public-profile' m.author%}"><img style="margin-bottom:0px;margin-right:5px;width:30px;height:30px"class="rounded-circle account-img" src="{{ m.author.profile.image.url }}">
+                <div style="margin-top: 3px;display: inline;">
+                    {{ m.author }}:  {{ m.content }}
+                </div>
+                </a>
+            </div>
+            {% endfor %}
+    
+    
+    
+        </div>
+    </div>
+    <div style="width:85%;padding: 10px">
+            <input maxlength="140" id="message-input" placeholder="New Message" class="form-control"style="border-radius: 10px;padding:5px;border: 0px;shadow: 0px;resize:none">
+    
+            </input>
+    
+            <br></br>
+
+        </div>
+        <button onClick="sendMessage()"type="submit" className="btn btn-grey-secondary" style="bottom: 92px;color:333333;border-radius: 10px;position:relative;float:right;right:10px;  height:35px; border:none">Send <i class="fas fa-paper-plane"></i></button>
+
+    </div>
+    </div>
+    <div class='d-none col-lg-6'style="
+    height:500px;
+    margin-top:5px;
+    padding-right:14px;
+    padding-left:5px;
+    
+    ">
+        <div class="content-section" style="height:500px;">
+    
+            <h2>Users</h2>
+            <div style="margin-left:20px;margin-right:20px;min-height: 443px;max-height: 443px;overflow: scroll;">
+            {% for profile in profiles %}
+            <div style="padding-top: 0px;display: inline;">
+                <a style="color: #333333;" href="{% url 'public-profile' profile.user.username %}">
+                <div style="padding:5px">
+                        <div class="row" style="">
+                            <div class="col-6"><img style="margin-bottom:0px;margin-right:5px;width:40px;height:40px"class="rounded-circle account-img" src="{{ profile.image.url }}">
+                                {{ profile.user.username }}
+                            </div>
+                            
+                            <div class="col-2"style="padding-top:6px">
+                                <center>
+                                    {{ profile.correct}}/{{ profile.predictions}}
+                                </center>
+                            </div>
+                            <div id="detail"class="col-4"style="padding-top:6px">
+                                <center>
+                                    {{ profile.user.date_joined|date:"Y-m-d" }}
+                                </center>
+                            </div>
+    
+    
+                        </div>
+                        
+                        <!--
+                       {{ profile.correct }}/{{ profile.predictions }}
+    
+                        -->
+                    </div>
+                    </a>
+                </div>
+    
+    
+            {% endfor %}
+            </div>
+    
+        </div>
+    </div>
+    
+    <script>
+    
+    
+    
+         window.addEventListener('load', function () {
+    
+            document.getElementById("m-scoll").scrollTop = $(window).height()
+    
+        })
+    
+        function sendMessage(){
+            el = document.getElementById('message-input')
+            console.log(el.value)
+            window.location.href = '/new-message/'+el.value
+    
+    
+    
+        }   
+    
+    </script>
+    <style>
+        @media screen and (max-width: 500px) {
+      #detail{
+        display:none;
+      }
+    
+    }
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+{{ numpred|json_script:"np" }}
+{{ correct|json_script:"correct" }}
+{{ gain|json_script:"gain" }}
+{{ loss|json_script:"loss" }}
+
+{{ extraCorrect|json_script:"extraCorrect" }}
+{{ pw|json_script:"pw" }}
+{{ ev_margin1|json_script:"ev_margin1" }}
+{{ ev_margin1_count|json_script:"ev_margin1_count" }}
+{{ ev_margin1_pct|json_script:"ev_margin1_pct" }}
+
+{{ ev_margin2|json_script:"ev_margin2" }}
+{{ ev_margin2_count|json_script:"ev_margin2_count" }}
+{{ ev_margin2_pct|json_script:"ev_margin2_pct" }}
+
+{{ ev_margin3|json_script:"ev_margin3" }}
+{{ ev_margin3_count|json_script:"ev_margin3_count" }}
+{{ ev_margin3_pct|json_script:"ev_margin3_pct" }}
+
+
+{{ ev_won|json_script:"ev_won" }}
+{{ ev_won_count|json_script:"ev_won_count" }}
+{{ ev_won_pct|json_script:"ev_won_pct" }}
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script  src="{% static 'predict/stats.js'%}" defer></script>
+
+
+</div>
+{% endblock content %}
+
+
+

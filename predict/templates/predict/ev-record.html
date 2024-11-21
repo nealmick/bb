@@ -1,0 +1,99 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="col-12" style="margin-top:25px;">
+    <div class="content-section" style="overflow:scroll">
+        <div style="margin-top:5px; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin-left:5px">EV+ Record</h2>
+            <div>
+                <a href="/predict/ev/" class="btn btn-grey-secondary" style="margin-bottom:15px !important; margin-right:10px;"><i class="fa-solid fa-wave-pulse"></i> Active Bets</a>
+            </div>
+        </div>
+        <br>
+        <table class="ev-table" style="border-radius: 0px !important;">
+            <thead>
+                <tr>
+                    <th>Assets</th>
+                    <th>Bookie</th>
+                    <th>Bookie Odd</th>
+                    <th>Fair Odd</th>
+                    <th>Match</th>
+                    <th>Away Score</th>
+                    <th>Home Score</th>
+                    <th>Bet Won</th>
+                    <th>Bet Type</th>
+                    <th>Competition</th>
+                    <th>Traded Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                <tr>
+                    <td>{{ item.assets_balancedZ|stringformat:"s"|slice:":5" }}$</td>
+                    <td>{{ item.bookie }}</td>
+                    <td>{{ item.bookieodd }}</td>
+                    <td>{{ item.fairodd }}</td>
+                    <td>{{ item.match }}</td>
+                    <td>{{ item.away_score }}</td>
+                    <td>{{ item.home_score }}</td>
+                    <td>{{ item.bet_right }}</td>
+                    <td>{{ item.bettype }}</td>
+                    <td>{{ item.competition }}</td>
+                    <td>{{ item.traded_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <center style="margin-top:25px;">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </center>
+
+        <div class="pagination" style="display: flex; justify-content: center;margin-bottom:15px;margin-top:3px;">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a class="btn btn-grey-secondary" href="?page=1">first</a>
+                    <a class="btn btn-grey-secondary" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+             
+        
+                {% if page_obj.has_next %}
+                    <a class="btn btn-grey-secondary" href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a class="btn btn-grey-secondary" href="?page={{ page_obj.paginator.num_pages }}">last </a>
+                {% endif %}
+            </span>
+        </div>
+
+    </div>
+</div>
+
+
+<style>
+
+td,tr{
+    border-radius: 0px !important;
+
+}
+td,th{
+    text-align: center;
+}
+
+</style>
+
+<script>
+  
+
+</script>
+{% endblock content%}

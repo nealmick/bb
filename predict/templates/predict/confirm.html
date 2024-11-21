@@ -1,0 +1,39 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+
+
+<div class="col-6" style="margin-left:auto;margin-right:auto">
+    <div style="margin-top:10px;"class="content-section">
+        <center>
+            <h2>Confirm Clear Games</h2>
+            <p>This action will delete all games created on your account.</p>
+            <a class="btn btn-grey" style="" href="{% url 'clear-games'%}">Delete ALL Games</a>
+            <a class="btn btn-grey" style="" href="{% url 'clear-stats'%}">Reset Profile Stats</a>
+
+        </center>
+        <br>
+        <br>
+    </div>
+</div>
+
+
+</div>
+{% endblock content %}
+
+
+

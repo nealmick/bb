@@ -1,0 +1,54 @@
+  {% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+<div class='content-section col-md-5 center'style="
+margin-right: auto;
+margin-left: auto;
+margin-top:75px;
+">
+<body class="">
+<center>
+  
+    <form method="POST">
+      {% csrf_token %}
+      <fieldset class="form-group">
+        <p style="font-size: 56px;color: #333333;text-decoration: underline;margin-bottom: 2px">Login</p>
+        {{ form|crispy}}
+      </fieldset>
+        <br>
+
+      <div class="form-group"id="tshadow" >
+
+        <a class="btn btn-grey" style="color:#F8F8F8!important"onclick="demoLogin();">Demo</a>
+        <button class="btn btn-grey-secondary" style=""type="submit">Login</button>
+
+
+        <br>
+
+      </div>
+    </form>
+    <div class="boder-top pt-3">
+      <small class="text-muted">
+        <br>
+
+        Need An Account?<a class="ml-2" href="{% url 'register' %}">Sign Up</a> 
+        <br>
+        Forgot Password? <a href="{% url 'password_reset'%}">Reset</a>
+      </small>
+    </div>
+  </body>
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+function demoLogin(){
+    document.getElementById('id_password').value='demo'
+    document.getElementById('id_username').value='demo'
+    document.forms[0].submit()
+
+
+  } 
+</script>
+
+{% endblock content%}

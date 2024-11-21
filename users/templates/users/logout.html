@@ -1,0 +1,14 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+<div class='content-section col-md-6 center'>
+  <body class="">
+  <h2>You have been logged out</h2>
+  <div class="boder-top pt-3">
+    <small class="text-muted">
+      Already Have An Account?<a href="{% url 'login' %}">loggin again</a>
+    </small>
+  </div>
+</body>
+</div
+{% endblock content%}

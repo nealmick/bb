@@ -1,0 +1,143 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+</body>
+<div class='content-section col-md-6 center'style="
+margin-right: auto;
+margin-left: auto;
+margin-top:25px;
+">
+<center>
+    <h2>Terms Of Service</h2>
+</center>
+<hr style="background-color: rgb(84, 84, 84);">
+
+<div class="scrollable-div" style="min-height: 35vh;max-height: 35vh;overflow-y:scroll;padding-right:10px;">
+
+
+    <h3>1. Introduction</h3>
+    <p>Welcome to FireBet.ai. This website is operated by FireBet.ai ("we", "us", or "our"). Our services, available via our website https://firebet.ai (the "Service"), are provided to you subject to the terms and conditions stated below. By accessing or using our Service, you agree to these Terms of Service.</p>
+
+    <h3>2. Use of Service</h3>
+    <p>The Service is offered as an analytical tool for sports betting and is intended for informational and entertainment purposes only. You must be at least 18 years old to access and use our Service. We do not endorse or promote betting activities and users are responsible for complying with local laws and regulations.</p>
+
+    <h3>3. Account Registration</h3>
+    <p>To access certain features of the Service, you may be required to create an account. You agree to provide accurate and complete information during the registration process and to keep this information up to date. You are responsible for safeguarding your password and any activities under your account.</p>
+
+    <h3>4. Prohibited Uses</h3>
+    <p>You agree not to use the Service for any unlawful purpose or in any way that interrupts, damages, impairs, or renders the Service less efficient. Additionally, you agree not to attempt to gain unauthorized access to our Service or related systems or networks.</p>
+
+    <h3>5. Subscription and Billing</h3>
+    <p>Certain features of our Service may require payment. By subscribing to these features, you agree to our billing terms and authorize us to charge the provided payment method. Prices and payment terms may be updated from time to time and will be communicated to you.</p>
+
+    <h3>6. Free Trial</h3>
+    <p>We may offer a free trial period for our Service. After this period By continuing to use the Service you agree to the applicable subscription fees.</p>
+
+    <h3>7. Intellectual Property</h3>
+    <p>The Service, including its content, features, and functionality, are owned by FireBet.ai or its licensors and are protected by intellectual property laws. Your use of the Service does not grant you ownership of any intellectual property rights in the Service.</p>
+
+    <h3>8. Disclaimer of Warranties</h3>
+    <p>The Service is provided "as is" without any warranties of any kind, express or implied. We do not guarantee the accuracy, completeness, or reliability of any content provided through the Service.</p>
+
+    <h3>9. Limitation of Liability</h3>
+    <p>To the fullest extent permitted by law, FireBet.ai shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service.</p>
+
+    <h3>10. Changes to Terms</h3>
+    <p>We reserve the right to modify these Terms at any time. Your continued use of the Service after such modifications constitutes acceptance of those changes.</p>
+    <h3>11. Money back Guarantee</h3>
+    <p>We offer refunds up to 30 days after starting a subscription. A maximum of 1 refund can be issued for the lifetime of each user account. If you request a refund your subscription will be canceled immediately, any future subscriptions or payments are also no longer eligible for refunds.</p>
+
+    <h3>12. Contact Us</h3>
+    <p>If you have any questions about these Terms, please contact us at <a href="mailto:support@firebet.ai">support@firebet.ai</a>.</p>
+</div>
+<hr style="background-color: rgb(84, 84, 84);">
+<center>
+   <!-- Checkbox for accepting TOS -->
+<label id="tosLabel" for="acceptTos" style="font-size: 20px; margin-bottom: 20px; display: inline-block;">
+    <input type="checkbox" id="acceptTos" name="acceptTos" style="width: 25px; height: 25px; vertical-align: middle;">
+    Verify 18 years or older and accept terms of service.
+</label>
+<br>
+<!-- Button with initial secondary class -->
+<a id="acceptButton" href="#" class="btn btn-grey-secondary" style="width:175px !important;margin-top:10px; margin-bottom:25px">Enter <i class="fa-solid fa-right-to-bracket"></i></a>
+
+</center>
+</div>
+<script>
+    const acceptTos = document.getElementById('acceptTos');
+    const acceptButton = document.getElementById('acceptButton');
+    const tosLabel = document.getElementById('tosLabel');
+
+    // Function to update button based on checkbox
+    function updateButton() {
+
+        if (acceptTos.checked) {
+            localStorage.setItem('tos', true);
+            acceptButton.classList.remove('btn-grey-secondary');
+            acceptButton.classList.add('btn-grey');
+
+            acceptButton.href = "/predict/ev"; // Update to your actual link
+        } else {
+            acceptButton.classList.remove('btn-grey');
+            acceptButton.classList.add('btn-grey-secondary');
+            acceptButton.href = "javascript:void(0)"; // Prevent default action
+        }
+    }
+
+    // Function to change label color and prevent navigation if checkbox is not checked
+    function handleAcceptClick(e) {
+        if (!acceptTos.checked) {
+            e.preventDefault(); // Stop link navigation
+            tosLabel.style.color = 'rgba(196, 20, 6,.9)'; // Change label color to indicate error
+            // Optionally, alert the user or provide a visible message
+        } else {
+            // Reset label color if needed
+            tosLabel.style.color = ''; // Or set to your default label color
+        }
+    }
+
+    // Listen for checkbox changes
+    acceptTos.addEventListener('change', updateButton);
+
+    // Listen for button click
+    acceptButton.addEventListener('click', handleAcceptClick);
+
+    // Initial update in case the checkbox is pre-checked
+    updateButton();
+</script>
+
+
+<style>
+
+
+.scrollable-div {
+    min-height: 40vh;
+    max-height: 40vh;
+    overflow-y: scroll; /* Ensure this div is scrollable */
+    padding-right: 10px;
+}
+
+/* Scrollbar customization */
+.scrollable-div::-webkit-scrollbar {
+    display: block;
+    width: 12px;
+    border-radius: 10px;
+}
+
+.scrollable-div::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-div::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.scrollable-div::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    border-radius: 10px;
+}
+</style>
+
+{% endblock content%}

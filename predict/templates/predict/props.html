@@ -1,0 +1,200 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12" style="margin-top:5px;padding:15px">
+    <div class="content-section" style="min-height:600px;">
+        <h2 style="margin-top:10px">FireBet Prop CheatSheet</h2>
+        <br>
+            <div class="row">
+                <div class="col-2" style="min-width:100px;">
+                   
+                </div>
+                <div id="player-name" class="col-3" style="">
+                </div>
+                <div id="first-stat-label" class="col-2">
+                    <center>
+
+                        <h5>ast</h5>
+                    </center>
+                </div>
+                <div class="col-2" style="padding-right:20px !important">
+                    <center>
+                        <h5>reb</h5>
+
+                    </center>
+
+                </div>
+                <div class="col-2" style="padding-right:45px !important">
+                    <center>
+                        <h5>pts</h5>
+
+                    </center>
+
+                </div>
+
+            </div>
+            {% if not active %}
+            <a href="/autoshop/" style="text-decoration: none; color: inherit; display: flex; justify-content: center; width: 100%;">
+                <div class="lock-overlay" style="margin-top:175px;position: absolute; z-index: 1000; font-size: 42px; width: 96%; height: 50%; opacity: .7;">
+                    <center>
+                        <i class="fas fa-lock" style="font-size: 128px"></i>
+                        <p class="lock-text" style="margin-bottom:0px">Subscribe</p>
+                        
+                    </center>
+            
+                </div>
+            </a>
+            
+            {% endif %}
+            {% for player, stats in props.items %}
+            {% if stats.data.nbaComHeadshot %}
+            <a style="" href="/predict/player-details/{{stats.id}}">
+
+            <div class="row event {% if forloop.counter >= 4 %}{% if  not active %} blurred {% endif %} {% endif %}" style="height:75px;margin-left:auto;margin-right:auto;padding:10px;padding-top:2px;">
+                <div id="player-name-mobile" style="display:none" class="col-12">
+                    
+                    <p class="text-muted" style="overflow:hidden;margin-bottom:4px;">{{ player }}</p>
+                
+                </div>
+                <div class="col-2" style="min-width:100px;">
+                    <center>
+                        <img  class="" id="player-image" style="margin-left:auto;margin-right:auto;height:60px;margin-top:0px !important;border-radius: 50%;display:inline;margin-left:0px;margin-top:5px;" src="{{stats.data.nbaComHeadshot}}">
+
+                    </center>
+                </div>
+                <div id="player-name" class="col-3" style="">
+                    <h5 style="overflow:hidden">
+                        
+                        {% if stats.data.injury %}
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% endif %}
+                        {{ player }}
+                        
+                    </h5>
+                </div>
+                <div id="first-stat" class="col-2">
+                    <center>
+                        <h5>{{ stats.ast }}ou </h5><h5 style="white-space: nowrap;">{{ stats.asthit }}/{{ stats.astcount }}</h5>
+
+                    </center>
+                </div>
+                <div id="second-stat" class="col-2">
+                    <center>
+                        <h5>{{ stats.reb }}ou</h5> <h5 style="white-space: nowrap;"> {{ stats.rebhit }}/{{ stats.rebcount }}</h5>
+
+                    </center>
+                </div>
+                <div id="third-stat" class="col-2">
+                    <center>
+
+                    <h5>{{ stats.pts }}ou</h5><h5 style="white-space: nowrap;">{{ stats.ptshit }}/{{ stats.ptscount }}</h5>
+                    </center>
+                </div>
+               
+
+            </div>
+        </a>
+            {% endif %}
+            {% endfor %}
+    </div>
+
+
+</div>
+
+
+<script>
+  
+
+</script>
+
+
+<style>
+
+
+
+.blur-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding:25px;
+    }
+
+.lock-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.blurred {
+    filter: blur(3px);
+}
+.event {
+    display: flex;
+    align-items: center; /* Centers children vertically */
+    margin-bottom: 3px;
+    width: 100%; /* Event takes the full width of its container */
+    margin-bottom:5px;
+    margin-top:3px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background-color: var(--event-background);
+
+
+}
+.event:hover {
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background-color: var(--event-background-hvr);
+
+
+}
+
+@media screen and (max-width: 700px) {
+    #player-name{
+        display: none !important;
+    }
+    #player-name-mobile{
+        display: block !important;
+    }
+    #first-stat{
+        margin-left:35px;
+
+    }
+
+
+    #first-stat-label{
+        margin-left:50px;
+    }
+    #player-image{
+        height:55px !important;
+    }
+    .event{
+        height:100px !important
+    }
+}
+
+
+@media screen and (max-width: 700px) {
+        .lock-overlay{
+            margin-top:50vh !important
+        }
+    }
+</style>
+{% endblock content%}

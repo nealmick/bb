@@ -1,0 +1,402 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content%}
+
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  
+  
+  <div class="col-lg-12" style='padding:5px;'>
+      <div style="margin-top:10px;height:300px;margin-bottom:0px;"class="content-section">
+        <div style="margin-top:15px;margin-left: auto;margin-right: auto;height: 250px; width: 85%;">
+          <canvas id="history-chart"></canvas>
+        </div>
+
+      </div>
+
+  </div>
+  
+  
+  <div class="col-lg-6" style="padding:5px">
+      <div style="margin-top:0px;height:635px;"class="content-section">
+        <center>
+          <div class="row">
+            <div class="col-6">
+              <canvas id="myChart2"></canvas>
+
+            </div>
+            <div class="col-6">
+              <canvas id="myChartCW"></canvas>
+
+            </div>
+
+          </div>
+     
+            <table style="margin-top:75px">
+                <tr>
+                    <td style="width:10px"><center>Correct</center></td>
+                    <td style="width:10px"><center>Count</center></td>
+                    <td style="width:10px"><center>Percent</center></td>
+                    <td style="width:10px"><center>TotalSpent</center></td>
+
+                    <td style="width:10px"><center>TotalWon</center></td>
+  
+
+                    <td style="width:10px"><center>TotalProfit</center></td>
+
+  
+                 </tr>
+                 <tr>
+                    <td style="width:10px"><center>{{correct}}</center></td>
+                    <td style="width:10px"><center>{{numBets}}</center></td>
+                    <td style="width:10px"><center>{{p}}%</center></td>
+                    
+                    <td style="width:10px"><center>{{totalSpent}}</center></td>
+                    <td style="width:10px"><center>{{totalWon}}</center></td>
+                    <td style="width:10px"><center>{{totalProfit}}</center></td>
+
+                 </tr>
+                 <tr>
+                  <td colspan="3" style=""><center>Positive Variance</center></td>
+                  <td colspan="3" style=""><center>Negative Variance</center></td>
+
+
+               </tr>
+               <tr>
+                <td colspan="3" style=""><center>{{ maxWon }}</center></td>
+                <td colspan="3" style=""><center>{{maxSpent}}</center></td>
+
+
+             </tr>
+            </table>
+
+        </center>
+    </div>
+    </div>
+    
+  <div class="col-lg-6" style="padding:5px">
+    <div style="margin-top:0px;height:635px;overflow: scroll"class="content-section">
+      <select id="days-select" style="width:26%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+        {%if days == 30 %}
+        <option value="30" selected>30 days</option>
+        {% else %}
+        <option value="30" >30 days</option>
+        {% endif%}
+        
+        {%if days == 60 %}
+        <option value="60" selected>60 days</option>
+        {% else %}
+        <option value="60" >60 days</option>
+        {% endif%}
+        {%if days == 90 %}
+        <option value="90" selected>90 days</option>
+        {% else %}
+        <option value="90" >90 days</option>
+        {% endif%}
+
+        {%if days == 180 %}
+        <option value="180" selected>180 days</option>
+        {% else %}
+        <option value="180" >180 days</option>
+        {% endif%}
+        {%if days == 360 %}
+        <option value="360" selected>360 days</option>
+        {% else %}
+        <option value="360" >360 days</option>
+        {% endif%}
+      </select>
+      <select id="filter-team" style="margin-left:3%;width:70%;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+        {%if filter == 'all' %}
+        <option value="all" selected>All Teams</option>
+        {% else %}
+        <option value="all" >All Teams</option>
+        {% endif%}
+        {% for team in abv %}
+
+          {%if filter == team %}
+          <option value="{{team}}" selected>{{team}}</option>
+          {% else %}
+          <option value="{{team}}" >{{team}}</option>
+          {% endif%}
+
+        {% endfor %}
+
+
+      </select>
+      <script>
+
+
+      document.getElementById("filter-team").addEventListener("input", () => {
+              team = document.getElementById("filter-team").value
+              days = document.getElementById("days-select").value
+              window.location.href = "{% url 'bet-list' %}"+team+'/'+days
+          });
+        document.getElementById("days-select").addEventListener("input", () => {
+            team = document.getElementById("filter-team").value
+            days = document.getElementById("days-select").value
+            window.location.href = "{% url 'bet-list' %}"+team+'/'+days
+        });
+
+      </script>
+      <br>
+        {% for game in games %}
+
+
+            {% if game.p0 is None %}
+                <div class="ff" >
+
+              <article  class="media content-section ff">
+              <p style="margin-bottom: 0px;">
+                <font color="red">Error game not found</font>: Invalid Input.  Make sure the game date is correct and visitor/home team are not miss-matched.  Try again or click on one of today's games.  
+
+              </p>
+
+            </article>
+          </div>
+
+            {% else %}
+            <a href="{% url 'edit-predict' game.pk%}">
+            <div class="" >
+
+              <article id="game" class="content-section gameScroll"style="margin-left:auto;margin-right:auto;margin-top: 10px;padding-top:8px;max-width:600px">
+                <!--
+                  background: linear-gradient(90deg, {{game.visitorcolor}} 0%, rgba(248,248,248,1) 30%, rgba(248,248,248,1) 50%, rgba(248,248,248,1) 70%, {{game.homecolor}} 100%);
+                -->
+
+                  <div class="row">
+                    <div class="col-3"style="padding:0">
+                      <center>
+                        <p style="margin:0px">{{ game.visitor }} {{ game.visitor_score }} {{ game.visitor_spread }} </p>
+                        <img id="team-logo" class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
+
+                    </center>
+                    </div>
+                    <div class="col-6"style="padding:0;">
+                        <center>
+                        <!--<p style="margin:0px">{{ game.prediction }}</p>!-->
+
+                        
+                        {% if not game.finished%}
+                          <form id="get_score" action="{% url 'get-score' game.pk %}" method="get">
+                            <div>
+                              <p style="margin-bottom: 5px;margin-top:2px;"><input type="submit" style="padding: 3px;margin-left: auto;margin-right: auto;" class="btn btn-grey-secondary" value="Get Score" name="mybtn"> </p>
+
+                              
+                            </div>
+                          </form>
+                        {% else%}
+
+                                            
+                        <p style="margin-bottom:3px">{{ game.gamedate }}</p>
+                        {% endif %}
+                        <div style="height: 65px !important;">
+                        <canvas  style=''id="{{ game.pk }}" ></canvas>
+                          
+
+
+                        <div id="margin-display">
+
+                      {% if game.visitor_spread == '0' %}
+                      {% elif game.pmscore != 0 %}
+                      <p style="margin:0px;"class="text-muted">
+                      
+                      {% if game.finished %}
+                        {% if game.ev_won == '1'%}
+                        <p class="text-muted"style="margin-bottom: 0px;">
+                          {% if game.spread_prediction == '1'%}
+                          Margin: {{ game.margin |floatformat:2}}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-right"></i>
+                          {% else%}
+                          <i style="color:rgb(65, 199, 8)" class="fas fa-arrow-left"></i>
+                          Margin: {{ game.margin |floatformat:2}}
+                          {%endif%}
+                        </p>
+                        
+                        {% else %}
+                        <p class="text-muted" style="margin-bottom: 0px;">
+                          {% if game.spread_prediction == '1'%}
+                          Margin {{ game.margin |floatformat:2}}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-right"></i> 
+
+                          {% else %}
+                          <i style='color:rgb(255, 0, 0)' class="fas fa-arrow-left"></i> 
+
+                          Margin: {{ game.margin |floatformat:2}}
+                          {% endif %}
+                          {% endif %}
+
+                        {% else %}
+                      
+                      {% if game.spread_prediction == '1'%}
+                        Margin {{ game.margin |floatformat:2}}
+                        <i class="fas fa-arrow-right"></i> 
+
+                        {% else %}
+                        <i  class="fas fa-arrow-left"></i> 
+                        Margin: {{ game.margin |floatformat:2}}
+                      {% endif %}
+                      {% endif %}
+                      {% endif %}
+                    </div>
+                  </div>
+                </center>
+
+
+
+
+                        <script defer>
+                            let data{{game.pk }} = {
+                                labels: [
+                                  '',
+                                ],
+                                datasets: [{
+                                  label: 'Plus Minus Prediction',
+                                  data: ["{{ game.pmscore }}"],
+
+                                  backgroundColor: [
+
+                                  {% if game.finished%}
+                                    {% if game.pmscore >= 0 and game.winner == 1 or game.pmscore < 0 and game.winner == 0 %}
+                                      'rgb(65, 199, 8)',
+                                    {%else%}
+                                      'rgb(255, 0, 0)',
+
+                                    {% endif %} 
+                                  {% endif %}
+
+                                  {%if not game.finished%}
+                                  'rgb(107,112,113)',
+                                  {% endif %}
+
+
+                                    
+
+                                  ],
+                                  hoverOffset: 10,
+
+                                  borderWidth: 1,
+
+                                
+                                }]
+                              };
+
+
+                          let config{{game.pk }} = {
+                              type: 'bar',
+                              data: data{{game.pk }},
+                              options: {
+                                  maintainAspectRatio: false,
+                                  responsive: true,
+                                  reverse: true,
+
+                                  start: 0,
+                                  end: 0,
+                                  begin: 1,
+                                  base: 0,
+                                  middle: 0,
+                                  indexAxis: 'y',
+                                  plugins: {
+                                      legend: {
+                                        display: false
+                                      }
+                                    },
+                                    layout: {
+                                      padding: {
+                                          // Any unspecified dimensions are assumed to be 0                     
+                                          top: 0,
+                                          bottom: 0,
+                                          left: 5,
+                                          right: 5,
+                                      }
+                                  },
+                                  yAxes: [{
+                                      type: 'time',
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 1
+                                      }
+                                }],
+                                  scales: {
+                                    x: {
+                                      min: -10,
+                                      max: 10,
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 4
+                                      },
+                                    
+
+
+                                    },
+                                    y: {
+                                      min: 0,
+                                      max: 1,
+                                      
+                                      weight: 1,
+
+                                    }
+                                  }
+                                  }
+
+                            };
+
+                            const c{{game.pk }} = new Chart(document.getElementById('{{ game.pk }}'),config{{game.pk }});
+
+                        </script>
+                    </div>
+                      <div class="col-3" style="padding:0">
+                        <center>
+                          <p style="margin:0px">{{ game.home }} {{ game.home_score }} {{game.home_spread}}</p>
+                      <img id="team-logo" class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
+
+                        </center>
+                    </div>
+                    
+
+                  </div>
+
+
+
+
+                  {% if game.prediction is None %}
+
+
+                  {% else %}
+                  
+
+                  {% endif %}
+              </article>
+            </div>
+            </a>
+            {% endif %}
+
+            {% empty %}
+              <br>
+              <center>
+                <h2>No bets found!</h2>
+                <p>Click Bet False at the bottom of a game.</p>
+              </center>
+              <br>
+
+          {% endfor %}
+    </div>
+</div>
+
+
+{{ maxWon |json_script:"pv" }}
+{{ maxSpent |json_script:"nv" }}
+
+
+{{ correct |json_script:"correct" }}
+{{ wrong |json_script:"wrong" }}
+
+{{ history |json_script:"history" }}
+{{ days |json_script:"days" }}
+<script  src="{% static 'predict/betStats.js'%}" defer></script>
+{% endblock content%}

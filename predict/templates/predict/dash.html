@@ -1,0 +1,511 @@
+
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+@media screen and (max-width: 700px) {
+    #shop-btn, #header-label{
+        display: none !important;
+    } 
+  #nba-emoji{
+    margin-right:0px !important
+  }
+    #game-vs-display{
+        display:none !important;
+    }
+    #game-vs-mobile-display{
+        display:block !important;
+        margin-top: 35px !important;
+    }
+  #player-image{
+    height:85px !important;
+    margin-top:25px !important;
+  }
+   #player-display{
+        display:none;
+    }
+    
+}
+
+#myChart{
+  margin-top:10px;
+  max-height: 175px !important;
+}
+@media screen and (max-width: 1000px) {
+   
+  .top-stats{
+    display: none;
+  }
+  .lock-overlay{
+    margin-top:450px !important;
+  }
+}   .big-btn{
+      border: 1px solid rgba(198, 198, 198, 0.2);
+
+
+    }
+   .big-btn:hover{
+        border: 1px solid var(--main-border-color);
+        background-color: var(--event-hvr-background) !important;
+
+
+    }
+
+
+
+    .blur-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding:25px;
+    }
+    
+    .lock-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .blurred {
+        filter: blur(4px);
+    }
+
+    .big-btn:hover{
+        background-color: rgba(172, 172, 172, 0.15) !important;
+
+
+    }
+
+
+</style>
+<div id="player-display"class="col-lg-6 " style="padding:10px;margin-bottom: 0px;padding-bottom:0px;">
+  <div class='content-section' style="min-height:320px;">
+
+      <a href="/predict/player-details/{{id}}">
+        <img  class="" id="player-image" style="height:125px;border-radius: 50%;display:inline;margin-left:0px;margin-top:5px;position:absolute;"src="{{data.nbaComHeadshot}}">
+
+        </a>
+        <div style="margin-left:35%;margin-top:25px">
+          <a href="/predict/player-details/{{id}}">
+
+        <h2 class="u-hover">{{name}}</h2>
+        </a>
+        <select id="model-slot" style="width:150px;height:35px;border-radius: 10px;margin-bottom: 2px !important;padding:5px;border: 0px;shadow: 0px;resize:none" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+            {% for label in labels %}
+            <center>
+                {% if label == 'ast' %}
+                <option value="{{ forloop.counter0 }}" selected>{{label}}</option>
+                {% else %}
+                <option value="{{ forloop.counter0 }}" >{{label}}</option>
+
+                {% endif %}
+            </center>
+
+
+            {% endfor %}
+
+        </select>
+
+      </div>
+
+    <!-- Canvas for Chart.js Graph -->
+        <canvas id="statsChart" style="margin-top:25px;width:80%;max-height: 175px;"></canvas>
+
+
+
+  </div>
+</div>
+
+
+<div class="col-lg-6" style="margin-bottom: 0px;padding:10px;padding-bottom:0px;">
+      <div class="row" style="">
+        <div class="col-6 section-hover" style="margin-bottom: 10px;padding-right:10px">
+            <a href="/predict/train/0" class="button-link">
+
+            <div class='content-section big-btn' style="min-height:155px; text-align: center;">
+                  <i class="fas fa-robot" style="color: var(--main-font-color) !important;font-size:52px;margin-top:20px"></i> <!-- Replace with your desired Font Awesome icon -->
+                  <div class="button-label" style="color: var(--main-font-color) !important;font-size:22px;white-space: nowrap;">Train Model</div>
+          </div>
+          </a>
+
+        </div>
+          <div class="col-6 section-hover" style="margin-bottom: 10px;padding-left:10px">
+             <a href="/predict/" class="button-link">
+
+              <div class='content-section big-btn' style="min-height:155px;  text-align: center;">
+
+                  <i class="fa-solid fa-list" style="ccolor: var(--main-font-color) !important;font-size:52px;margin-top:20px"></i> <!-- Replace with your desired Font Awesome icon -->
+                  <div class="button-label" style="color: var(--main-font-color) !important;font-size:22px;white-space: nowrap;">Game Analysis</div>
+              </div>
+            </a>
+        </div>
+          <div class="col-6 section-hover" style="margin-bottom: 10px;padding-right:10px">
+             <a href="/predict/teams" class="button-link">
+
+          <div class='content-section big-btn' style="min-height:155px;  text-align: center;">
+              <i class="fas fa-database" style="color: var(--main-font-color) !important;font-size:52px;margin-top:20px"></i> <!-- Replace with your desired Font Awesome icon -->
+                <div class="button-label" style="color: var(--main-font-color) !important;font-size:22px;white-space: nowrap;">Data Trends</div>
+
+          </div>
+          </a>          
+        </div>
+
+          <div class="col-6 section-hover" style="margin-bottom: 10px;padding-left:10px">
+             <a href="/predict/faq" class="button-link">
+          <div class='content-section big-btn' style="min-height:155px;  text-align: center;">
+              <i class="fa-solid fa-circle-question" style="color: var(--main-font-color) !important;font-size:52px;margin-top:20px"></i> <!-- Replace with your desired Font Awesome icon -->
+              <div class="button-label" style="color: var(--main-font-color) !important;font-size:22px;white-space: nowrap;">About Project</div>
+          </div>
+         </a> 
+        </div>
+      </div>
+
+    </div>
+
+  <div class="col-lg-4" style="height:250px;padding:10px;padding-top:0px">
+    <div class="content-section" style="width:100%;height:100%">
+      <h3 style="display:inline">Trending</h3>
+      <h5 style="float: right;display:inline;color:#6dac56 !important"><i class="fa-sharp fa-solid fa-up"></i> 23%</h5>
+     <canvas id="myChart" width="600" height="300" style="margin-bottom:25px !important"></canvas>
+      <script>
+          const labels = ['Fanduel', 'DraftKings', 'BetMGM', 'Caesars'];
+          const data = {
+              labels: labels,
+              datasets: [
+                  {
+                      label: 'Trend',
+                      data: [65, -59, 80, -81],
+                      borderColor: "#fc861e",
+                      backgroundColor: 'rgba(252, 134, 30, 0.5)',
+                      borderWidth: 2,
+                      borderRadius: Number.MAX_VALUE, // Fully rounded corners
+                      borderSkipped: false,
+                      barPercentage: 0.5,
+                      categoryPercentage: 0.5,
+                  },
+                  {
+                      label: 'Trend',
+                      data: [28, 48, 40, 19,],
+                      backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                      borderColor: 'rgb(54, 162, 235)',
+                      borderWidth: 2,
+                      borderRadius: 5, // Small corner radius
+                      borderSkipped: false,
+                      barPercentage: 0.5,
+                      categoryPercentage: 0.5,
+                  }
+              ]
+          };
+  
+          const config = {
+              type: 'bar',
+              data: data,
+              options: {
+                  indexAxis: 'y', // Makes the bar chart horizontal
+                  scales: {
+                      x: {
+                          beginAtZero: true,
+                      }
+                  },
+                  plugins: {
+                      legend: {
+                          display: false,
+                      }
+                  }
+              },
+          };
+  
+          var myChart = new Chart(document.getElementById('myChart'), config);
+      </script>
+      
+    </div>
+  </div>
+  <div class="col-lg-8" style="height:250px;padding:10px;padding-top:0px">
+    <div class="content-section" style="width:100%;height:100%;
+    border:none !important;
+
+    background: hsla(39, 96%, 50%, 1);
+
+    background: linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    background: -moz-linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    background: -webkit-linear-gradient(315deg, hsla(39, 96%, 50%, 1) 0%, hsla(24, 92%, 41%, 1) 31%, hsla(16, 44%, 45%, 1) 45%, hsla(214, 64%, 55%, 1) 78%, hsla(216, 56%, 67%, 1) 100%);
+
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FAA506", endColorstr="#C75408", GradientType=1 );
+    ">
+    <div class="row">
+      <div class="col-6">
+
+        <h1  id="header-label" style="white-space: nowrap; overflow: visible;">Welcome to FireBet 🚀</h1>
+
+        <div style="margin-left:5px">
+      <p> <i class="fa-light fa-circle-check"></i> Player Prop Trends</p>
+      <p><i class="fa-light fa-circle-check"></i> TensorFlow Dashboard</p>
+      <p><i class="fa-light fa-circle-check"></i> Game Projection Analysis</p>
+  
+    </div>
+    {% if active %}
+    <a id="shop-btn" class="btn btn-grey" href="/predict/faq">Frequently Asked Questions <i class="fa-sharp fa-regular fa-question"></i></a>
+
+    {% else %}
+    <a id="shop-btn" class="btn btn-grey" href="https://firebet.ai/">Unlock Full Site 🔑</a>
+
+    {% endif %}
+    </div>
+
+    <div class="col-6" style=" text-align: right;">
+      <img id="nba-emoji" style="font-size: 166px;margin-right:25px;margin-top:43px;" src="https://i.imgur.com/pitkOg5.png">
+      </img>
+    </div>
+    
+
+  </div>
+</div>
+
+  </div>
+
+
+
+<div id="games-div"class="col-lg-12 " style="margin-top:8px;padding:10px;margin-bottom: 10px;padding-top:0px;min-height: 500px;">
+
+    <div id="gamescroll"class="content-section  "style="height:100%; min-height: 250px;overflow-y:scroll;overflow-x:hidden">
+     <!-- Include Bootstrap DateTimePicker CDN -->
+
+
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+ 
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css"rel="stylesheet">
+        
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
+
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+       
+
+    <h1>Today's Action</h1>
+
+    {% if not active %}
+        <a href="/autoshop/" id="lock-sub" style="text-decoration: none; color: inherit; display: flex; justify-content: center; width: 100%;">
+            <div class="lock-overlay" style="margin-top:175px;position: absolute; z-index: 1000; font-size: 42px; width: 96%; height: 50%; opacity: .7;">
+                <center>
+                     <i class="fas fa-lock" style="font-size: 128px"></i>
+                    <p class="lock-text" style="margin-bottom:0px">Subscribe</p>
+                     
+                </center>
+         
+            </div>
+        </a>
+        
+        {% endif %}
+
+    <div class="row {% if not active %}  {%endif%}">
+
+      {% for game in games %}
+
+
+      {% if game.p0 is None %}
+                
+
+            
+        
+                  
+                  
+
+          <div class="ff" >
+
+        <article  class="media content-section ff ">
+        <p style="margin-bottom: 0px;">
+          <font color="red">Error game not found</font>: Invalid Input.  Make sure the game date is correct and visitor/home team are not miss-matched.  Try again or click on one of today's games.  
+
+        </p>
+
+      </article>
+    </div>
+
+      {% else %}
+      
+      <a class="col-lg-6 {% if forloop.counter >= 3 %} {% if not active %}blurred{%endif%}{%endif%}" href="{% if not active %}{% if forloop.counter >= 3 %}{% url 'auto-shop'%} {%else%}{% url 'edit-predict' game.pk%}{%endif%} {%else%}{% url 'edit-predict' game.pk%}{%endif%}">
+      <div  style="width:100%">
+
+        <article id="game" class="content-section gameScroll "style="margin-top: 10px;padding-top:8px;">
+          <!--
+            background: linear-gradient(90deg, {{game.visitorcolor}} 0%, rgba(248,248,248,1) 30%, rgba(248,248,248,1) 50%, rgba(248,248,248,1) 70%, {{game.homecolor}} 100%);
+          -->
+
+            <div class="row">
+              <div class="col-4"style="padding:0">
+                <center>
+                  <img id="team-logo" class="" style="display:inline;height: 93px;"src="{% static 'predict/nba-logo/' %}{{ game.visitor }}.webp">
+
+                  <h5 style="margin:0px">{% if game.visitor_score != '0' %} {{ game.visitor_score }} {% endif%} {{ game.visitor_spread }} </h5>
+
+              </center>
+              </div>
+              <div class="col-4"style="padding:0;">
+                  <center>
+                  <!--<p style="margin:0px">{{ game.prediction }}</p>!-->
+
+                  <h3 style="margin-top:35px;" id="game-vs-display" >{{ game.visitor }} vs {{ game.home }}</h3>
+                  <h3 style="margin-top:35px; display:none" id="game-vs-mobile-display" >vs</h3>
+                  </center>
+
+
+                  </div>
+
+
+
+                <div class="col-4" style="padding:0">
+                  <center>
+                <img id="team-logo" class="" style="display:inline;height: 100px;"src="{% static 'predict/nba-logo/' %}{{ game.home }}.webp">
+                    <h5 style="margin:0px">{% if game.visitor_score != '0' %} {{ game.home_score }} {% endif%}  {{game.home_spread}}</h5>
+
+                  </center>
+              </div>
+              
+
+            </div>
+
+
+
+
+            {% if game.prediction is None %}
+
+
+            {% else %}
+                
+
+            {% endif %}
+        </article>
+      </div>
+      </a>
+      {% endif %}
+
+      {% empty %}
+        <br>
+        <br>
+        <br>
+
+          <h2 style="margin-left:30px">No games found for the date selected.</h2>
+
+          <style>
+            #lock-sub{
+                display:none !important;
+            }
+            #games-div{
+              display:none !important;
+            }
+          </style>
+    {% endfor %}
+    
+
+
+    <script>
+        var lg10 = {{ lg10|safe }};
+        var ctx = document.getElementById('statsChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Stat Value',
+                    data: [],
+                    borderColor: "#3e95cd",
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Player Trend',
+                    data: [],
+                    borderColor: "#fc861e",
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+
+            options: {
+             scales: {
+                    x: {  // or 'xAxes' for Chart.js version 2
+                        display: false, // This will hide the x-axis labels
+                         gridLines: {
+                            color: 'rgba(0, 0, 0, 1)' // Darker grid for x-axis
+                        }
+                    },
+                    y: {  // or 'xAxes' for Chart.js version 2
+                        display: true, // This will hide the x-axis labels
+                         gridLines: {
+                            color: 'rgba(0, 0, 0, 1)' // Darker grid for x-axis
+                        }
+                    },
+                   
+                   
+                   
+                },
+             
+            }
+        });
+    
+        function calculateMovingAverage(data) {
+            let runningTotal = 0;
+            return data.map((value, index) => {
+                let numericValue = parseFloat(value); // Ensure value is a number
+                runningTotal += numericValue;
+                return runningTotal / (index + 1);
+            });
+        }
+        function updateChart(statIndex) {
+            var newLabels = [];
+            var newData = [];
+        
+            lg10.forEach(game => {
+                newLabels.push(game.date);
+                newData.push(game.stats[parseInt(statIndex, 10)]);
+            });
+        
+            newLabels.reverse();
+            newData.reverse();
+    
+            const movingAverageData = calculateMovingAverage(newData);
+        
+            chart.data.labels = newLabels;
+            chart.data.datasets[0].data = newData;
+            console.log(statIndex)
+            chart.data.datasets[1].data = movingAverageData;
+            chart.update();
+        }
+        
+        updateChart(0);
+    
+        function displaySelectedStat() {
+            var selectedStatIndex = document.getElementById("model-slot").value;
+            updateChart(selectedStatIndex);
+        }
+        
+        document.getElementById("model-slot").onchange = displaySelectedStat;
+    </script>
+    </div>
+    <style>
+        #game:hover {
+          border: 1px solid var(--main-border-color);
+            background-color: var(--event-hvr-background) !important;
+
+        }
+
+    </style>
+
+{% endblock content%}

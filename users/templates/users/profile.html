@@ -1,0 +1,56 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+  <div class="col-md-8 content-section center "style="color:333333 !important;margin-top:50px">
+    <body class="">
+
+
+    <div class="media">
+      <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+      <div class="media-body">
+        <h2 class="account-heading">{{ user.username }}</h2>
+        <p class="text-secondary">{{ user.email }}</p>
+      </div>
+    </div>
+    <!-- FORM HERE -->
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Profile Info</legend>
+        {{ u_form|crispy}}
+        {{ p_form|crispy}}
+      </fieldset>
+      <div>
+      <div class="form-group">
+        <button class="btn btn-grey" style="" type="submit">Update</button>
+        <a class="btn btn-grey" style="" href="{% url 'export-games'%}">Export Data</a>
+        <a class="btn btn-grey" style="" href="{% url 'team-list'%}">View Teams</a>
+        <a class="btn btn-grey" style="" href="{% url 'bet-list'%}">Game Bets</a>
+        <a class="btn btn-grey" style="" href="{% url 'confirm-clear-games'%}">Clear</a>
+        <button class="btn btn-grey" id="themeToggle">Theme</button>
+
+      </div>
+    </div>
+    </form>
+    </body>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+    const currentTheme = localStorage.getItem('theme') || 'default';
+    if (currentTheme === 'alternate') {
+        document.documentElement.classList.add('alternate-theme');
+    }
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('alternate-theme');
+        let theme = 'default';
+        if (document.documentElement.classList.contains('alternate-theme')) {
+            theme = 'alternate';
+        }
+        localStorage.setItem('theme', theme);
+    });
+});
+  </script>
+
+  {% endblock content%}

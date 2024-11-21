@@ -1,0 +1,93 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+
+
+{% load static %}
+
+
+{% block content%}
+
+
+<body class="row" style="overflow-x: hidden;">
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="col-12">
+    <div class="content-section" style="overflow:scroll;">
+        <center>
+
+          <img id="team-logo" class="" style="display:inline;height: 200px;"src="{% static 'predict/nba-logo/' %}{{ abv }}.webp">
+          <h2 class="" style="margin-top:10px">{{ team }}</h2>
+          <p>Win: {{win}} Loss: {{loss}} Streak: {{streak}}</p>
+      
+        </center>
+          <br>
+
+          <table align="center" style="width:100%;">
+            <tr>
+      
+      <td style="width:10px;background-color: rgba(206, 206, 206, 0.1) !important;"><center>Name</center></td>
+                  {% for label in labels %}
+                  <td style="width:10px"><center>{{label}}</center></td>
+                  {% endfor %}
+
+            </tr>
+              {% for player in p %}
+            <tr>
+
+                <td id="player-name" class="oof">
+                    <center>
+                      <button  style="background: transparent;
+                      border: none !important;color: #333333"onclick="window.location.href='{% url 'player-detail-name' player.name%}';">
+                        {{player.name}}
+                      </button>
+                      
+
+                    </center>
+                </td>
+                {% for stat in player.avg %}
+                  <td>
+                    <center>
+                      {{stat}}
+
+                    </center>
+                </td>
+                {% empty %}
+                {% for label in labels %}
+                <td>
+                  <center>
+                    0
+                  </center>
+              </td>
+
+
+              {% endfor %}
+              {% endfor %}
+            </tr>
+
+                {% endfor%}
+          </table>
+          <br>
+          <p class="text-muted">TeamId: {{teamId}}</p>
+          <p class="text-muted">API: <a class="text-muted" href="https://www.balldontlie.io/api/v1/teams/{{teamId}}">https://www.balldontlie.io/api/v1/teams/{{teamId}}</a></p>
+      </div>
+
+</div>
+<style>
+  #player-name{
+    background-color: rgba(206, 206, 206, 0.1) !important;
+      border-radius: 0px;
+  }
+  #player-name:hover{
+      background-color: #fc861e !important;
+      border-radius: 0px;
+
+  }
+</style>
+
+<script>
+
+</script>
+{% endblock content%}

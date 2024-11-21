@@ -1,0 +1,35 @@
+{% extends "predict/base.html"%}
+{% load crispy_forms_tags %}
+{% block content%}
+<div class='content-section col-md-6 center' style="
+margin-right: auto;
+margin-left: auto;
+">
+  <body class="">
+        <p style="font-size: 56px;color: #333333;text-decoration: underline;margin-bottom: 2px">Register</p>
+        <br>
+        <br>
+
+    <form method="POST">
+      {% csrf_token %}
+      <fieldset class="form-group">
+        {{ form|crispy}}
+      </fieldset>
+      <div class="form-group">
+        <button class="btn btn-grey" style="color:white" type="submit">Sign Up</button>
+
+      </div>
+    </form>
+    <div class="boder-top pt-3">
+      <small class="text-muted">
+        Already Have An Account?<a class="ml-2" href="{% url 'login' %}">Sign In</a>
+      </small>
+    </div>
+    </center>
+  </body>
+</div>
+
+<style>
+    input {min-width: 300px};
+</style>
+{% endblock content%}
